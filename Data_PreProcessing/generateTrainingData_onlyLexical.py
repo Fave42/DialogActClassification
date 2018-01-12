@@ -10,29 +10,48 @@ Usage: python3 generateTrainingData_onlyLexical.py <PathToTranscriptionFile>
 
 import sys
 import gensim
+import time
 
-fileName = sys.argv[1]
+#fileName = sys.argv[1]
+# For testing provide the file "TestDict.txt" wich is provided in the parent folder of this script
+fileName = "TestDictEins.txt"
+
+# Start timing the importing of the dictionary
+startTime = time.time()
 
 # Load Google's pre-trained Word2Vec model.
 # Richie Laptop
-model = gensim.models.KeyedVectors.load_word2vec_format(
-    '/home/richard/Projekte/Project_Deep_Learners/Processing_Resources/dict/GoogleNews-vectors-negative300.bin',
-    binary=True)
+#model = gensim.models.KeyedVectors.load_word2vec_format(
+#    '/home/richard/Projekte/Project_Deep_Learners/Processing_Resources/dict/GoogleNews-vectors-negative300.bin',
+#    binary=True)
+
 # Fabian Laptop
 model = gensim.models.KeyedVectors.load_word2vec_format(
-    'D:/word2vec_Test/dict/GoogleNews-vectors-negative300.bin',
-    binary=True)
+    'D:/word2vec_Test/dict/GoogleNews-vectors-negative300.bin', binary=True)
+endTimte = time.time()
+duration = endTimte - startTime
 
-with open(fileName, "r") as inputFile:
-    for line in inputFile:
+# Generate the outputfilfe wich is stored in the root folder
+outputFile = open("testOutput.txt", "w")
+
+with open(fileName, "r") as dictionary:
+    for line in dictionary:
 
         splittedLine = line.split()
         fileID = splittedLine[0]
         diagClass = splittedLine[1]
 
-        trainingTuple = [[], []]  # first list stores the actual featureMatrix, second tuple stores the one-hot vector.
         for i in range(2, len(splittedLine)):
-            trainingTuple[0].append(model[splittedLine[i])
+            # first list stores the actual featureMatrix, second tuple stores the one-hot vector.
+            trainingTuple = [[], []]
+            word = splittedLine[i]
+            # Check if the word is in the model
+            # If not fill the list with 300 0's
+            if (splittedLine[i] in model.vocab):
+                word300 = model[word]
+            else:
+                word300 = [0] * 300
+            trainingTuple[0].append(word300)
 
             if diagClass == "backchannel":
                 trainingTuple[1] = [1, 0, 0, 0]
@@ -44,4 +63,15 @@ with open(fileName, "r") as inputFile:
                 trainingTuple[1] = [0, 0, 1, 0]
 
             print('OK')
-            # store the tuple in file.
+            # Store the tuple in an output file
+            # Each tuple/word is currently in one line
+            outputFile.write((word) + " ")
+            for item in trainingTuple[0]:
+                for subitem in item:
+                    outputFile.write(str(subitem) + " ")
+            for item in trainingTuple[1]:
+                outputFile.write(str(item) + " ")
+            outputFile.write("\n")
+outputFile.close()
+
+print("Import duration of dictionary was " + str(duration) + " seconds!")
