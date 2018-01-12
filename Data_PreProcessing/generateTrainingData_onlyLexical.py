@@ -9,33 +9,39 @@ Usage: python3 generateTrainingData_onlyLexical.py <PathToTranscriptionFile>
 '''
 
 import sys
+import gensim
 
 fileName = sys.argv[1]
 
-with open(fileName,"r") as inputFile:
-	
-	for line in inputFile:
-		
-		splittedLine = line.split()
-		
-			fileID = splittedLine[0]
-			diagClass = splittedLine[1]
-			
-			trainingTuple = [[],[]]	# first list stores the actual featureMatrix, second tuple stores the one-hot vector.
-			for i in range(2,len(splittedLine)):
-				trainingTuple[0].append(# Get feature Vector of i)
-				
-			if diagClass == "backchannel":
-				trainingTuple[1] = [1,0,0,0]
-			elif  diagClass == "statement":
-				trainingTuple[1] = [0,1,0,0]
-			elif  diagClass == "question":
-				trainingTuple[1] = [0,0,1,0]
-			elif  diagClass == "opinion":
-				trainingTuple[1] = [0,0,1,0]
-					
-			# store the tuple in file.
+# Load Google's pre-trained Word2Vec model.
+# Richie Laptop
+model = gensim.models.KeyedVectors.load_word2vec_format(
+    '/home/richard/Projekte/Project_Deep_Learners/Processing_Resources/dict/GoogleNews-vectors-negative300.bin',
+    binary=True)
+# Fabian Laptop
+model = gensim.models.KeyedVectors.load_word2vec_format(
+    'D:/word2vec_Test/dict/GoogleNews-vectors-negative300.bin',
+    binary=True)
 
-			
-				
-				
+with open(fileName, "r") as inputFile:
+    for line in inputFile:
+
+        splittedLine = line.split()
+        fileID = splittedLine[0]
+        diagClass = splittedLine[1]
+
+        trainingTuple = [[], []]  # first list stores the actual featureMatrix, second tuple stores the one-hot vector.
+        for i in range(2, len(splittedLine)):
+            trainingTuple[0].append(model[splittedLine[i])
+
+            if diagClass == "backchannel":
+                trainingTuple[1] = [1, 0, 0, 0]
+            elif diagClass == "statement":
+                trainingTuple[1] = [0, 1, 0, 0]
+            elif diagClass == "question":
+                trainingTuple[1] = [0, 0, 1, 0]
+            elif diagClass == "opinion":
+                trainingTuple[1] = [0, 0, 1, 0]
+
+            print('OK')
+            # store the tuple in file.
