@@ -14,14 +14,15 @@ import time # To time the import and excecution
 import operator # For sorting the dictionary that is storing the unknown words
 import random as rand
 import pickle
+import numpy as np
 
 #fileName = sys.argv[1]
 # Fabian-Laptop Path
 #fileName = "D:/Mega/Uni-Master/Deep Learning/Projekt/Data/Train/train.txt"
 # Serverpath
 #fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Train/train.txt"
-#fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Dev/dev.txt"
-fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Test/test.txt"
+fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Dev/dev.txt"
+#fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Test/test.txt"
 
 # Select the padding depth of the matrix (1=one line with 0's, 2=two lines with 0's
 paddingDepth = 1
@@ -72,7 +73,7 @@ with open(fileName, "r") as dataFile:
         # first list stores the actual featureMatrix, second tuple stores the one-hot vector.
         trainingTuple = [[], []]
         for i in range(0, paddingDepth):
-            zeroPadding = [0] * 300
+            zeroPadding = np.zeros((1, 300), dtype="float32")
             trainingTuple[0].append(zeroPadding)
 
         #print(trainingTuple[0])
@@ -83,7 +84,7 @@ with open(fileName, "r") as dataFile:
             # If not fill the list with 300 0's
             if (splittedLine[i] in model.vocab):
                 word300 = model[word]
-                word300 = word300.tolist()
+                #word300 = word300.tolist()
             elif (splittedLine[i] in unknownWordsDict):
                 word300 = unknownWordsDict[word]
             else:
@@ -93,29 +94,31 @@ with open(fileName, "r") as dataFile:
             trainingTuple[0].append(word300)
 
         for i in range(0, paddingDepth):
-            zeroPadding = [0] * 300
+            zeroPadding = np.zeros((1, 300), dtype="float32")
             trainingTuple[0].append(zeroPadding)
 
         if diagClass == "backchannel":
-            trainingTuple[1] = [1, 0, 0, 0]
+            trainingTuple[1] = np.asarray([1, 0, 0, 0])
         elif diagClass == "statement":
-            trainingTuple[1] = [0, 1, 0, 0]
+            trainingTuple[1] = np.asarray([0, 1, 0, 0])
         elif diagClass == "question":
-            trainingTuple[1] = [0, 0, 1, 0]
+            trainingTuple[1] = np.asarray([0, 0, 1, 0])
         elif diagClass == "opinion":
-            trainingTuple[1] = [0, 0, 0, 1]
+            trainingTuple[1] = np.asarray([0, 0, 0, 1])
 
         #print("################")
         #print(trainingTuple)
-
+        trainingTuple = np.asarray(trainingTuple)
         outputList.append(trainingTuple)
+
+    outputList = np.asarray(outputList)
 
 # Saves the unknown words with their respective 300 random numbers
 with open('dict/unknownWordsDict.pickle', 'wb') as handle:
     pickle.dump(unknownWordsDict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Saves the the complete list with every sentence
-with open('Output_Files/testExamples_2WordContext.pickle', 'wb') as handle:
+with open('Output_Files/testExamplesNUMPY_2WordContext.pickle', 'wb') as handle:
     pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 endTime2 = time.time()
