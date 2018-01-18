@@ -28,9 +28,9 @@ pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 #trainingList = pickle.load(open(pathTraining, "rb"))
 evaluationList = pickle.load(open(pathEvaluation, "rb"))
 
-print len(evaluationList[0][0])
-print evaluationList[0][0].shape
-print evaluationList[0][1].shape
+# print len(evaluationList[0][0])
+# print evaluationList[0][0].shape
+# print evaluationList[0][1].shape
 
 #trainingArray = np.asarray(pathTraining)
 #evaluationArray = np.asarray(evaluationList)
@@ -42,9 +42,9 @@ print evaluationList[0][1].shape
 #
 evalDataTF = np.array(evaluationList[0][0]).reshape(1, 108, 300, 1)
 #evalDataTF = tf.convert_to_tensor(evaluationList[0][0], np.float32)
-print evaluationList[0][0].shape
-print "-----------------------"
-print evalDataTF
+# print evaluationList[0][0].shape
+# print "-----------------------"
+# print evalDataTF
 
 
 
@@ -75,7 +75,7 @@ labels.append(tf.convert_to_tensor(evaluationList[0][1], np.float32))
 #
 # ### Functions ###
 def weightVariable(shape):
-    initial = tf.truncated_normal(shape, stddev=0.1)
+    initial = tf.truncated_normal(shape, stddev=1)
     return tf.Variable(initial)
 
 def biasVariable(shape):
@@ -83,7 +83,7 @@ def biasVariable(shape):
     return tf.Variable(initial)
 
 def conv2d(x, W):
-    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='VALID')
 
 def maxPool2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
@@ -98,10 +98,13 @@ y_ = tf.placeholder(tf.float32, shape=[1, 4]) # gold standard labels; 1hot-vecto
 
 x_ = tf.reshape(x, shape=[1, 108, 300, 1])
 #
-W_conv1 = weightVariable([2, 108, 1, 32])
+W_conv1 = weightVariable([3, 300, 1, 1])
 b_conv1 = biasVariable([20])
 #
 tmp = conv2d(x_, W_conv1)
+# print type(tmp)
+# print type(conv2d(x_, W_conv1)[0])
+
 # #todo Use GlobalAveragePooling
 #
 # ### Session ###
@@ -124,6 +127,14 @@ input = features[0]
 
 # we want to get (fetch) the value of a, feeding the input vector for the placeholders
 output = sess.run([tmp], {x: evaluationList[0][0]})
-#
-print(output[0].shape)
-print(output)
+
+count = 0
+for item in output:
+    for item2 in item:
+        for item3 in item2:
+            for item4 in item3:
+                #if (item4 != 0.0):
+                count += 1
+                print item4
+
+print count
