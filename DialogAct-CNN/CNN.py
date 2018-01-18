@@ -8,7 +8,7 @@
 The script is stored on the server under the following path:
 /mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources
 
-Usage: python3 main.py
+Usage: python3 CNN.py
 '''
 
 ### Imports ###
