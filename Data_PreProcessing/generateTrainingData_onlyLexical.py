@@ -21,11 +21,12 @@ import numpy as np
 #fileName = "D:/Mega/Uni-Master/Deep Learning/Projekt/Data/Train/train.txt"
 # Serverpath
 #fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Train/train.txt"
-fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Dev/dev.txt"
-#fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Test/test.txt"
+#fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Dev/dev.txt"
+fileName = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/Test/test.txt"
 
 # Select the padding depth of the matrix (1=one line with 0's, 2=two lines with 0's
-paddingDepth = 1
+paddingDepth = 4
+maxSentenceLength = 100
 
 # Loads "unknownWordsDict.txt that all every unknown words has unique 300 random float numbers
 unknownWordsDict = {}
@@ -71,46 +72,54 @@ with open(fileName, "r") as dataFile:
         diagClass = splittedLine[1]
 
         # first list stores the actual featureMatrix, second tuple stores the one-hot vector.
-        trainingTuple = [[], []]
-        for i in range(0, paddingDepth):
-            zeroPadding = np.zeros((1, 300), dtype="float32")
-            trainingTuple[0].append(zeroPadding)
+        trainingTuple = [np.zeros((maxSentenceLength+2*paddingDepth,300)), None]
 
         #print(trainingTuple[0])
-
-        for i in range(2, len(splittedLine)):
-            word = splittedLine[i]
-            # Check if the word is in the model
-            # If not fill the list with 300 0's
-            if (splittedLine[i] in model.vocab):
-                word300 = model[word]
-                #word300 = word300.tolist()
-            elif (splittedLine[i] in unknownWordsDict):
-                word300 = unknownWordsDict[word]
+        
+        for i in range(paddingDepth, len(splittedLine)-2+paddingDepth): #for filling np.array correctly.
+            
+            if i <= maxSentenceLength+paddingDepth:
+                word = splittedLine[i+2-paddingDepth] # transforms the i to fit to the splittedLine index.
+                # Check if the word is in the model
+                # If not fill the list with 300 random numbers between -1 and 1
+                if (word in model.vocab):
+                    word300 = model[word]
+                    #word300 = word300.tolist()
+                elif (word in unknownWordsDict):
+                    word300 = unknownWordsDict[word]
+                else:
+                    word300 = getRandomDimensions()
+                    unknownWordsDict[word] = word300
+                
+                # fills the corresponding row and elements of the trainingMatrix with the values of word300.
+                for j in range(0,300):
+                    trainingTuple[0][i][j] = word300[j]
             else:
-                word300 = getRandomDimensions()
-                unknownWordsDict[word] = word300
-
-            trainingTuple[0].append(word300)
-
-        for i in range(0, paddingDepth):
-            zeroPadding = np.zeros((1, 300), dtype="float32")
-            trainingTuple[0].append(zeroPadding)
-
+                print("Sentence is longer than " + str(maxSentenceLength) + "words!")
+                print(line)
+                break
+            
         if diagClass == "backchannel":
-            trainingTuple[1] = np.asarray([1, 0, 0, 0])
+            trainingTuple[1] = np.array([1, 0, 0, 0])
         elif diagClass == "statement":
-            trainingTuple[1] = np.asarray([0, 1, 0, 0])
+            trainingTuple[1] = np.array([0, 1, 0, 0])
         elif diagClass == "question":
-            trainingTuple[1] = np.asarray([0, 0, 1, 0])
+            trainingTuple[1] = np.array([0, 0, 1, 0])
         elif diagClass == "opinion":
-            trainingTuple[1] = np.asarray([0, 0, 0, 1])
+            trainingTuple[1] = np.array([0, 0, 0, 1])
 
         #print("################")
         #print(trainingTuple)
         trainingTuple = np.asarray(trainingTuple)
         outputList.append(trainingTuple)
-
+    
+        #print("only one test interation")
+        #break
+    
+    #print(trainingTuple[0][4])
+    #print(trainingTuple[0].shape)
+    #print(trainingTuple[1])
+    
     outputList = np.asarray(outputList)
 
 # Saves the unknown words with their respective 300 random numbers
@@ -118,7 +127,7 @@ with open('dict/unknownWordsDict.pickle', 'wb') as handle:
     pickle.dump(unknownWordsDict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Saves the the complete list with every sentence
-with open('Output_Files/testExamplesNUMPY_2WordContext.pickle', 'wb') as handle:
+with open('NN_Input_Files/testOutput_3-5WordContext.pickle', 'wb') as handle:
     pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 endTime2 = time.time()
@@ -127,3 +136,4 @@ duration2 = endTime2 - startTime2
 
 print("Import duration of dictionary was " + str(duration) + " seconds!")
 print("The rest of the program was completed in " + str(duration2) + " seconds!")
+
