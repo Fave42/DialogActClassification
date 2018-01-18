@@ -86,8 +86,10 @@ def conv2d(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='VALID')
 
 def maxPool2x2(x):
-    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
-                          strides=[1, 2, 2, 1], padding='SAME')
+    return tf.nn.max_pool(x, ksize=[1, 107, 1, 1],
+                          strides=[1, 1, 1, 1], padding='VALID')
+
+
 #
 #
 # ### Graph definition ###
@@ -96,16 +98,16 @@ x = tf.placeholder(tf.float32, shape=[108, 300]) # input vectors
 #print(x.shape)
 y_ = tf.placeholder(tf.float32, shape=[1, 4]) # gold standard labels; 1hot-vectors
 
-x_ = tf.reshape(x, shape=[1, 108, 300, 1])
+x_4DTensor = tf.reshape(x, shape=[1, 108, 300, 1])
 #
-W_conv1 = weightVariable([3, 300, 1, 1])
-b_conv1 = biasVariable([20])
+W_conv1 = weightVariable([2, 300, 1, 1])
+b_conv1 = biasVariable([1])
 #
-tmp = conv2d(x_, W_conv1)
+h_conv1 = tf.nn.relu(conv2d(x_4DTensor, W_conv1) + b_conv1)
+h_pool1 = maxPool2x2(h_conv1)
 # print type(tmp)
 # print type(conv2d(x_, W_conv1)[0])
 
-# #todo Use GlobalAveragePooling
 #
 # ### Session ###
 # # numEpoch = 1
@@ -126,15 +128,17 @@ sess.run(tf.global_variables_initializer())
 input = features[0]
 
 # we want to get (fetch) the value of a, feeding the input vector for the placeholders
-output = sess.run([tmp], {x: evaluationList[0][0]})
+output = sess.run([h_pool1], {x: evaluationList[0][0]})
 
-count = 0
-for item in output:
-    for item2 in item:
-        for item3 in item2:
-            for item4 in item3:
-                #if (item4 != 0.0):
-                count += 1
-                print item4
+# count = 0
+# for item in output:
+#     for item2 in item:
+#         for item3 in item2:
+#             for item4 in item3:
+#                 #if (item4 != 0.0):
+#                 count += 1
+#                 print item4
+#
+# print count
 
-print count
+print output
