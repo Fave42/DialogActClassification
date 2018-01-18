@@ -28,6 +28,10 @@ pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 #trainingList = pickle.load(open(pathTraining, "rb"))
 evaluationList = pickle.load(open(pathEvaluation, "rb"))
 
+print len(evaluationList[0][0])
+print evaluationList[0][0].shape
+print evaluationList[0][1].shape
+
 #trainingArray = np.asarray(pathTraining)
 #evaluationArray = np.asarray(evaluationList)
 
@@ -36,7 +40,11 @@ evaluationList = pickle.load(open(pathEvaluation, "rb"))
 # print(evaluationList[0, 0].shape)
 # print(evaluationList[0])
 #
-evalDataTF = tf.convert_to_tensor(evaluationList[0][0], np.float32)
+evalDataTF = np.array(evaluationList[0][0]).reshape(1, 108, 300, 1)
+#evalDataTF = tf.convert_to_tensor(evaluationList[0][0], np.float32)
+print evaluationList[0][0].shape
+print "-----------------------"
+print evalDataTF
 
 
 
@@ -84,14 +92,16 @@ def maxPool2x2(x):
 #
 # ### Graph definition ###
 #
-x = tf.placeholder(tf.float32, shape=[1, 108, 300, 1]) # input vectors
+x = tf.placeholder(tf.float32, shape=[108, 300]) # input vectors
 #print(x.shape)
 y_ = tf.placeholder(tf.float32, shape=[1, 4]) # gold standard labels; 1hot-vectors
+
+x_ = tf.reshape(x, shape=[1, 108, 300, 1])
 #
-W_conv1 = weightVariable([2, 300, 1, 32])
+W_conv1 = weightVariable([2, 108, 1, 32])
 b_conv1 = biasVariable([20])
 #
-tmp = conv2d(x, W_conv1)
+tmp = conv2d(x_, W_conv1)
 # #todo Use GlobalAveragePooling
 #
 # ### Session ###
