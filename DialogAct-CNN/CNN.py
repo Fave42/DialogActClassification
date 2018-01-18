@@ -15,15 +15,15 @@ Usage: python2.7 CNN.py
 ### Imports ###
 import tensorflow as tf
 import numpy as np
-import pickle
+import cPickle as pickle
 
 # Server Paths
-#pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
-#pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
+pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
+pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 
 # PC Paths
-pathTraining = "D:/NN_Projekt/trainData_3-5WordContext.pickle"
-pathEvaluation = "D:/NN_Projekt/devData_3-5WordContext.pickle"
+#pathTraining = "D:/NN_Projekt/trainData_3-5WordContext.pickle"
+#pathEvaluation = "D:/NN_Projekt/devData_3-5WordContext.pickle"
 
 #trainingList = pickle.load(open(pathTraining, "rb"))
 evaluationList = pickle.load(open(pathEvaluation, "rb"))
@@ -31,35 +31,41 @@ evaluationList = pickle.load(open(pathEvaluation, "rb"))
 #trainingArray = np.asarray(pathTraining)
 #evaluationArray = np.asarray(evaluationList)
 
-print(evaluationList[0, 0].shape)
-print(evaluationList[0])
+#print evaluationList[0]
 
-evalDataTF = tf.convert_to_tensor(evaluationList, np.float32)
+# print(evaluationList[0, 0].shape)
+# print(evaluationList[0])
+#
+evalDataTF = tf.convert_to_tensor(evaluationList[0][0], np.float32)
 
-print(evalDataTF[0, 0].shape)
-print(evalDataTF[0])
 
+
+
+#
+# print(evalDataTF[0, 0].shape)
+# print(evalDataTF[0])
+#
 features = []
 labels = []
-for item in evalDataTF:
-    features.append(item[0])
-    labels.append(item[1])
-
-features = np.asarray(features)
-labels = np.asarray(labels)
-
-# print(features)
-# print(labels)
-
-assert features.shape[0] == labels.shape[0]
-
-features_placeholder = tf.placeholder(features.dtype, features.shape)
-labels_placeholder = tf.placeholder(labels.dtype, labels.shape)
-
-dataset = tf.data.Dataset.from_tensor_slices((features_placeholder, labels_placeholder))
-iterator = dataset.make_initializable_iterator()
-
-### Functions ###
+# for item in evalDataTF
+features.append(tf.convert_to_tensor(evaluationList[0][0], np.float32))
+labels.append(tf.convert_to_tensor(evaluationList[0][1], np.float32))
+#
+# features = np.asarray(features)
+# labels = np.asarray(labels)
+#
+# # print(features)
+# # print(labels)
+#
+#assert features.shape[0] == labels.shape[0]
+#
+#features_placeholder = tf.placeholder(features.dtype, features.shape)
+#labels_placeholder = tf.placeholder(labels.dtype, labels.shape)
+#
+# dataset = tf.data.Dataset.from_tensor_slices((features_placeholder, labels_placeholder))
+# iterator = dataset.make_initializable_iterator()
+#
+# ### Functions ###
 def weightVariable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
     return tf.Variable(initial)
@@ -74,29 +80,29 @@ def conv2d(x, W):
 def maxPool2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
                           strides=[1, 2, 2, 1], padding='SAME')
-
-
-### Graph definition ###
-
-x = tf.placeholder(tf.float32, shape=[1, None, None, 1]) # input vectors
-print(x.shape)
-y_ = tf.placeholder(tf.float32, shape=[None, 4]) # gold standard labels; 1hot-vectors
-
+#
+#
+# ### Graph definition ###
+#
+x = tf.placeholder(tf.float32, shape=[1, 108, 300, 1]) # input vectors
+#print(x.shape)
+y_ = tf.placeholder(tf.float32, shape=[1, 4]) # gold standard labels; 1hot-vectors
+#
 W_conv1 = weightVariable([2, 300, 1, 32])
 b_conv1 = biasVariable([20])
-
-tmp = conv2d(x, W_conv1)
-#todo Use GlobalAveragePooling
-
-### Session ###
-# numEpoch = 1
 #
+tmp = conv2d(x, W_conv1)
+# #todo Use GlobalAveragePooling
+#
+# ### Session ###
+# # numEpoch = 1
+# #
 # with tf.Session() as sess:
 #     sess.run(tf.global_variables_initializer())
 #     for epoch in range(numEpoch):
 #         for i in range(0, len(trainingArray)):
-#todo Add randemization of training examples
-
+# #todo Add randemization of training examples
+#
 # Creating the session object
 sess = tf.Session()
 
@@ -104,10 +110,10 @@ sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
 # Assigning values to placeholders and running the graph
-input = evalDataTF[0, 0]
+input = features[0]
 
 # we want to get (fetch) the value of a, feeding the input vector for the placeholders
-output = sess.run([tmp], {x: input})
-
+output = sess.run([tmp], {x: evaluationList[0][0]})
+#
 print(output[0].shape)
 print(output)
