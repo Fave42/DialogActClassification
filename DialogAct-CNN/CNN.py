@@ -14,68 +14,21 @@ Usage: python2.7 CNN.py
 
 ### Imports ###
 import tensorflow as tf
-import numpy as np
 import cPickle as pickle
+from random import shuffle
+from copy import deepcopy
+import numpy as np
 
 # Server Paths
 pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
 pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 
-# PC Paths
-#pathTraining = "D:/NN_Projekt/trainData_3-5WordContext.pickle"
-#pathEvaluation = "D:/NN_Projekt/devData_3-5WordContext.pickle"
+trainingList = pickle.load(open(pathTraining, "rb"))
+#evaluationList = pickle.load(open(pathEvaluation, "rb"))
 
-#trainingList = pickle.load(open(pathTraining, "rb"))
-evaluationList = pickle.load(open(pathEvaluation, "rb"))
-
-# print len(evaluationList[0][0])
-# print evaluationList[0][0].shape
-# print evaluationList[0][1].shape
-
-#trainingArray = np.asarray(pathTraining)
-#evaluationArray = np.asarray(evaluationList)
-
-#print evaluationList[0]
-
-# print(evaluationList[0, 0].shape)
-# print(evaluationList[0])
-#
-evalDataTF = np.array(evaluationList[0][0]).reshape(1, 108, 300, 1)
-#evalDataTF = tf.convert_to_tensor(evaluationList[0][0], np.float32)
-# print evaluationList[0][0].shape
-# print "-----------------------"
-# print evalDataTF
-
-
-
-
-#
-# print(evalDataTF[0, 0].shape)
-# print(evalDataTF[0])
-#
-features = []
-labels = []
-# for item in evalDataTF
-features.append(tf.convert_to_tensor(evaluationList[0][0], np.float32))
-labels.append(tf.convert_to_tensor(evaluationList[0][1], np.float32))
-#
-# features = np.asarray(features)
-# labels = np.asarray(labels)
-#
-# # print(features)
-# # print(labels)
-#
-#assert features.shape[0] == labels.shape[0]
-#
-#features_placeholder = tf.placeholder(features.dtype, features.shape)
-#labels_placeholder = tf.placeholder(labels.dtype, labels.shape)
-#
-# dataset = tf.data.Dataset.from_tensor_slices((features_placeholder, labels_placeholder))
-# iterator = dataset.make_initializable_iterator()
-#
 # ### Functions ###
 def weightVariable(shape):
-    initial = tf.truncated_normal(shape, stddev=1)
+    initial = tf.truncated_normal(shape, stddev=1.0)
     return tf.Variable(initial)
 
 def biasVariable(shape):
@@ -85,60 +38,99 @@ def biasVariable(shape):
 def conv2d(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='VALID')
 
-def maxPool2x2(x):
-    return tf.nn.max_pool(x, ksize=[1, 107, 1, 1],
+def maxPool2x2(x, kernelDepth):
+    return tf.nn.max_pool(x, ksize=[1, kernelDepth, 1, 1],
                           strides=[1, 1, 1, 1], padding='VALID')
 
 
-#
-#
-# ### Graph definition ###
-#
+### Graph definition ###
 x = tf.placeholder(tf.float32, shape=[108, 300]) # input vectors
-#print(x.shape)
+
 y_ = tf.placeholder(tf.float32, shape=[1, 4]) # gold standard labels; 1hot-vectors
 
 x_4DTensor = tf.reshape(x, shape=[1, 108, 300, 1])
-#
-W_conv1 = weightVariable([2, 300, 1, 1])
-b_conv1 = biasVariable([1])
-#
-h_conv1 = tf.nn.relu(conv2d(x_4DTensor, W_conv1) + b_conv1)
-h_pool1 = maxPool2x2(h_conv1)
-# print type(tmp)
-# print type(conv2d(x_, W_conv1)[0])
 
-#
-# ### Session ###
-# # numEpoch = 1
-# #
-# with tf.Session() as sess:
-#     sess.run(tf.global_variables_initializer())
-#     for epoch in range(numEpoch):
-#         for i in range(0, len(trainingArray)):
-# #todo Add randemization of training examples
-#
-# Creating the session object
-sess = tf.Session()
+###
+# L1 = Layer 1
+# 2WC = Two-Word-Context
+###
+filterNumber = 20
+### Two-Word-Context
+W_conv_L1_2WC = weightVariable([2, 300, 1, filterNumber])
+b_conv_L1_2WC = biasVariable([1])
 
-# Initializing the variables
-sess.run(tf.global_variables_initializer())
+h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC)
+h_pool_L1_2WC = maxPool2x2(h_conv_L1_2WC, 107)
 
-# Assigning values to placeholders and running the graph
-input = features[0]
+### Three-Word-Context
+W_conv_L1_3WC = weightVariable([3, 300, 1, filterNumber])
+b_conv_L1_3WC = biasVariable([1])
 
-# we want to get (fetch) the value of a, feeding the input vector for the placeholders
-output = sess.run([h_pool1], {x: evaluationList[0][0]})
+h_conv_L1_3WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC)
+h_pool_L1_3WC = maxPool2x2(h_conv_L1_3WC, 106)
 
-# count = 0
-# for item in output:
-#     for item2 in item:
-#         for item3 in item2:
-#             for item4 in item3:
-#                 #if (item4 != 0.0):
-#                 count += 1
-#                 print item4
-#
-# print count
+### Four-Word-Context
+W_conv_L1_4WC = weightVariable([4, 300, 1, filterNumber])
+b_conv_L1_4WC = biasVariable([1])
 
-print output
+h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC)
+h_pool_L1_4WC = maxPool2x2(h_conv_L1_4WC, 105)
+
+### Concatenate the polling outputs the get the feature vector
+outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
+# Reshape to 2D tensor
+outputTensor_L1_2D = tf.reshape(outputTensor_L1, [1, 60])
+
+### First Fully Connected Layer
+W_FC_L2 = weightVariable([60, 120])
+b_FC_L2 = biasVariable([120])
+
+h_FC_L2 = tf.nn.relu(tf.matmul(outputTensor_L1_2D, W_FC_L2) + b_FC_L2)
+
+## Dropout percentage
+keep_Prob = tf.placeholder(tf.float32)
+h_FC_L2_drop = tf.nn.dropout(h_FC_L2, keep_Prob)
+
+### Second Fully Connected Layer
+W_FC_L3 = weightVariable([120, 4])
+b_FC_L3 = biasVariable([4])
+
+y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L3) + b_FC_L3)
+
+### Softmax Output
+cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y)) # (Goldstandard, Output)
+
+### Training
+learningRate = 0.1
+train_Step = tf.train.GradientDescentOptimizer(learningRate).minimize(cross_entropy)
+
+correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+### Session ###
+numEpoch = 100
+
+config = tf.ConfigProto(intra_op_parallelism_threads=4, inter_op_parallelism_threads=4)
+
+with tf.Session(config=config) as sess:
+    sess.run(tf.global_variables_initializer())
+    random_TrainingList = deepcopy(trainingList)
+    for epoch in range(numEpoch):
+        shuffle(random_TrainingList)
+        epochAccuracyList = []
+
+        for item in random_TrainingList:
+            labels = item[1].reshape((1, 4))
+            feature_Matrix =  item[0]
+            batch = [feature_Matrix, labels]
+            # todo Add batch processing for multithreading
+            training_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.5})
+
+            train_Step.run(feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.5})
+            epochAccuracyList.append(training_accuracy)
+
+        if epoch % 10 == 0:
+            print('step %d, training accuracy %g' % (epoch, np.mean(epochAccuracyList)))
+
+    #print('test accuracy %g' % accuracy.eval(feed_dict={
+    #    x: mnist.test.images, y_: mnist.test.labels, keep_Prob: 1.0}))
