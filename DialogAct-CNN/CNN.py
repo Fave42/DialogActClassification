@@ -136,3 +136,4 @@ with tf.Session(config=config) as sess:
     #    x: mnist.test.images, y_: mnist.test.labels, keep_Prob: 1.0}))
 
 # todo Import a function to time the duration of training
+# todo Save accuarcy, duration etc. to an output file
