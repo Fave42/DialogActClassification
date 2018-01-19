@@ -23,8 +23,8 @@ import numpy as np
 pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
 pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 
-trainingList = pickle.load(open(pathTraining, "rb"))
-#evaluationList = pickle.load(open(pathEvaluation, "rb"))
+#trainingList = pickle.load(open(pathTraining, "rb"))
+evaluationList = pickle.load(open(pathEvaluation, "rb"))
 
 # ### Functions ###
 def weightVariable(shape):
@@ -97,7 +97,7 @@ b_FC_L3 = biasVariable([4])
 
 y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L3) + b_FC_L3)
 
-### Softmax Output
+### Softmax Output, loss-function
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y)) # (Goldstandard, Output)
 
 ### Training
@@ -114,7 +114,7 @@ config = tf.ConfigProto(intra_op_parallelism_threads=4, inter_op_parallelism_thr
 
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
-    random_TrainingList = deepcopy(trainingList)
+    random_TrainingList = deepcopy(evaluationList)
     for epoch in range(numEpoch):
         shuffle(random_TrainingList)
         epochAccuracyList = []
@@ -129,8 +129,10 @@ with tf.Session(config=config) as sess:
             train_Step.run(feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.5})
             epochAccuracyList.append(training_accuracy)
 
-        if epoch % 10 == 0:
+        if epoch % 1 == 0:
             print('step %d, training accuracy %g' % (epoch, np.mean(epochAccuracyList)))
 
     #print('test accuracy %g' % accuracy.eval(feed_dict={
     #    x: mnist.test.images, y_: mnist.test.labels, keep_Prob: 1.0}))
+
+# todo Import a function to time the duration of training
