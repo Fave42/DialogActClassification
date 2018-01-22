@@ -1,6 +1,6 @@
 #!/bin/bash
 
-'''
+"""
 @created: 15.01.2018
 @authors: Jens Beck, Fabian Fey, Richard Kollotzek
 
@@ -10,7 +10,7 @@ The script is stored on the server under the following path:
 
 Usage: python2.7 CNN.py
 !!!!!!!!! Server currently only supports TensorFlow python2.7 !!!!!!!!!
-'''
+"""
 
 ### Imports ###
 import tensorflow as tf
@@ -23,7 +23,7 @@ import numpy as np
 pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
 pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 
-# trainingList = pickle.load(open(pathTraining, "rb"))
+trainingList = pickle.load(open(pathTraining, "rb"))
 evaluationList = pickle.load(open(pathEvaluation, "rb"))
 
 ### Functions ###
@@ -38,41 +38,82 @@ def biasVariable(shape):
 def conv2d(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='VALID')
 
-def maxPool2x2(x, kernelDepth):
+def maxPool100x1(x, kernelDepth):
     return tf.nn.max_pool(x, ksize=[1, kernelDepth, 1, 1],
                           strides=[1, 1, 1, 1], padding='VALID')
 
 ### Creates and returns a batchlist with the following format
 #   batchList = [ (1Batch-Features, 1Batch-Labels), (2Batch-Features, 2Batch-Labels), ...]
-#
 ###
 def createBatchList(random_TrainingList, batchSize):
+    npArrayDepth = 0
     batchList = []
     tmpFeatureList = []
     tmpLabelList = []
 
-    for i in range(0, len(random_TrainingList)):
-        tmpFeatureList.append(random_TrainingList[i][0])
-        tmpLabelList.append(random_TrainingList[i][1])
+    for i in range(1, len(random_TrainingList)+1):
+        npArrayDepth += 1
+        tmpFeatureList.append(random_TrainingList[i-1][0])
+        tmpLabelList.append(random_TrainingList[i-1][1])
 
-        if (i % batchSize == 0):
-            batchList.append((tmpFeatureList,tmpLabelList))
+        if (i % batchSize == 0) and (i != 0):
+            featureBatchArray = np.array(tmpFeatureList)
+            labelsBatchArray = np.array(tmpLabelList)
+
+            featureBatchArray = featureBatchArray.reshape(npArrayDepth, 32400)
+            labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
+
+            #print(labelsBatchArray.shape)
+
+            batchList.append((featureBatchArray, labelsBatchArray))
             tmpFeatureList = []
             tmpLabelList = []
+            npArrayDepth = 0
 
         elif (i == len(random_TrainingList)-1):
-            batchList.append((tmpFeatureList,tmpLabelList))
+            featureBatchArray = np.array(np.asarray(tmpFeatureList))
+            labelsBatchArray = np.array(np.asarray(tmpLabelList))
+
+            featureBatchArray = featureBatchArray.reshape(npArrayDepth, 32400)
+            labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
+
+            #print(labelsBatchArray.shape)
+
+            batchList.append((featureBatchArray, labelsBatchArray))
             tmpFeatureList = []
             tmpLabelList = []
+            npArrayDepth = 0
 
     return batchList
 
+def createEvalList(rawEvalList):
+    npArrayDepth = 0
+    evalTuple = ()
+    tmpFeatureList = []
+    tmpLabelList = []
+
+    for i in range(1, len(rawEvalList) + 1):
+        npArrayDepth += 1
+        tmpFeatureList.append(rawEvalList[i - 1][0])
+        tmpLabelList.append(rawEvalList[i - 1][1])
+
+    featureEvalArray = np.array(tmpFeatureList)
+    labelsEvalArray = np.array(tmpLabelList)
+
+    featureEvalArray = featureEvalArray.reshape(npArrayDepth, 32400)
+    labelsEvalArray = labelsEvalArray.reshape(npArrayDepth, 4)
+
+    evalTuple = (featureEvalArray, labelsEvalArray)
+
+    return evalTuple
+
+
 
 ### Graph definition ###
-x = tf.placeholder(tf.float32, shape=[108, 300]) # input vectors
-x_4DTensor = tf.reshape(x, shape=[1, 108, 300, 1]) # input 4D-Matrix
+x = tf.placeholder(tf.float32, shape=[None, 108 * 300]) # input vectors
+x_4DTensor = tf.reshape(x, shape=[-1, 108, 300, 1]) # input vecotrs as a 4D-Matrix
 
-y_ = tf.placeholder(tf.float32, shape=[1, 4]) # gold standard labels; 1hot-vectors
+y_ = tf.placeholder(tf.float32, shape=[None, 4]) # gold standard labels; 1hot-vectors
 
 ###
 # L1 = Layer 1
@@ -84,26 +125,26 @@ W_conv_L1_2WC = weightVariable([2, 300, 1, filterNumber])
 b_conv_L1_2WC = biasVariable([1])
 
 h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC)
-h_pool_L1_2WC = maxPool2x2(h_conv_L1_2WC, 107)
+h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 107)
 
 ### Three-Word-Context
 W_conv_L1_3WC = weightVariable([3, 300, 1, filterNumber])
 b_conv_L1_3WC = biasVariable([1])
 
 h_conv_L1_3WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC)
-h_pool_L1_3WC = maxPool2x2(h_conv_L1_3WC, 106)
+h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 106)
 
 ### Four-Word-Context
 W_conv_L1_4WC = weightVariable([4, 300, 1, filterNumber])
 b_conv_L1_4WC = biasVariable([1])
 
 h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC)
-h_pool_L1_4WC = maxPool2x2(h_conv_L1_4WC, 105)
+h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 105)
 
-### Concatenate the polling outputs the get the feature vector
+### Concatenate the pooling outputs to get the feature vector
 outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
 # Reshape to 2D tensor
-outputTensor_L1_2D = tf.reshape(outputTensor_L1, [1, 60])
+outputTensor_L1_2D = tf.reshape(outputTensor_L1, [-1, 60])
 
 ### First Fully Connected Layer
 W_FC_L2 = weightVariable([60, 120])
@@ -126,30 +167,33 @@ cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_
 
 ### Training
 learningRate = 0.1
-train_Step = tf.train.GradientDescentOptimizer(learningRate).minimize(cross_entropy)
+train_Step = tf.train.AdamOptimizer(learningRate).minimize(cross_entropy)
 
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 ### Session ###
-numEpoch = 100
+numEpoch = 20
 
-config = tf.ConfigProto(intra_op_parallelism_threads=4, inter_op_parallelism_threads=4)
+# Configure how many threads are used for batch processing
+config = tf.ConfigProto(intra_op_parallelism_threads=6, inter_op_parallelism_threads=6)
 
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
-    random_TrainingList = deepcopy(evaluationList)
+    random_TrainingList = deepcopy(trainingList)
 
+    # reshapes the feature-matrix into a vector format
     # reshapes every 1hot-vector (labels) to a 2D shape
-    for _ in range(0, len(random_TrainingList)):
-        random_TrainingList[_][1] = random_TrainingList[_][1].reshape((1, 4))
+    for i in range(len(random_TrainingList)):
+        random_TrainingList[i][0] = random_TrainingList[i][0].reshape(1, 32400)
+        random_TrainingList[i][1] = random_TrainingList[i][1].reshape((1, 4))
 
     for epoch in range(numEpoch):
         shuffle(random_TrainingList)
         epochAccuracyList = []
         batchList = []
 
-        # Batch processing here
+        # Batch processing
         batchList = createBatchList(random_TrainingList, 100)
 
         for tupleBatch in batchList:
@@ -157,14 +201,6 @@ with tf.Session(config=config) as sess:
             labels = tupleBatch[1]
             batch = (feature_Matrix, labels)
 
-            print (feature_Matrix[0].shape)
-            print (labels[0].shape)
-            print (type(feature_Matrix))
-            print (type(labels))
-            print(batch[0])
-            print(batch[0].shape)
-
-            # todo Add batch processing for multithreading
             training_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.5})
 
             train_Step.run(feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.5})
@@ -173,8 +209,9 @@ with tf.Session(config=config) as sess:
         if epoch % 1 == 0:
             print('step %d, training accuracy %g' % (epoch, np.mean(epochAccuracyList)))
 
-    #print('test accuracy %g' % accuracy.eval(feed_dict={
-    #    x: mnist.test.images, y_: mnist.test.labels, keep_Prob: 1.0}))
+    evaluationTuple = createEvalList(evaluationList)
+    print()
+    print('test accuracy %g' % accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0}))
 
 # todo Implement a function to time the duration of training
 # todo Save accuarcy, duration etc. to an output file
