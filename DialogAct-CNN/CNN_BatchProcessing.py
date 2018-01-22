@@ -210,7 +210,6 @@ with tf.Session(config=config) as sess:
             print('step %d, training accuracy %g' % (epoch, np.mean(epochAccuracyList)))
 
     evaluationTuple = createEvalList(evaluationList)
-    print()
     print('test accuracy %g' % accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0}))
 
 # todo Implement a function to time the duration of training
