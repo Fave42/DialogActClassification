@@ -166,17 +166,17 @@ y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L3) + b_FC_L3)
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y)) # (Goldstandard, Output)
 
 ### Training
-learningRate = 0.1
+learningRate = 1e-4 # changed Learning Rate R.K. before 0.1
 train_Step = tf.train.AdamOptimizer(learningRate).minimize(cross_entropy)
 
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 ### Session ###
-numEpoch = 20
+numEpoch = 10
 
 # Configure how many threads are used for batch processing
-config = tf.ConfigProto(intra_op_parallelism_threads=6, inter_op_parallelism_threads=6)
+config = tf.ConfigProto(intra_op_parallelism_threads=10, inter_op_parallelism_threads=10)
 
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
@@ -188,7 +188,7 @@ with tf.Session(config=config) as sess:
         random_TrainingList[i][0] = random_TrainingList[i][0].reshape(1, 32400)
         random_TrainingList[i][1] = random_TrainingList[i][1].reshape((1, 4))
 
-    for epoch in range(numEpoch):
+    for epoch in range(numEpoch+1):
         shuffle(random_TrainingList)
         epochAccuracyList = []
         batchList = []
@@ -201,7 +201,7 @@ with tf.Session(config=config) as sess:
             labels = tupleBatch[1]
             batch = (feature_Matrix, labels)
 
-            training_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.5})
+            training_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.75}) # changed dropoutRate R.K. before: 0.5
 
             train_Step.run(feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.5})
             epochAccuracyList.append(training_accuracy)
