@@ -19,6 +19,19 @@ import random as rand
 import pickle
 import numpy as np
 
+def main():
+
+    fileNameList = ["Train/train.txt", "Dev/dev.txt", "Test/test.txt"]
+
+    # Select the padding depth of the matrix (1=one line with 0's, 2=two lines with 0's
+    paddingDepth = input("Which vertical padding depth is used?\n")
+    maxSentenceLength = input("What is the maximum sentence length?\n")
+
+    for type in fileNameList:
+        path = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/"
+        path += type
+        work(paddingDepth, maxSentenceLength, path, type)
+
 # Generates 300 random numbers between -1 and 1 for unknown words
 def getRandomDimensions():
     randomList = []
@@ -124,3 +137,5 @@ def work(paddingDepth, maxSentenceLength, filePath, dataType):
     print("Import duration of dictionary was " + str(duration) + " seconds!")
     print("The rest of the program was completed in " + str(duration2) + " seconds!")
 
+### Run ###
+main()
