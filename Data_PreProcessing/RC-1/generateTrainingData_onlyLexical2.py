@@ -5,11 +5,10 @@ This script loads a transcription file, extracts the word2vec features for each 
 and stores those vectors in a 2D matrix. Furthermore a one hot vector is generated for each training examble.
 Finally the script stores the training examples together with their one-hot vectors in a pickle file.
 
-Usage: python3 generateTrainingData_onlyLexical.py <PathToTranscriptionFile>
+Usage: python3 generateTrainingData_onlyLexical.py
 
 Filestructure must be:
 /dict/GoogleNews-vectors-negative300.bin
-/main.py
 /generateTrainingData_onlyLexical2.py
 '''
 
@@ -18,35 +17,28 @@ import time  # To time the import and excecution
 import random as rand
 import pickle
 import numpy as np
+import datetime
+
 
 def main():
-
     fileNameList = ["Train/train.txt", "Dev/dev.txt", "Test/test.txt"]
 
     # Select the padding depth of the matrix (1=one line with 0's, 2=two lines with 0's
-    paddingDepth = input("Which vertical padding depth is used?\n")
-    maxSentenceLength = input("What is the maximum sentence length?\n")
+    paddingDepth = input("Which vertical padding depth is used? (Standard 5)\n")
+    maxSentenceLength = input("What is the maximum sentence length? (Standard 100)\n")
 
-    for type in fileNameList:
-        path = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/"
-        path += type
-        work(paddingDepth, maxSentenceLength, path, type)
-
-# Generates 300 random numbers between -1 and 1 for unknown words
-def getRandomDimensions():
-    randomList = []
-    for i in range(0, 300):
-        randomList.append(rand.uniform(-1.0, 1.0))
-    return randomList
-
-def work(paddingDepth, maxSentenceLength, filePath, dataType):
     # Loads "unknownWordsDict.txt that all every unknown words has unique 300 random float numbers
-    unknownWordsDict = {}
     # Serverpath
     unknownWordsDict = pickle.load(open("dict/unknownWordsDict.pickle", "rb"))
 
-    # Stores every sentence to be dumped with pickle
-    outputList = []
+    # Generate a timestamp
+    now = datetime.datetime.now()
+    year = now.year
+    month = now.month
+    day = now.day
+    hour = now.hour
+    minute = now.minute
+    timeStamp = "%s-%s-%s-%d-%d" % (year, month, day, hour, minute)
 
     # Start timing the importing of the dictionary
     startTime = time.time()
@@ -60,12 +52,37 @@ def work(paddingDepth, maxSentenceLength, filePath, dataType):
         'dict/GoogleNews-vectors-negative300.bin', binary=True)
 
     endTime = time.time()
+    duration = endTime - startTime
 
     print("--- Dictionary was imported successfully! ---")
+    print("Import duration of dictionary was " + str(duration) + " seconds!")
 
-    # Start timing the creation of the training set
+    for type in fileNameList:
+        path = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/"
+        path += type
+        work(paddingDepth, maxSentenceLength, path, type, unknownWordsDict, timeStamp, model)
+
+
+# Generates 300 random numbers between -1 and 1 for unknown words
+def getRandomDimensions():
+    randomList = []
+    for i in range(0, 300):
+        randomList.append(rand.uniform(-1.0, 1.0))
+    return randomList
+
+
+def work(paddingDepth, maxSentenceLength, filePath, dataType, unknownWordsDict, timeStamp, model):
+    # Cast the strings to int for computation
+    paddingDepth = int(paddingDepth)
+    maxSentenceLength = int(maxSentenceLength)
+
+    print("Currently working on %s" % (dataType))
+
+    # Stores every sentence to be dumped with pickle
+    outputList = []
+
+    # Start timing the creation of the data
     startTime2 = time.time()
-
     with open(filePath, "r") as dataFile:
         for line in dataFile:
 
@@ -119,23 +136,28 @@ def work(paddingDepth, maxSentenceLength, filePath, dataType):
     with open('dict/unknownWordsDict.pickle', 'wb') as handle:
         pickle.dump(unknownWordsDict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    # Saves the the complete list with every sentence
+    # Saves the the complete list with every sentence and a timestamp
     if ("train" in dataType):
-        with open('NN_Input_Files/trainOutput_3-5WordContext.pickle', 'wb') as handle:
+        savePath ='NN_Input_Files/trainOutput_%d_%d_'+timeStamp+'.pickle' % (paddingDepth, maxSentenceLength)
+        with open(savePath, 'wb') as handle:
             pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        print("### Saving training data! ###")
     if ("test" in dataType):
-        with open('NN_Input_Files/testOutput_3-5WordContext.pickle', 'wb') as handle:
+        savePath = 'NN_Input_Files/testOutput_%d_%d_'+timeStamp+'.pickle' % (paddingDepth, maxSentenceLength)
+        with open(savePath, 'wb') as handle:
             pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        print("### Saving test data! ###")
     if ("dev" in dataType):
-        with open('NN_Input_Files/devOutput_3-5WordContext.pickle', 'wb') as handle:
+        savePath = 'NN_Input_Files/trainOutput_%d_%d_'+timeStamp+'.pickle' % (paddingDepth, maxSentenceLength)
+        with open(savePath, 'wb') as handle:
             pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        print("### Saving development data! ###")
 
     endTime2 = time.time()
-    duration = endTime - startTime
     duration2 = endTime2 - startTime2
 
-    print("Import duration of dictionary was " + str(duration) + " seconds!")
     print("The rest of the program was completed in " + str(duration2) + " seconds!")
+
 
 ### Run ###
 main()

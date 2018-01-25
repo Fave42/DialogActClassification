@@ -8,7 +8,7 @@
 The script is stored on the server under the following path:
 /mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources
 
-Usage: python2.7 CNN.py
+Usage: python2.7 CNN.py >>> log.txt
 !!!!!!!!! Server currently only supports TensorFlow python2.7 !!!!!!!!!
 """
 
@@ -21,8 +21,8 @@ import numpy as np
 import time
 
 evalFrequency = 1   # Every odd step
-numEpoch = 100      # Number of Epochs for training
-numCPUs = 4         # Number of CPU's to be used
+numEpoch = 3      # Number of Epochs for training
+numCPUs = 10         # Number of CPU's to be used
 
 # Server Paths
 pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
@@ -217,13 +217,15 @@ with tf.Session(config=config) as sess:
         random_TrainingList[i][1] = random_TrainingList[i][1].reshape((1, 4))
 
     # Tensorboard integration
+    training_accuracy = 0
     #tf.summary.scalar("loss_function", loss)
     tf.summary.scalar("learning_rate", learningRate)
+    #tf.summary.histogram("Accuracy", training_accuracy)
     #tf.summary.histogram("train_prediction", train_prediction)
     merged = tf.summary.merge_all()
     writer = tf.summary.FileWriter("/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/log", sess.graph)
 
-    for epoch in range(numEpoch+1):
+    for epoch in range(numEpoch):
         print("Current epoch " + str(epoch))
         shuffle(random_TrainingList)
         epochAccuracyList = []
@@ -250,14 +252,14 @@ with tf.Session(config=config) as sess:
 
             elapsed_time = time.time() - start_time
             start_time = time.time()
-            epochAccuracyList.append(training_accuracy)
+            #epochAccuracyList.append(training_accuracy)
 
         # Evaluation Frequency
         if epoch % evalFrequency == 0:
             summary = sess.run(merged, feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.75},
                                          options=run_options, run_metadata=run_metadata)
 
-            print('step %d, training accuracy %g, learning rate %f, %f ms' % (epoch, np.mean(epochAccuracyList),
+            print('step %d, training accuracy %g, learning rate %f, %f ms' % (epoch, training_accuracy,
                                                                               learningRate, 1000 * elapsed_time))
             writer.add_run_metadata(run_metadata, 'step %d' % epoch)
             writer.add_summary(summary, epoch)
