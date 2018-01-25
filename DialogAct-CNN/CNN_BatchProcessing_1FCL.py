@@ -21,7 +21,8 @@ import numpy as np
 import time
 import datetime
 
-evalFrequency = 1       # Every odd step
+batchSize = 100         # Batchsize for training
+evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
 numEpoch = 20           # Number of Epochs for training
 numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 10    # Number of filters for 2-Word-Context
@@ -222,6 +223,7 @@ logFileTmp += "##########\n"
 logFileTmp += "Type of CNN: " + str(typeOfCNN) + "\n"
 logFileTmp += "Number of epochs: " + str(numEpoch) + "\n"
 logFileTmp += "Number of filters: " + str(filterNumber4WC) + "\n"
+logFileTmp += "Batchsize: " + str(batchSize) + "\n"
 logFileTmp += "Learning Rate: " + str(learningRate) + "\n"
 logFileTmp += "Activation Function: " + str(activationFunction) + "\n"
 logFileTmp += "Loss Function: " + str(lossFunction) + "\n"
@@ -259,7 +261,7 @@ with tf.Session(config=config) as sess:
         batchList = []
 
         # Batch processing
-        batchList = createBatchList(random_TrainingList, 100)
+        batchList = createBatchList(random_TrainingList, batchSize)
 
         for tupleBatch in batchList:
             feature_Matrix = tupleBatch[0]
