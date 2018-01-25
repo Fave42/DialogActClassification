@@ -19,10 +19,23 @@ from random import shuffle
 from copy import deepcopy
 import numpy as np
 import time
+import datetime
 
-evalFrequency = 1   # Every odd step
-numEpoch = 3      # Number of Epochs for training
-numCPUs = 10         # Number of CPU's to be used
+evalFrequency = 1       # Every odd step
+numEpoch = 20           # Number of Epochs for training
+numCPUs = 10            # Number of CPU's to be used
+filterNumber2WC = 10    # Number of filters for 2-Word-Context
+filterNumber3WC = 10    # Number of filters for 3-Word-Context
+filterNumber4WC = 10    # Number of filters for 4-Word-Context
+activationFunction = "Relu"
+lossFunction = "Cross Entropy"
+dropout = 0.5
+optimizerFunction = "AdamOptimizer"
+typeOfCNN = "CNN + 1 Fully-Connected-Layer"
+
+logFileTmp = ""
+
+overallTime = time.time()
 
 # Server Paths
 pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
@@ -126,10 +139,9 @@ y_ = tf.placeholder(tf.float32, shape=[None, 4]) # gold standard labels; 1hot-ve
 # L1 = Layer 1
 # 2WC = Two-Word-Context
 ###
-filterNumber = 20
 ### Two-Word-Context
 with tf.name_scope("CL1_Weights_2WordContext"):
-    W_conv_L1_2WC = weightVariable([2, 300, 1, filterNumber])
+    W_conv_L1_2WC = weightVariable([2, 300, 1, filterNumber2WC])
 with tf.name_scope("CL1_Bias_2WordContext"):
     b_conv_L1_2WC = biasVariable([1])
 
@@ -140,7 +152,7 @@ with tf.name_scope("CL1_MaxPooling_2WordContext"):
 
 ### Three-Word-Context
 with tf.name_scope("CL1_Weights_3WordContext"):
-    W_conv_L1_3WC = weightVariable([3, 300, 1, filterNumber])
+    W_conv_L1_3WC = weightVariable([3, 300, 1, filterNumber3WC])
 with tf.name_scope("CL1_Bias_3WordContext"):
     b_conv_L1_3WC = biasVariable([1])
 
@@ -151,7 +163,7 @@ with tf.name_scope("CL1_MaxPooling_3WordContext"):
 
 ### Four-Word-Context
 with tf.name_scope("CL1_Weights_4WordContext"):
-    W_conv_L1_4WC = weightVariable([4, 300, 1, filterNumber])
+    W_conv_L1_4WC = weightVariable([4, 300, 1, filterNumber4WC])
 with tf.name_scope("CL1_Bias_4WordContext"):
     b_conv_L1_4WC = biasVariable([1])
 
@@ -164,29 +176,30 @@ with tf.name_scope("CL1_MaxPooling_4WordContext"):
 with tf.name_scope("L1_OutputTensor"):
     outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
 # Reshape to 2D tensor
+numOutputConcat = filterNumber2WC + filterNumber3WC + filterNumber4WC
 with tf.name_scope("L1_OutputTensor_2D"):
-    outputTensor_L1_2D = tf.reshape(outputTensor_L1, [-1, 60])
+    outputTensor_L1_2D = tf.reshape(outputTensor_L1, [-1, numOutputConcat])
 
 # First Fully Connected Layer
-with tf.name_scope("FCL2_Weights"):
-    W_FC_L2 = weightVariable([60, 120])
-with tf.name_scope("FCL2_Bias"):
-    b_FC_L2 = biasVariable([120])
-
-with tf.name_scope("FCL2_HiddenLayer"):
-    h_FC_L2 = tf.nn.relu(tf.matmul(outputTensor_L1_2D, W_FC_L2) + b_FC_L2)
+# with tf.name_scope("FCL2_Weights"):
+#     W_FC_L2 = weightVariable([numOutputConcat, numOutputConcat * 2])
+# with tf.name_scope("FCL2_Bias"):
+#     b_FC_L2 = biasVariable([numOutputConcat * 2])
+#
+# with tf.name_scope("FCL2_HiddenLayer"):
+#     h_FC_L2 = tf.nn.relu(tf.matmul(outputTensor_L1_2D, W_FC_L2) + b_FC_L2)
 
 # Dropout percentage
 keep_Prob = tf.placeholder(tf.float32)
-h_FC_L2_drop = tf.nn.dropout(h_FC_L2, keep_Prob)
+h_FC_L2_drop = tf.nn.dropout(outputTensor_L1_2D, keep_Prob)
 
 # Second Fully Connected Layer
 with tf.name_scope("FCL3_Weights"):
-    W_FC_L3 = weightVariable([120, 4])
+    W_FC_L2 = weightVariable([numOutputConcat, 4])
 with tf.name_scope("FCL3_Bias"):
-    b_FC_L3 = biasVariable([4])
+    b_FC_L2 = biasVariable([4])
 
-y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L3) + b_FC_L3)
+y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)
 
 # Softmax Output, loss-function
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y)) # (Goldstandard, Output)
@@ -203,6 +216,19 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 # Start the session
 # Configure how many threads are used for batch processing
 config = tf.ConfigProto(intra_op_parallelism_threads=numCPUs, inter_op_parallelism_threads=numCPUs)
+
+# Dump for logfile
+logFileTmp += "##########\n"
+logFileTmp += "Type of CNN: " + str(typeOfCNN) + "\n"
+logFileTmp += "Number of epochs: " + str(numEpoch) + "\n"
+logFileTmp += "Number of filters: " + str(filterNumber4WC) + "\n"
+logFileTmp += "Learning Rate: " + str(learningRate) + "\n"
+logFileTmp += "Activation Function: " + str(activationFunction) + "\n"
+logFileTmp += "Loss Function: " + str(lossFunction) + "\n"
+logFileTmp += "Dropout: " + str(dropout) + "\n"
+logFileTmp += "Optimizer: " + str(optimizerFunction) + "\n"
+logFileTmp += "##########\n"
+
 
 print("Starting Training...")
 start_time = time.time()
@@ -227,6 +253,7 @@ with tf.Session(config=config) as sess:
 
     for epoch in range(numEpoch):
         print("Current epoch " + str(epoch))
+        # Shuffle the traininglist
         shuffle(random_TrainingList)
         epochAccuracyList = []
         batchList = []
@@ -243,10 +270,10 @@ with tf.Session(config=config) as sess:
             run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
             run_metadata = tf.RunMetadata()
 
-            training_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.75}) # changed dropoutRate R.K. before: 0.5
+            training_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout}) # changed dropoutRate R.K. before: 0.5
 
             # Run the optimizer to update weights.
-            sess.run(optimizer, feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.75})
+            sess.run(optimizer, feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout})
 
             #summary, lr = train_Step.run([merged, learningRate], feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.75}, options=run_options, run_metadata=run_metadata)
 
@@ -256,7 +283,7 @@ with tf.Session(config=config) as sess:
 
         # Evaluation Frequency
         if epoch % evalFrequency == 0:
-            summary = sess.run(merged, feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.75},
+            summary = sess.run(merged, feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout},
                                          options=run_options, run_metadata=run_metadata)
 
             print('step %d, training accuracy %g, learning rate %f, %f ms' % (epoch, training_accuracy,
@@ -265,7 +292,23 @@ with tf.Session(config=config) as sess:
             writer.add_summary(summary, epoch)
             print("Adding run metadata for epoch " + str(epoch))
 
+            logFileTmp += 'step %d, training accuracy %g, learning rate %f, %f ms\n' % (epoch, training_accuracy,
+                                                                              learningRate, 1000 * elapsed_time)
+            logFileTmp += "####\n"
+
     evaluationTuple = createEvalList(evaluationList)
-    print('test accuracy %g' % accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0}))
+    overallEndTime = (time.time() - overallTime)/60
+
+    testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
+    print('test accuracy %g' % testAccuracy)
+    print("The program was executed in " + str(overallEndTime) + " minutes")
+
+    logFileTmp += "########\n"
+    logFileTmp += "Test Accuracy: " + str(testAccuracy) + "\n"
+    logFileTmp += "The program was executed in " + str(overallEndTime) + " minutes\n"
+
+    savePath = "log/terminal_logfiles/" + str(datetime.datetime.now().strftime("%y-%m-%d-%H-%M")) + ".txt"
+    with open(savePath,'wb') as saveFile:
+        saveFile.write(logFileTmp)
 
 # todo More TensorBoard

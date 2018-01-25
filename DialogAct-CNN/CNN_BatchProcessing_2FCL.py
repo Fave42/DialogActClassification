@@ -20,9 +20,13 @@ from copy import deepcopy
 import numpy as np
 import time
 
-evalFrequency = 1   # Every odd step
-numEpoch = 3      # Number of Epochs for training
-numCPUs = 10         # Number of CPU's to be used
+evalFrequency = 1       # Every odd step
+numEpoch = 3            # Number of Epochs for training
+numCPUs = 10            # Number of CPU's to be used
+filterNumber2WC = 15    # Number of filters for 2-Word-Context
+filterNumber3WC = 10    # Number of filters for 3-Word-Context
+filterNumber4WC = 5    # Number of filters for 4-Word-Context
+
 
 # Server Paths
 pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
@@ -126,10 +130,9 @@ y_ = tf.placeholder(tf.float32, shape=[None, 4]) # gold standard labels; 1hot-ve
 # L1 = Layer 1
 # 2WC = Two-Word-Context
 ###
-filterNumber = 20
 ### Two-Word-Context
 with tf.name_scope("CL1_Weights_2WordContext"):
-    W_conv_L1_2WC = weightVariable([2, 300, 1, filterNumber])
+    W_conv_L1_2WC = weightVariable([2, 300, 1, filterNumber2WC])
 with tf.name_scope("CL1_Bias_2WordContext"):
     b_conv_L1_2WC = biasVariable([1])
 
@@ -140,7 +143,7 @@ with tf.name_scope("CL1_MaxPooling_2WordContext"):
 
 ### Three-Word-Context
 with tf.name_scope("CL1_Weights_3WordContext"):
-    W_conv_L1_3WC = weightVariable([3, 300, 1, filterNumber])
+    W_conv_L1_3WC = weightVariable([3, 300, 1, filterNumber3WC])
 with tf.name_scope("CL1_Bias_3WordContext"):
     b_conv_L1_3WC = biasVariable([1])
 
@@ -151,7 +154,7 @@ with tf.name_scope("CL1_MaxPooling_3WordContext"):
 
 ### Four-Word-Context
 with tf.name_scope("CL1_Weights_4WordContext"):
-    W_conv_L1_4WC = weightVariable([4, 300, 1, filterNumber])
+    W_conv_L1_4WC = weightVariable([4, 300, 1, filterNumber4WC])
 with tf.name_scope("CL1_Bias_4WordContext"):
     b_conv_L1_4WC = biasVariable([1])
 
@@ -164,14 +167,15 @@ with tf.name_scope("CL1_MaxPooling_4WordContext"):
 with tf.name_scope("L1_OutputTensor"):
     outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
 # Reshape to 2D tensor
+numOutputConcat = filterNumber2WC + filterNumber3WC + filterNumber4WC
 with tf.name_scope("L1_OutputTensor_2D"):
-    outputTensor_L1_2D = tf.reshape(outputTensor_L1, [-1, 60])
+    outputTensor_L1_2D = tf.reshape(outputTensor_L1, [-1, numOutputConcat])
 
 # First Fully Connected Layer
 with tf.name_scope("FCL2_Weights"):
-    W_FC_L2 = weightVariable([60, 120])
+    W_FC_L2 = weightVariable([numOutputConcat, numOutputConcat * 2])
 with tf.name_scope("FCL2_Bias"):
-    b_FC_L2 = biasVariable([120])
+    b_FC_L2 = biasVariable([numOutputConcat * 2])
 
 with tf.name_scope("FCL2_HiddenLayer"):
     h_FC_L2 = tf.nn.relu(tf.matmul(outputTensor_L1_2D, W_FC_L2) + b_FC_L2)
@@ -182,7 +186,7 @@ h_FC_L2_drop = tf.nn.dropout(h_FC_L2, keep_Prob)
 
 # Second Fully Connected Layer
 with tf.name_scope("FCL3_Weights"):
-    W_FC_L3 = weightVariable([120, 4])
+    W_FC_L3 = weightVariable([numOutputConcat * 2, 4])
 with tf.name_scope("FCL3_Bias"):
     b_FC_L3 = biasVariable([4])
 
@@ -267,5 +271,6 @@ with tf.Session(config=config) as sess:
 
     evaluationTuple = createEvalList(evaluationList)
     print('test accuracy %g' % accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0}))
+    print("Endtime: %d") % (time.time())
 
 # todo More TensorBoard
