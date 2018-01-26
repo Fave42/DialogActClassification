@@ -23,6 +23,7 @@ import argparse
 
 def main():
     fileNameList = ["Train/train.txt", "Dev/dev.txt", "Test/test.txt"]
+    stopWordSave = ""
 
     # Store the arguments given at the start of teh script
     paddingDepth, maxSentenceLength, stopWordPath = getArgs()
@@ -31,6 +32,7 @@ def main():
     print("A paddingdepth of", paddingDepth, "and a maximum sentence length of", maxSentenceLength, "will be used.")
     if (stopWordPath != ""):
         print("The stopwordsfile", stopWordPath, "will be used.")
+        stopWordSave = "_fsw"
     else:
         print("No stopwordsfile wax specified.")
 
@@ -40,6 +42,7 @@ def main():
 
     # Load the stopword file if it is present
     # stopWordPath = "stopwords.txt"
+    stopWordsDict = {}
     if (stopWordPath != ""):
         if os.path.isfile(stopWordPath):
             print("Stopwordsfile found!\nImporting it now...")
@@ -71,7 +74,7 @@ def main():
     for type in fileNameList:
         path = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/"
         path += type
-        work(paddingDepth, maxSentenceLength, path, type, unknownWordsDict, timeStamp, model, stopWordsDict)
+        work(paddingDepth, maxSentenceLength, path, type, unknownWordsDict, timeStamp, model, stopWordsDict, stopWordSave)
 
 # This function parses and returns arguments passed in
 def getArgs():
@@ -80,7 +83,7 @@ def getArgs():
     # Add arguments
     parser.add_argument("-p", "--paddingDepth", type=int,
                         help="Specifies the padding depth of the input Matrix. If left empty the standard value 5 will be used.",
-                        required=False, default=5)
+                        required=False, default=4)
     parser.add_argument("-m", "--maxSentenceLength", type=int,
                         help="Specifies the maximum sentence length. If left empty the standard value 100 will be used.",
                         required=False, default=100)
@@ -128,7 +131,7 @@ def getRandomDimensions():
     return randomList
 
 
-def work(paddingDepth, maxSentenceLength, filePath, dataType, unknownWordsDict, timeStamp, model, stopWordsDict):
+def work(paddingDepth, maxSentenceLength, filePath, dataType, unknownWordsDict, timeStamp, model, stopWordsDict, stopWordSave):
     # Cast the strings to int for computation
     paddingDepth = int(paddingDepth)
     maxSentenceLength = int(maxSentenceLength)
@@ -143,30 +146,37 @@ def work(paddingDepth, maxSentenceLength, filePath, dataType, unknownWordsDict, 
     with open(filePath, "r") as dataFile:
         for line in dataFile:
 
-            splittedLine = line.split()
-            fileID = splittedLine[0]
-            diagClass = splittedLine[1]
+            splittedLineUncleaned = line.split()
+            splittedLineCleaned = []
+            for item in splittedLineUncleaned:
+                if item not in stopWordsDict:
+                    splittedLineCleaned.append(item)
+
+            if (len(splittedLineCleaned) == 0):
+                print("Line is empty!")
+
+            fileID = splittedLineCleaned[0]
+            diagClass = splittedLineCleaned[1]
 
             # first list stores the actual featureMatrix, second tuple stores the one-hot vector.
             trainingTuple = [np.zeros((maxSentenceLength + 2 * paddingDepth, 300)), None]
 
             # print(trainingTuple[0])
 
-            for i in range(paddingDepth, len(splittedLine) - 2 + paddingDepth):  # for filling np.array correctly.
+            for i in range(paddingDepth, len(splittedLineCleaned) - 2 + paddingDepth):  # for filling np.array correctly.
 
                 if i <= maxSentenceLength + paddingDepth:
-                    word = splittedLine[i + 2 - paddingDepth]  # transforms the i to fit to the splittedLine index.
+                    word = splittedLineCleaned[i + 2 - paddingDepth]  # transforms the i to fit to the splittedLine index.
                     # Check if the word is in the model, if it is in stopWordsDict it will not be added
                     # If not fill the list with 300 random numbers between -1 and 1
-                    if (word not in stopWordsDict):
-                        if (word in model.vocab):
-                            word300 = model[word]
-                            # word300 = word300.tolist()
-                        elif (word in unknownWordsDict):
-                            word300 = unknownWordsDict[word]
-                        else:
-                            word300 = getRandomDimensions()
-                            unknownWordsDict[word] = word300
+                    if (word in model.vocab):
+                        word300 = model[word]
+                        # word300 = word300.tolist()
+                    elif (word in unknownWordsDict):
+                        word300 = unknownWordsDict[word]
+                    else:
+                        word300 = getRandomDimensions()
+                        unknownWordsDict[word] = word300
 
                     # fills the corresponding row and elements of the trainingMatrix with the values of word300.
                     for j in range(0, 300):
@@ -194,21 +204,22 @@ def work(paddingDepth, maxSentenceLength, filePath, dataType, unknownWordsDict, 
     with open('dict/unknownWordsDict.pickle', 'wb') as handle:
         pickle.dump(unknownWordsDict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+
     # Saves the the complete list with every sentence and a timestamp
     if ("train" in dataType):
-        savePath ='NN_Input_Files/trainOutput_'+str(paddingDepth)+'_'+str(maxSentenceLength)+'_'+str(timeStamp)+'.pickle'
+        savePath ='NN_Input_Files/trainData_'+str(paddingDepth)+'_'+str(maxSentenceLength)+''+str(stopWordSave)+'.pickle'
         with open(savePath, 'wb') as handle:
-            pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(outputList, handle, protocol=2)
         print("### Saving training data! ###")
     if ("test" in dataType):
-        savePath = 'NN_Input_Files/testOutput_'+str(paddingDepth)+'_'+str(maxSentenceLength)+'_'+str(timeStamp)+'.pickle'
+        savePath = 'NN_Input_Files/testData_'+str(paddingDepth)+'_'+str(maxSentenceLength)+''+str(stopWordSave)+'.pickle'
         with open(savePath, 'wb') as handle:
-            pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(outputList, handle, protocol=2)
         print("### Saving test data! ###")
     if ("dev" in dataType):
-        savePath = 'NN_Input_Files/devOutput_'+str(paddingDepth)+'_'+str(maxSentenceLength)+'_'+str(timeStamp)+'.pickle'
+        savePath = 'NN_Input_Files/devData_'+str(paddingDepth)+'_'+str(maxSentenceLength)+''+str(stopWordSave)+'.pickle'
         with open(savePath, 'wb') as handle:
-            pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(outputList, handle, protocol=2)
         print("### Saving development data! ###")
 
     endTime2 = time.time()

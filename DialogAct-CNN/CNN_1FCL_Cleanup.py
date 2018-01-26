@@ -21,17 +21,17 @@ import numpy as np
 import time
 import datetime
 
-batchSize = 100  # Batchsize for training
-evalFrequency = 1  # Evaluation frequency (epoch % evalFrequency == 0)
-numEpoch = 50  # Number of Epochs for training
-numCPUs = 10  # Number of CPU's to be used
-filterNumber2WC = 10  # Number of filters for 2-Word-Context
-filterNumber3WC = 10  # Number of filters for 3-Word-Context
-filterNumber4WC = 10  # Number of filters for 4-Word-Context
+batchSize = 100         # Batchsize for training
+evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
+numEpoch = 25           # Number of Epochs for training
+numCPUs = 10            # Number of CPU's to be used
+filterNumber2WC = 10    # Number of filters for 2-Word-Context
+filterNumber3WC = 10    # Number of filters for 3-Word-Context
+filterNumber4WC = 10    # Number of filters for 4-Word-Context
 activationFunction = "Relu"
 lossFunction = "Cross Entropy"
 dropout = 0.5
-optimizerFunction = "AdamOptimizer"
+optimizerFunction = "Stochastic Gradient Descent"
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
 logFileTmp = ""
@@ -40,11 +40,11 @@ overallTime = time.time()
 
 # Server Paths
 # Without stopwords
-# pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
-# pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
+pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
+pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 # With stopwords
-pathTraining = "NN_Input_Files/trainData5_100_fsw.pickle"
-pathEvaluation = "NN_Input_Files/devData_5_100_fsw.pickle"
+# pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
+# pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
 
 print("### Importing Training and Evaluation Data! ###")
 trainingList = pickle.load(open(pathTraining, "rb"))
@@ -205,10 +205,10 @@ y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output)
 
 # Training
-learningRate = 1e-4  # changed Learning Rate R.K. before 0.1
+learningRate = 1e-4
 # Optimizer
 # train_Step = tf.train.AdamOptimizer(learningRate).minimize(cross_entropy)
-optimizer = tf.train.AdamOptimizer(learningRate).minimize(cross_entropy)
+train_Step = tf.train.GradientDescentOptimizer(learningRate).minimize(cross_entropy)
 
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -280,7 +280,7 @@ with tf.Session(config=config) as sess:
                 feed_dict={x: batch[0], y_: batch[1], keep_Prob: 1})
 
             # Run the optimizer to update weights.
-            sess.run(optimizer, feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout})
+            summary, loss, train = sess.run([merged, cross_entropy, train_Step], feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout})
 
             elapsed_time = time.time() - start_time
             start_time = time.time()
@@ -289,11 +289,9 @@ with tf.Session(config=config) as sess:
         # Evaluation output for direct user controll.
         if epoch % evalFrequency == 0:
             epochAccuracy = np.mean(epochAccuracyList)
-            summary, loss = sess.run([merged, cross_entropy], feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout},
-                               options=run_options, run_metadata=run_metadata)
 
-            print('step %d, epoch accuracy %g, learning rate %f, loss %f, %f s' % (epoch, epochAccuracy, loss,
-                                                                              learningRate, 1000 * elapsed_time))
+            print('step %d, epoch accuracy %g, learning rate %f, loss %f, %f s' % (epoch, epochAccuracy, learningRate,
+                                                                                   loss, 1000 * elapsed_time))
             writer.add_run_metadata(run_metadata, 'step %d' % epoch)
             writer.add_summary(summary, epoch)
             print("Adding run metadata for epoch " + str(epoch))
