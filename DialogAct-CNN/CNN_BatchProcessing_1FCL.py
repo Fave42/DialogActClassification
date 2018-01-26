@@ -8,7 +8,7 @@
 The script is stored on the server under the following path:
 /mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources
 
-Usage: python2.7 CNN.py >>> log.txt
+Usage: python2.7 CNN.py
 !!!!!!!!! Server currently only supports TensorFlow python2.7 !!!!!!!!!
 """
 
@@ -21,13 +21,13 @@ import numpy as np
 import time
 import datetime
 
-batchSize = 100         # Batchsize for training
-evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
-numEpoch = 20           # Number of Epochs for training
-numCPUs = 10            # Number of CPU's to be used
-filterNumber2WC = 10    # Number of filters for 2-Word-Context
-filterNumber3WC = 10    # Number of filters for 3-Word-Context
-filterNumber4WC = 10    # Number of filters for 4-Word-Context
+batchSize = 50  # Batchsize for training
+evalFrequency = 1  # Evaluation frequency (epoch % evalFrequency == 0)
+numEpoch = 20  # Number of Epochs for training
+numCPUs = 10  # Number of CPU's to be used
+filterNumber2WC = 10  # Number of filters for 2-Word-Context
+filterNumber3WC = 10  # Number of filters for 3-Word-Context
+filterNumber4WC = 10  # Number of filters for 4-Word-Context
 activationFunction = "Relu"
 lossFunction = "Cross Entropy"
 dropout = 0.5
@@ -45,6 +45,7 @@ pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 print("### Importing Training and Evaluation Data! ###")
 trainingList = pickle.load(open(pathTraining, "rb"))
 evaluationList = pickle.load(open(pathEvaluation, "rb"))
+
 
 ### Functions ###
 def weightVariable(shape):
@@ -65,6 +66,7 @@ def maxPool100x1(x, kernelDepth):
     return tf.nn.max_pool(x, ksize=[1, kernelDepth, 1, 1],
                           strides=[1, 1, 1, 1], padding='VALID')
 
+
 ### Creates and returns a batchlist with the following format
 #   batchList = [ (1Batch-Features, 1Batch-Labels), (2Batch-Features, 2Batch-Labels), ...]
 ###
@@ -74,10 +76,10 @@ def createBatchList(random_TrainingList, batchSize):
     tmpFeatureList = []
     tmpLabelList = []
 
-    for i in range(1, len(random_TrainingList)+1):
+    for i in range(1, len(random_TrainingList) + 1):
         npArrayDepth += 1
-        tmpFeatureList.append(random_TrainingList[i-1][0])
-        tmpLabelList.append(random_TrainingList[i-1][1])
+        tmpFeatureList.append(random_TrainingList[i - 1][0])
+        tmpLabelList.append(random_TrainingList[i - 1][1])
 
         if (i % batchSize == 0) and (i != 0):
             featureBatchArray = np.array(tmpFeatureList)
@@ -86,21 +88,21 @@ def createBatchList(random_TrainingList, batchSize):
             featureBatchArray = featureBatchArray.reshape(npArrayDepth, 32400)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
-            #print(labelsBatchArray.shape)
+            # print(labelsBatchArray.shape)
 
             batchList.append((featureBatchArray, labelsBatchArray))
             tmpFeatureList = []
             tmpLabelList = []
             npArrayDepth = 0
 
-        elif (i == len(random_TrainingList)-1):
+        elif (i == len(random_TrainingList) - 1):
             featureBatchArray = np.array(np.asarray(tmpFeatureList))
             labelsBatchArray = np.array(np.asarray(tmpLabelList))
 
             featureBatchArray = featureBatchArray.reshape(npArrayDepth, 32400)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
-            #print(labelsBatchArray.shape)
+            # print(labelsBatchArray.shape)
 
             batchList.append((featureBatchArray, labelsBatchArray))
             tmpFeatureList = []
@@ -108,6 +110,7 @@ def createBatchList(random_TrainingList, batchSize):
             npArrayDepth = 0
 
     return batchList
+
 
 def createEvalList(rawEvalList):
     npArrayDepth = 0
@@ -130,11 +133,12 @@ def createEvalList(rawEvalList):
 
     return evalTuple
 
-### Graph definition ###
-x = tf.placeholder(tf.float32, shape=[None, 108 * 300]) # input vectors
-x_4DTensor = tf.reshape(x, shape=[-1, 108, 300, 1]) # input vecotrs as a 4D-Matrix
 
-y_ = tf.placeholder(tf.float32, shape=[None, 4]) # gold standard labels; 1hot-vectors
+### Graph definition ###
+x = tf.placeholder(tf.float32, shape=[None, 108 * 300])  # input vectors
+x_4DTensor = tf.reshape(x, shape=[-1, 108, 300, 1])  # input vecotrs as a 4D-Matrix
+
+y_ = tf.placeholder(tf.float32, shape=[None, 4])  # gold standard labels; 1hot-vectors
 
 ###
 # L1 = Layer 1
@@ -203,12 +207,12 @@ with tf.name_scope("FCL3_Bias"):
 y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)
 
 # Softmax Output, loss-function
-cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y)) # (Goldstandard, Output)
+cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output)
 
 # Training
-learningRate = 1e-4 # changed Learning Rate R.K. before 0.1
+learningRate = 1e-4  # changed Learning Rate R.K. before 0.1
 # Optimizer
-#train_Step = tf.train.AdamOptimizer(learningRate).minimize(cross_entropy)
+# train_Step = tf.train.AdamOptimizer(learningRate).minimize(cross_entropy)
 optimizer = tf.train.AdamOptimizer(learningRate).minimize(cross_entropy)
 
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
@@ -231,7 +235,6 @@ logFileTmp += "Dropout: " + str(dropout) + "\n"
 logFileTmp += "Optimizer: " + str(optimizerFunction) + "\n"
 logFileTmp += "##########\n"
 
-
 print("Starting Training...")
 start_time = time.time()
 with tf.Session(config=config) as sess:
@@ -246,12 +249,13 @@ with tf.Session(config=config) as sess:
 
     # Tensorboard integration
     training_accuracy = 0
-    #tf.summary.scalar("loss_function", loss)
+    # tf.summary.scalar("loss_function", loss)
     tf.summary.scalar("learning_rate", learningRate)
-    #tf.summary.histogram("Accuracy", training_accuracy)
-    #tf.summary.histogram("train_prediction", train_prediction)
+    # tf.summary.histogram("Accuracy", training_accuracy)
+    # tf.summary.histogram("train_prediction", train_prediction)
     merged = tf.summary.merge_all()
-    writer = tf.summary.FileWriter("/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/log", sess.graph)
+    writer = tf.summary.FileWriter(
+        "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/log", sess.graph)
 
     for epoch in range(numEpoch):
         print("Current epoch " + str(epoch))
@@ -272,21 +276,22 @@ with tf.Session(config=config) as sess:
             run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
             run_metadata = tf.RunMetadata()
 
-            training_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout}) # changed dropoutRate R.K. before: 0.5
+            training_accuracy = accuracy.eval(
+                feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout})  # changed dropoutRate R.K. before: 0.5
 
             # Run the optimizer to update weights.
             sess.run(optimizer, feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout})
 
-            #summary, lr = train_Step.run([merged, learningRate], feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.75}, options=run_options, run_metadata=run_metadata)
+            # summary, lr = train_Step.run([merged, learningRate], feed_dict={x: batch[0], y_: batch[1], keep_Prob: 0.75}, options=run_options, run_metadata=run_metadata)
 
             elapsed_time = time.time() - start_time
             start_time = time.time()
-            #epochAccuracyList.append(training_accuracy)
+            # epochAccuracyList.append(training_accuracy)
 
         # Evaluation Frequency
         if epoch % evalFrequency == 0:
             summary = sess.run(merged, feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout},
-                                         options=run_options, run_metadata=run_metadata)
+                               options=run_options, run_metadata=run_metadata)
 
             print('step %d, training accuracy %g, learning rate %f, %f ms' % (epoch, training_accuracy,
                                                                               learningRate, 1000 * elapsed_time))
@@ -295,11 +300,12 @@ with tf.Session(config=config) as sess:
             print("Adding run metadata for epoch " + str(epoch))
 
             logFileTmp += 'step %d, training accuracy %g, learning rate %f, %f ms\n' % (epoch, training_accuracy,
-                                                                              learningRate, 1000 * elapsed_time)
+                                                                                        learningRate,
+                                                                                        1000 * elapsed_time)
             logFileTmp += "####\n"
 
     evaluationTuple = createEvalList(evaluationList)
-    overallEndTime = (time.time() - overallTime)/60
+    overallEndTime = (time.time() - overallTime) / 60
 
     testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
     print('test accuracy %g' % testAccuracy)
@@ -310,7 +316,7 @@ with tf.Session(config=config) as sess:
     logFileTmp += "The program was executed in " + str(overallEndTime) + " minutes\n"
 
     savePath = "log/terminal_logfiles/" + str(datetime.datetime.now().strftime("%y-%m-%d-%H-%M")) + ".txt"
-    with open(savePath,'wb') as saveFile:
+    with open(savePath, 'wb') as saveFile:
         saveFile.write(logFileTmp)
 
 # todo More TensorBoard

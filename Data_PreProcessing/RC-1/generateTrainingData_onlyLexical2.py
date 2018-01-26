@@ -18,28 +18,38 @@ import random as rand
 import pickle
 import numpy as np
 import datetime
-
+import os
+import argparse
 
 def main():
     fileNameList = ["Train/train.txt", "Dev/dev.txt", "Test/test.txt"]
 
-    # Select the padding depth of the matrix (1=one line with 0's, 2=two lines with 0's
-    paddingDepth = input("Which vertical padding depth is used? (Standard 5)\n")
-    maxSentenceLength = input("What is the maximum sentence length? (Standard 100)\n")
+    # Store the arguments given at the start of teh script
+    paddingDepth, maxSentenceLength, stopWordPath = getArgs()
+
+    #print("A paddingdepth of %d and a maximum sentence length of %d will be used.") % (paddingDepth, maxSentenceLength)
+    print("A paddingdepth of", paddingDepth, "and a maximum sentence length of", maxSentenceLength, "will be used.")
+    if (stopWordPath != ""):
+        print("The stopwordsfile", stopWordPath, "will be used.")
+    else:
+        print("No stopwordsfile wax specified.")
 
     # Loads "unknownWordsDict.txt that all every unknown words has unique 300 random float numbers
     # Serverpath
     unknownWordsDict = pickle.load(open("dict/unknownWordsDict.pickle", "rb"))
 
-    # Generate a timestamp
-    now = datetime.datetime.now()
-    year = now.year
-    month = now.month
-    day = now.day
-    hour = now.hour
-    minute = now.minute
-    timeStamp = "%s-%s-%s-%d-%d" % (year, month, day, hour, minute)
+    # Load the stopword file if it is present
+    # stopWordPath = "stopwords.txt"
+    if (stopWordPath != ""):
+        if os.path.isfile(stopWordPath):
+            print("Stopwordsfile found!\nImporting it now...")
+            stopWordsDict = buildStopWordDict(stopWordPath)
+        else:
+            print("Stopwordsfile not found!\nPlease rerun the script!")
+            quit()
 
+    # Generate a timestamp
+    timeStamp = generateTimesstamp()
     # Start timing the importing of the dictionary
     startTime = time.time()
 
@@ -48,6 +58,7 @@ def main():
     # model = gensim.models.KeyedVectors.load_word2vec_format(
     #     'dict/GoogleNews-vectors-negative300.bin', binary=True)
     # Server Version
+    print("Importing word2vec binary now...")
     model = gensim.models.Word2Vec.load_word2vec_format(
         'dict/GoogleNews-vectors-negative300.bin', binary=True)
 
@@ -60,7 +71,53 @@ def main():
     for type in fileNameList:
         path = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/"
         path += type
-        work(paddingDepth, maxSentenceLength, path, type, unknownWordsDict, timeStamp, model)
+        work(paddingDepth, maxSentenceLength, path, type, unknownWordsDict, timeStamp, model, stopWordsDict)
+
+# This function parses and returns arguments passed in
+def getArgs():
+    # Add description
+    parser = argparse.ArgumentParser(description='This script generates training, development and test data for a CNN.')
+    # Add arguments
+    parser.add_argument("-p", "--paddingDepth", type=int,
+                        help="Specifies the padding depth of the input Matrix. If left empty the standard value 5 will be used.",
+                        required=False, default=5)
+    parser.add_argument("-m", "--maxSentenceLength", type=int,
+                        help="Specifies the maximum sentence length. If left empty the standard value 100 will be used.",
+                        required=False, default=100)
+    parser.add_argument("-s", "--stopWords", type=str,
+                        help="Specifies a stopwordfile. If left empty no stopword filtering will be done.",
+                        required=False, default="")
+    # Array for all arguments passed to script
+    args = parser.parse_args()
+    # Assign args to variables
+    pd = args.paddingDepth
+    msl = args.maxSentenceLength
+    swf = args.stopWords
+    # Return all variables
+    return pd, msl, swf
+
+
+# Generates a stopword dictionary based on a given "stopwords.txt" file in the folder
+def buildStopWordDict(stopWordPath):
+    tmpDict = {}
+    with open(stopWordPath, "r") as stopWordsFile:
+        for word in stopWordsFile:
+            if (word not in tmpDict):
+                tmpDict[word] = word
+    print("Stopwordsfile imported!")
+    return tmpDict
+
+
+# Generates a timestamp for the current day and time
+def generateTimesstamp():
+    now = datetime.datetime.now()
+    year = now.year
+    month = now.month
+    day = now.day
+    hour = now.hour
+    minute = now.minute
+    timestamp = "%s-%s-%s-%d-%d" % (year, month, day, hour, minute)
+    return timestamp
 
 
 # Generates 300 random numbers between -1 and 1 for unknown words
@@ -71,7 +128,7 @@ def getRandomDimensions():
     return randomList
 
 
-def work(paddingDepth, maxSentenceLength, filePath, dataType, unknownWordsDict, timeStamp, model):
+def work(paddingDepth, maxSentenceLength, filePath, dataType, unknownWordsDict, timeStamp, model, stopWordsDict):
     # Cast the strings to int for computation
     paddingDepth = int(paddingDepth)
     maxSentenceLength = int(maxSentenceLength)
@@ -99,16 +156,17 @@ def work(paddingDepth, maxSentenceLength, filePath, dataType, unknownWordsDict, 
 
                 if i <= maxSentenceLength + paddingDepth:
                     word = splittedLine[i + 2 - paddingDepth]  # transforms the i to fit to the splittedLine index.
-                    # Check if the word is in the model
+                    # Check if the word is in the model, if it is in stopWordsDict it will not be added
                     # If not fill the list with 300 random numbers between -1 and 1
-                    if (word in model.vocab):
-                        word300 = model[word]
-                        # word300 = word300.tolist()
-                    elif (word in unknownWordsDict):
-                        word300 = unknownWordsDict[word]
-                    else:
-                        word300 = getRandomDimensions()
-                        unknownWordsDict[word] = word300
+                    if (word not in stopWordsDict):
+                        if (word in model.vocab):
+                            word300 = model[word]
+                            # word300 = word300.tolist()
+                        elif (word in unknownWordsDict):
+                            word300 = unknownWordsDict[word]
+                        else:
+                            word300 = getRandomDimensions()
+                            unknownWordsDict[word] = word300
 
                     # fills the corresponding row and elements of the trainingMatrix with the values of word300.
                     for j in range(0, 300):
@@ -138,17 +196,17 @@ def work(paddingDepth, maxSentenceLength, filePath, dataType, unknownWordsDict, 
 
     # Saves the the complete list with every sentence and a timestamp
     if ("train" in dataType):
-        savePath ='NN_Input_Files/trainOutput_%d_%d_'+timeStamp+'.pickle' % (paddingDepth, maxSentenceLength)
+        savePath ='NN_Input_Files/trainOutput_'+str(paddingDepth)+'_'+str(maxSentenceLength)+'_'+str(timeStamp)+'.pickle'
         with open(savePath, 'wb') as handle:
             pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
         print("### Saving training data! ###")
     if ("test" in dataType):
-        savePath = 'NN_Input_Files/testOutput_%d_%d_'+timeStamp+'.pickle' % (paddingDepth, maxSentenceLength)
+        savePath = 'NN_Input_Files/testOutput_'+str(paddingDepth)+'_'+str(maxSentenceLength)+'_'+str(timeStamp)+'.pickle'
         with open(savePath, 'wb') as handle:
             pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
         print("### Saving test data! ###")
     if ("dev" in dataType):
-        savePath = 'NN_Input_Files/trainOutput_%d_%d_'+timeStamp+'.pickle' % (paddingDepth, maxSentenceLength)
+        savePath = 'NN_Input_Files/devOutput_'+str(paddingDepth)+'_'+str(maxSentenceLength)+'_'+str(timeStamp)+'.pickle'
         with open(savePath, 'wb') as handle:
             pickle.dump(outputList, handle, protocol=pickle.HIGHEST_PROTOCOL)
         print("### Saving development data! ###")
