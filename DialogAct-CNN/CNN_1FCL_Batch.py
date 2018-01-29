@@ -23,7 +23,7 @@ import datetime
 
 batchSize = 100         # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
-numEpoch = 25           # Number of Epochs for training
+numEpoch = 15           # Number of Epochs for training
 numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 10    # Number of filters for 2-Word-Context
 filterNumber3WC = 10    # Number of filters for 3-Word-Context
@@ -40,11 +40,11 @@ overallTime = time.time()
 
 # Server Paths
 # Without stopwords
-pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
-pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
+# pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
+# pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 # With stopwords
-# pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
-# pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
+pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
+pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
 
 print("### Importing Training and Evaluation Data! ###")
 trainingList = pickle.load(open(pathTraining, "rb"))
