@@ -34,7 +34,7 @@ def main():
         print("The stopwordsfile", stopWordPath, "will be used.")
         stopWordSave = "_fsw"
     else:
-        print("No stopwordsfile wax specified.")
+        print("No stopwordsfile was specified.")
 
     # Loads "unknownWordsDict.txt that all every unknown words has unique 300 random float numbers
     # Serverpath
