@@ -25,7 +25,7 @@ import os
 
 batchSize = 100         # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
-numEpoch = 8            # Number of Epochs for training
+numEpoch = 3            # Number of Epochs for training
 numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 10    # Number of filters for 2-Word-Context
 filterNumber3WC = 10    # Number of filters for 3-Word-Context
@@ -152,49 +152,53 @@ y_ = tf.placeholder(tf.float32, shape=[None, 4])  # gold standard labels; 1hot-v
 # 2WC = Two-Word-Context
 ###
 ### Two-Word-Context
-with tf.name_scope("CL1_Weights_2WordContext"):
-    W_conv_L1_2WC = weightVariable([2, 300, 1, filterNumber2WC])
-with tf.name_scope("CL1_Bias_2WordContext"):
-    b_conv_L1_2WC = biasVariable([1])
+with tf.name_scope("Two_Word_Context"):
+    with tf.name_scope("CL1_Weights"):
+        W_conv_L1_2WC = weightVariable([2, 300, 1, filterNumber2WC])
+    with tf.name_scope("CL1_Bias"):
+        b_conv_L1_2WC = biasVariable([1])
 
-with tf.name_scope("CL1_HiddenLayer_2WordContext"):
-#    h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
-    h_conv_L1_2WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
-#	 h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
-with tf.name_scope("CL1_MaxPooling_2WordContext"):
-    h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 107)
+    with tf.name_scope("CL1_HiddenLayer"):
+    #    h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
+        h_conv_L1_2WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
+    #	 h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
+    with tf.name_scope("CL1_MaxPooling"):
+        h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 107)
 
 ### Three-Word-Context
-with tf.name_scope("CL1_Weights_3WordContext"):
-    W_conv_L1_3WC = weightVariable([3, 300, 1, filterNumber3WC])
-with tf.name_scope("CL1_Bias_3WordContext"):
-    b_conv_L1_3WC = biasVariable([1])
+with tf.name_scope("Three_Word_Context"):
+    with tf.name_scope("CL1_Weights"):
+        W_conv_L1_3WC = weightVariable([3, 300, 1, filterNumber3WC])
+    with tf.name_scope("CL1_Bias"):
+        b_conv_L1_3WC = biasVariable([1])
 
-with tf.name_scope("CL1_HiddenLayer_3WordContext"):
-#    h_conv_L1_3WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
-    h_conv_L1_3WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
-#    h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
-with tf.name_scope("CL1_MaxPooling_3WordContext"):
-    h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 106)
+    with tf.name_scope("CL1_HiddenLayer"):
+    #    h_conv_L1_3WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
+        h_conv_L1_3WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
+    #    h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
+    with tf.name_scope("CL1_MaxPooling"):
+        h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 106)
 
 ### Four-Word-Context
-with tf.name_scope("CL1_Weights_4WordContext"):
-    W_conv_L1_4WC = weightVariable([4, 300, 1, filterNumber4WC])
-with tf.name_scope("CL1_Bias_4WordContext"):
-    b_conv_L1_4WC = biasVariable([1])
+with tf.name_scope("Four_Word_Context"):
+    with tf.name_scope("CL1_Weights"):
+        W_conv_L1_4WC = weightVariable([4, 300, 1, filterNumber4WC])
+    with tf.name_scope("CL1_Bias"):
+        b_conv_L1_4WC = biasVariable([1])
 
-with tf.name_scope("CL1_HiddenLayer_4WordContext"):
-#    h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
-    h_conv_L1_4WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
-#    h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
-with tf.name_scope("CL1_MaxPooling_4WordContext"):
-    h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 105)
+    with tf.name_scope("CL1_HiddenLayer"):
+    #    h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
+        h_conv_L1_4WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
+    #    h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
+    with tf.name_scope("CL1_MaxPooling"):
+        h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 105)
 
 # Concatenate the pooling outputs to get the feature vector
 with tf.name_scope("L1_OutputTensor"):
     outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
 # Reshape to 2D tensor
-numOutputConcat = filterNumber2WC + filterNumber3WC + filterNumber4WC
+with tf.name_scope("Concatination_Dimensions"):
+    numOutputConcat = filterNumber2WC + filterNumber3WC + filterNumber4WC
 with tf.name_scope("L1_OutputTensor_2D"):
     outputTensor_L1_2D = tf.reshape(outputTensor_L1, [-1, numOutputConcat])
 
@@ -208,7 +212,8 @@ with tf.name_scope("FCL2_Weights"):
 with tf.name_scope("FCL2_Bias"):
     b_FC_L2 = biasVariable([4])
 
-y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function ReLu
+with tf.name_scope("Activation_Function"):
+    y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function ReLu
 #y = tf.tanh(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2) ### activation function TanH
 #y = tf.nn.sigmoid(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function sigmoid
 
@@ -269,8 +274,7 @@ with tf.Session(config=config) as sess:
     # Tensorboard integration
     training_accuracy = 0
     tf.summary.scalar("learning_rate", learningRate)
-    # tf.summary.histogram("Accuracy", training_accuracy)
-    # tf.summary.histogram("train_prediction", train_prediction)
+    tf.summary.histogram("training_accuracy", training_accuracy)
     tf.summary.histogram("loss_function", loss)
     tf.summary.histogram("accuracy", accuracy)
     merged = tf.summary.merge_all()
@@ -340,5 +344,7 @@ with tf.Session(config=config) as sess:
     savePath = logPath + "/" + programStartTime +".txt"
     with open(savePath, 'wb') as saveFile:
         saveFile.write(logFileTmp)
+
+writer.close()
 
 # todo More TensorBoard
