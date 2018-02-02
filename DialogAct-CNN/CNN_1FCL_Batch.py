@@ -20,17 +20,20 @@ from copy import deepcopy
 import numpy as np
 import time
 import datetime
+import os
+
 
 batchSize = 100         # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
-numEpoch = 15           # Number of Epochs for training
+numEpoch = 8            # Number of Epochs for training
 numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 10    # Number of filters for 2-Word-Context
 filterNumber3WC = 10    # Number of filters for 3-Word-Context
 filterNumber4WC = 10    # Number of filters for 4-Word-Context
-activationFunction = "Relu"
+activationFunction = "CNN = tanh + FCL = Relu"
 lossFunction = "Cross Entropy"
-dropout = 0.5
+learningRate = 0.01
+dropout = 1.0
 optimizerFunction = "Stochastic Gradient Descent"
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
@@ -40,11 +43,11 @@ overallTime = time.time()
 
 # Server Paths
 # Without stopwords
-# pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
-# pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
+pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
+pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
 # With stopwords
-pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
-pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
+#pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
+#pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
 
 print("### Importing Training and Evaluation Data! ###")
 trainingList = pickle.load(open(pathTraining, "rb"))
@@ -155,7 +158,9 @@ with tf.name_scope("CL1_Bias_2WordContext"):
     b_conv_L1_2WC = biasVariable([1])
 
 with tf.name_scope("CL1_HiddenLayer_2WordContext"):
-    h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC)
+#    h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
+    h_conv_L1_2WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
+#	 h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
 with tf.name_scope("CL1_MaxPooling_2WordContext"):
     h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 107)
 
@@ -166,7 +171,9 @@ with tf.name_scope("CL1_Bias_3WordContext"):
     b_conv_L1_3WC = biasVariable([1])
 
 with tf.name_scope("CL1_HiddenLayer_3WordContext"):
-    h_conv_L1_3WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC)
+#    h_conv_L1_3WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
+    h_conv_L1_3WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
+#    h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
 with tf.name_scope("CL1_MaxPooling_3WordContext"):
     h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 106)
 
@@ -177,7 +184,9 @@ with tf.name_scope("CL1_Bias_4WordContext"):
     b_conv_L1_4WC = biasVariable([1])
 
 with tf.name_scope("CL1_HiddenLayer_4WordContext"):
-    h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC)
+#    h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
+    h_conv_L1_4WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
+#    h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
 with tf.name_scope("CL1_MaxPooling_4WordContext"):
     h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 105)
 
@@ -199,16 +208,20 @@ with tf.name_scope("FCL2_Weights"):
 with tf.name_scope("FCL2_Bias"):
     b_FC_L2 = biasVariable([4])
 
-y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)
+y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function ReLu
+#y = tf.tanh(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2) ### activation function TanH
+#y = tf.nn.sigmoid(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function sigmoid
 
 # Softmax Output, loss-function
-cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output)
+#loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
+loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
+#loss = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(targets=y_, logits=y, pos_weight=0.5))  # (Goldstandard, Output); Weighted Cross Entropy
+
 
 # Training
-learningRate = 1e-4
 # Optimizer
-# train_Step = tf.train.AdamOptimizer(learningRate).minimize(cross_entropy)
-train_Step = tf.train.GradientDescentOptimizer(learningRate).minimize(cross_entropy)
+# train_Step = tf.train.AdamOptimizer(learningRate).minimize(loss)
+train_Step = tf.train.GradientDescentOptimizer(learningRate).minimize(loss)
 
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -232,7 +245,16 @@ logFileTmp += "Dropout: " + str(dropout) + "\n"
 logFileTmp += "Optimizer: " + str(optimizerFunction) + "\n"
 logFileTmp += "##########\n"
 
+
 print("Starting Training...")
+programStartTime = str(datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")) # stores the time when the computation starts.
+logPath = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/log/"
+logPath += programStartTime
+
+# Creates a folder in which to store all logfiles
+if not os.path.exists(logPath):
+    os.makedirs(logPath)
+
 start_time = time.time()
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
@@ -249,17 +271,17 @@ with tf.Session(config=config) as sess:
     tf.summary.scalar("learning_rate", learningRate)
     # tf.summary.histogram("Accuracy", training_accuracy)
     # tf.summary.histogram("train_prediction", train_prediction)
-    tf.summary.histogram("loss_function", cross_entropy)
+    tf.summary.histogram("loss_function", loss)
     tf.summary.histogram("accuracy", accuracy)
     merged = tf.summary.merge_all()
-    writer = tf.summary.FileWriter(
-        "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/log", sess.graph)
+    writer = tf.summary.FileWriter(logPath, sess.graph)
 
     for epoch in range(numEpoch):
         print("Current epoch " + str(epoch))
         # Shuffle the traininglist
         shuffle(random_TrainingList)
         epochAccuracyList = []
+        epochLossList = []
         batchList = []
 
         # Batch processing
@@ -277,34 +299,37 @@ with tf.Session(config=config) as sess:
 
             # computes the actual accuracy for the current batch.
             training_accuracy = accuracy.eval(
-                feed_dict={x: batch[0], y_: batch[1], keep_Prob: 1})
+                feed_dict={x: batch[0], y_: batch[1], keep_Prob: 1.0})
 
             # Run the optimizer to update weights.
-            summary, loss, train = sess.run([merged, cross_entropy, train_Step], feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout})
+            summary, l, train = sess.run([merged, loss, train_Step], feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout})
 
             elapsed_time = time.time() - start_time
             start_time = time.time()
             epochAccuracyList.append(training_accuracy)
+            epochLossList.append(l)
 
         # Evaluation output for direct user controll.
         if epoch % evalFrequency == 0:
-            epochAccuracy = np.mean(epochAccuracyList)
+            epochAvgAccuracy = np.mean(epochAccuracyList)
+            epochAvgLoss = np.mean(epochLossList)
 
-            print('step %d, epoch accuracy %g, learning rate %f, loss %f, %f s' % (epoch, epochAccuracy, learningRate,
-                                                                                   loss, 1000 * elapsed_time))
+            print('step %d, epoch accuracy %g, learning rate %f, loss %f, %f s' % (epoch, epochAvgAccuracy, learningRate,
+                                                                                   epochAvgLoss, 1000 * elapsed_time))
             writer.add_run_metadata(run_metadata, 'step %d' % epoch)
             writer.add_summary(summary, epoch)
             print("Adding run metadata for epoch " + str(epoch))
 
-            logFileTmp += 'step %d, epoch accuracy %g, loss %f, learning rate %f, %f s\n' % (epoch, epochAccuracy,
-                                                                                                 loss, learningRate,
-                                                                                                1000 * elapsed_time)
+            logFileTmp += 'step %d, epoch accuracy %g, loss %f, learning rate %f, %f s\n' % (epoch, epochAvgAccuracy,
+                                                                                                 epochAvgLoss, learningRate,
+                                                                                                1000 * elapsed_time)			
             logFileTmp += "####\n"
 
     evaluationTuple = createEvalList(evaluationList)
     overallEndTime = (time.time() - overallTime) / 60
 
     testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
+
     print('test accuracy %g' % testAccuracy)
     print("The program was executed in " + str(overallEndTime) + " minutes")
 
@@ -312,7 +337,7 @@ with tf.Session(config=config) as sess:
     logFileTmp += "Test Accuracy: " + str(testAccuracy) + "\n"
     logFileTmp += "The program was executed in " + str(overallEndTime) + " minutes\n"
 
-    savePath = "log/terminal_logfiles/" + str(datetime.datetime.now().strftime("%y-%m-%d-%H-%M")) + ".txt"
+    savePath = logPath + "/" + programStartTime +".txt"
     with open(savePath, 'wb') as saveFile:
         saveFile.write(logFileTmp)
 
