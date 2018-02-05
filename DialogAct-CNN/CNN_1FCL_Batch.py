@@ -30,6 +30,7 @@ numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 10    # Number of filters for 2-Word-Context
 filterNumber3WC = 10    # Number of filters for 3-Word-Context
 filterNumber4WC = 10    # Number of filters for 4-Word-Context
+trainableEmbeddings = False
 activationFunction = "CNN = tanh + FCL = Relu"
 lossFunction = "Cross Entropy"
 learningRate = 0.01
@@ -43,15 +44,18 @@ overallTime = time.time()
 
 # Server Paths
 # Without stopwords
-pathTraining = "NN_Input_Files/trainData_3-5WordContext_prot2.pickle"
-pathEvaluation = "NN_Input_Files/devData_3-5WordContext_prot2.pickle"
+pathTraining = "NN_Input_Files/trainData_Embeddings.pickle"
+pathEvaluation = "NN_Input_Files/devData_Embeddings.pickle"
+pathEmbeddings = "dict/embeddingMatrix_np.pickle"
 # With stopwords
 #pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
 #pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
 
-print("### Importing Training and Evaluation Data! ###")
+print("### Importing Training, Evaluation and Embedding Data! ###")
 trainingList = pickle.load(open(pathTraining, "rb"))
 evaluationList = pickle.load(open(pathEvaluation, "rb"))
+embeddingInputs = pickle.load(open(pathEmbeddings, "rb"))
+print("\t---> Done with importing!")
 
 
 ### Functions ###
@@ -66,7 +70,7 @@ def biasVariable(shape):
 
 
 def conv2d(x, W):
-    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='VALID')
+    return tf.nn.conv2d(x, W, strides=[1, 1, 300, 1], padding='VALID')
 
 
 def maxPool100x1(x, kernelDepth):
@@ -92,7 +96,7 @@ def createBatchList(random_TrainingList, batchSize):
             featureBatchArray = np.array(tmpFeatureList)
             labelsBatchArray = np.array(tmpLabelList)
 
-            featureBatchArray = featureBatchArray.reshape(npArrayDepth, 32400)
+            featureBatchArray = featureBatchArray.reshape(npArrayDepth, 100)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
             # print(labelsBatchArray.shape)
@@ -106,7 +110,7 @@ def createBatchList(random_TrainingList, batchSize):
             featureBatchArray = np.array(np.asarray(tmpFeatureList))
             labelsBatchArray = np.array(np.asarray(tmpLabelList))
 
-            featureBatchArray = featureBatchArray.reshape(npArrayDepth, 32400)
+            featureBatchArray = featureBatchArray.reshape(npArrayDepth, 100)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
             # print(labelsBatchArray.shape)
@@ -142,15 +146,32 @@ def createEvalList(rawEvalList):
 
 
 ### Graph definition ###
-x = tf.placeholder(tf.float32, shape=[None, 108 * 300])  # input vectors
-x_4DTensor = tf.reshape(x, shape=[-1, 108, 300, 1])  # input vecotrs as a 4D-Matrix
-
+x = tf.placeholder(tf.float32, shape=[None, 100])  # input vectors
 y_ = tf.placeholder(tf.float32, shape=[None, 4])  # gold standard labels; 1hot-vectors
 
 ###
 # L1 = Layer 1
 # 2WC = Two-Word-Context
 ###
+
+### Layer 0
+vocab_size = 10017
+embedding_dim = 300
+with tf.name_scope("Embedding_Layer"):
+    with tf.name_scope("Embedding_Matrix"):
+        embedding_Matrix = tf.Variable(tf.constant(0.0, shape=[vocab_size, embedding_dim]),
+                        trainable=trainableEmbeddings)
+    with tf.name_scope("Embedding_Placeholder"):
+        embedding_placeholder = tf.placeholder(tf.float32, [vocab_size, embedding_dim])
+    with tf.name_scope("Embedding_init"):
+        embedding_init = embedding_Matrix.assign(embedding_placeholder)
+    with tf.name_scope("Embedded_Input"):
+        x_embedded = tf.nn.embedding_lookup(embedding_Matrix, tf.cast(x, dtype=tf.int32))
+    with tf.name_scope("Embedded_4D_Tensor"):
+        x_4DTensor = tf.reshape(x_embedded, shape=[-1, 100, 300, 1])  # input vecotrs as a 4D-Matrix
+print("Shape of x_4DTensor: " + str(x_4DTensor.shape))
+
+### Layer 1
 ### Two-Word-Context
 with tf.name_scope("Two_Word_Context"):
     with tf.name_scope("CL1_Weights"):
@@ -161,9 +182,10 @@ with tf.name_scope("Two_Word_Context"):
     with tf.name_scope("CL1_HiddenLayer"):
     #    h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
         h_conv_L1_2WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
+        print("Shape of h_conv_L1_2WC: " + str(h_conv_L1_2WC.shape))
     #	 h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
-        h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 107)
+        h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 99)
 
 ### Three-Word-Context
 with tf.name_scope("Three_Word_Context"):
@@ -177,7 +199,7 @@ with tf.name_scope("Three_Word_Context"):
         h_conv_L1_3WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
     #    h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
-        h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 106)
+        h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 98)
 
 ### Four-Word-Context
 with tf.name_scope("Four_Word_Context"):
@@ -191,7 +213,7 @@ with tf.name_scope("Four_Word_Context"):
         h_conv_L1_4WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
     #    h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
-        h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 105)
+        h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 97)
 
 # Concatenate the pooling outputs to get the feature vector
 with tf.name_scope("L1_OutputTensor"):
@@ -242,6 +264,7 @@ logFileTmp += "Used Dev Data: " + str(pathEvaluation) + "\n"
 logFileTmp += "Type of CNN: " + str(typeOfCNN) + "\n"
 logFileTmp += "Number of epochs: " + str(numEpoch) + "\n"
 logFileTmp += "Number of filters: " + str(filterNumber4WC) + "\n"
+logFileTmp += "Trainable Embeddings: " + str(trainableEmbeddings) + "\n"
 logFileTmp += "Batchsize: " + str(batchSize) + "\n"
 logFileTmp += "Learning Rate: " + str(learningRate) + "\n"
 logFileTmp += "Activation Function: " + str(activationFunction) + "\n"
@@ -263,12 +286,14 @@ if not os.path.exists(logPath):
 start_time = time.time()
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
+    sess.run(embedding_init, feed_dict={embedding_placeholder: embeddingInputs})
+
     random_TrainingList = deepcopy(trainingList)
 
     # reshapes the feature-matrix into a vector format
     # reshapes every 1hot-vector (labels) to a 2D shape
     for i in range(len(random_TrainingList)):
-        random_TrainingList[i][0] = random_TrainingList[i][0].reshape(1, 32400)
+        random_TrainingList[i][0] = random_TrainingList[i][0].reshape(1, 100)
         random_TrainingList[i][1] = random_TrainingList[i][1].reshape((1, 4))
 
     # Tensorboard integration
@@ -325,8 +350,8 @@ with tf.Session(config=config) as sess:
             print("Adding run metadata for epoch " + str(epoch))
 
             logFileTmp += 'step %d, epoch accuracy %g, loss %f, learning rate %f, %f s\n' % (epoch, epochAvgAccuracy,
-                                                                                                 epochAvgLoss, learningRate,
-                                                                                                1000 * elapsed_time)			
+                                                                                             epochAvgLoss, learningRate,
+                                                                                             1000 * elapsed_time)
             logFileTmp += "####\n"
 
     evaluationTuple = createEvalList(evaluationList)

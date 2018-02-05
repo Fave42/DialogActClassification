@@ -18,6 +18,7 @@ import random
 
 path = "/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Data/"
 
+
 def getTypes(pathList):
     typeList = []
     # iterate over every given file
@@ -40,8 +41,8 @@ def getTypes(pathList):
 
 
 def generateEmbeddingMatrix(model, typeList, unknownWordsDict):
-    embeddingMatrix_np = np.zeros((len(typeList)+2, 300))
-
+    embeddingMatrix_np = np.zeros((len(typeList)+2, 300)) # No zero-line for the padding vector,
+                                                          # last line is for no words (if sentence is shorter then 100)
     for i, type in enumerate(typeList):
         if (type in model.vocab):
             typeVector = model[type]
@@ -72,14 +73,15 @@ def generateFeatureVector(typeList, fileNameList):
                 sentenceSplit = sentence.split()
                 fileID = sentenceSplit.pop(0)           # pop .wav filename
                 dialogClass = sentenceSplit.pop(0)      # pop sentence class
-                tmpFeatureVec = np.full([106], len(typeList)+1)  # [sentence] + [unknown word Vector] + [padding vector]                tmpTrainingTuple = ()
+                tmpFeatureVec = np.full([100], len(typeList)+1)  # [sentence] + [unknown word Vector] + [|sentences| < 100]
+                # tmpTrainingTuple = ()
 
                 for i, word in enumerate(sentenceSplit):
                     word = word.lower()     # every word to lowercase
                     if (word in typeList) and (i <= 100):   # adds every word up to a sentence length of 100
-                        tmpFeatureVec[i + 3] = typeList.index(word)
+                        tmpFeatureVec[i] = typeList.index(word)
                     elif (word not in typeList) and (i <= 100):
-                        tmpFeatureVec[i + 3] = len(typeList)  # every unknown word gets the index of the random vector
+                        tmpFeatureVec[i] = len(typeList)  # every unknown word gets the index of the random vector
 
                 if dialogClass == "backchannel":
                     tmpClassVec = np.array([1, 0, 0, 0])
@@ -112,11 +114,11 @@ def generateFeatureVector(typeList, fileNameList):
             pickle.dump(outputList, handle, protocol=2)
 
 
-# Generates 300 random numbers between -1 and 1 for unknown words
+# Generates 300 random numbers between -0.25 and 0.25 (Variance of word2vec) for unknown words
 def getRandomDimensions():
     randomList = []
     for i in range(0, 300):
-        randomList.append(random.uniform(-1.0, 1.0))
+        randomList.append(random.uniform(-0.25, 0.25))
     return randomList
 
 
@@ -141,15 +143,13 @@ if __name__ == "__main__":
     with open('dict/unknownWordsDict.pickle', 'wb') as handle:
         pickle.dump(unknownWordsDict, handle, protocol=2)
 
-    unknownWordsDict = pickle.load(open("dict/unknownWordsDict.pickle", "rb"))
-
-    # generate the typelist
-    print("Generating typeList...")
+    # generate the typelist, generate the embedding matrix
+    print("Generating typeList and embedding matrix...")
     typeList = getTypes(knownWordFiles)
-
-    # generate the embedding matrix
-    print("Generating embedding matrix...")
     unknownWordsDict, embeddingMatrix_np = generateEmbeddingMatrix(model, typeList, unknownWordsDict)
+
+    print("\t---> Length of typeList:", len(typeList))
+    print("\t---> Equals vocabulary size (|typeList|+2):", len(typeList)+2)
 
     # Saves the unknown words with their respective 300 random numbers
     print("Dumping the unknownWordsDict as pickle file...")
