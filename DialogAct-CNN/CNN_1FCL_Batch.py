@@ -25,7 +25,7 @@ import os
 
 batchSize = 100         # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
-numEpoch = 3            # Number of Epochs for training
+numEpoch = 20            # Number of Epochs for training
 numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 10    # Number of filters for 2-Word-Context
 filterNumber3WC = 10    # Number of filters for 3-Word-Context
@@ -60,7 +60,7 @@ print("\t---> Done with importing!")
 
 ### Functions ###
 def weightVariable(shape):
-    initial = tf.truncated_normal(shape, stddev=1.0)
+    initial = tf.truncated_normal(shape, stddev=1.0, seed=1)
     return tf.Variable(initial)
 
 
@@ -137,7 +137,7 @@ def createEvalList(rawEvalList):
     featureEvalArray = np.array(tmpFeatureList)
     labelsEvalArray = np.array(tmpLabelList)
 
-    featureEvalArray = featureEvalArray.reshape(npArrayDepth, 32400)
+    featureEvalArray = featureEvalArray.reshape(npArrayDepth, 100)
     labelsEvalArray = labelsEvalArray.reshape(npArrayDepth, 4)
 
     evalTuple = (featureEvalArray, labelsEvalArray)
@@ -169,7 +169,6 @@ with tf.name_scope("Embedding_Layer"):
         x_embedded = tf.nn.embedding_lookup(embedding_Matrix, tf.cast(x, dtype=tf.int32))
     with tf.name_scope("Embedded_4D_Tensor"):
         x_4DTensor = tf.reshape(x_embedded, shape=[-1, 100, 300, 1])  # input vecotrs as a 4D-Matrix
-print("Shape of x_4DTensor: " + str(x_4DTensor.shape))
 
 ### Layer 1
 ### Two-Word-Context
@@ -182,7 +181,6 @@ with tf.name_scope("Two_Word_Context"):
     with tf.name_scope("CL1_HiddenLayer"):
     #    h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
         h_conv_L1_2WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
-        print("Shape of h_conv_L1_2WC: " + str(h_conv_L1_2WC.shape))
     #	 h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 99)
@@ -209,9 +207,9 @@ with tf.name_scope("Four_Word_Context"):
         b_conv_L1_4WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-    #    h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
+        # h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
         h_conv_L1_4WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
-    #    h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
+        # h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 97)
 
@@ -288,6 +286,13 @@ with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
     sess.run(embedding_init, feed_dict={embedding_placeholder: embeddingInputs})
 
+    # values1 = sess.run(W_conv_L1_2WC)
+    # values2 = sess.run(W_conv_L1_3WC)
+    # print("Weight_2WC:")
+    # print(values1)
+    # print("Weight_3WC:")
+    # print(values2)
+
     random_TrainingList = deepcopy(trainingList)
 
     # reshapes the feature-matrix into a vector format
@@ -343,7 +348,7 @@ with tf.Session(config=config) as sess:
             epochAvgAccuracy = np.mean(epochAccuracyList)
             epochAvgLoss = np.mean(epochLossList)
 
-            print('step %d, epoch accuracy %g, learning rate %f, loss %f, %f s' % (epoch, epochAvgAccuracy, learningRate,
+            print('\t- step %d, epoch accuracy %g, learning rate %f, loss %f, %f s' % (epoch, epochAvgAccuracy, learningRate,
                                                                                    epochAvgLoss, 1000 * elapsed_time))
             writer.add_run_metadata(run_metadata, 'step %d' % epoch)
             writer.add_summary(summary, epoch)
@@ -354,10 +359,14 @@ with tf.Session(config=config) as sess:
                                                                                              1000 * elapsed_time)
             logFileTmp += "####\n"
 
-    evaluationTuple = createEvalList(evaluationList)
+            evaluationTuple = createEvalList(evaluationList)
+            testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
+            print('\t--> dev accuracy %g' % testAccuracy)
+
     overallEndTime = (time.time() - overallTime) / 60
 
-    testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
+    # evaluationTuple = createEvalList(evaluationList)
+    # testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
 
     print('test accuracy %g' % testAccuracy)
     print("The program was executed in " + str(overallEndTime) + " minutes")
@@ -371,5 +380,3 @@ with tf.Session(config=config) as sess:
         saveFile.write(logFileTmp)
 
 writer.close()
-
-# todo More TensorBoard
