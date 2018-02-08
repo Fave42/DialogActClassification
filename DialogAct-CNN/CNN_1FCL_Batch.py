@@ -30,9 +30,9 @@ numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 20    # Number of filters for 2-Word-Context
 filterNumber3WC = 20    # Number of filters for 3-Word-Context
 filterNumber4WC = 20    # Number of filters for 4-Word-Context
-trainableEmbeddings = False
+trainableEmbeddings = True
 activationFunction = "Relu"     #"CNN = tanh + FCL = Relu"
-lossFunction = "Cross Entropy"
+lossFunction = "Hinge-Loss"
 learningRate = 0.02
 dropout = 0.75
 optimizerFunction = "Stochastic Gradient Descent"
@@ -159,7 +159,7 @@ vocab_size = 10017
 embedding_dim = 300
 with tf.name_scope("Embedding_Layer"):
     with tf.name_scope("Embedding_Matrix"):
-        embedding_Matrix = tf.Variable(tf.constant(0.0, shape=[vocab_size, embedding_dim]),
+        embedding_Matrix = tf.Variable(tf.random_uniform(shape=[vocab_size, embedding_dim], minval=-1, maxval=1),
                         trainable=trainableEmbeddings)
     with tf.name_scope("Embedding_Placeholder"):
         embedding_placeholder = tf.placeholder(tf.float32, [vocab_size, embedding_dim])
@@ -233,15 +233,12 @@ with tf.name_scope("FCL2_Bias"):
     b_FC_L2 = biasVariable([4])
 
 with tf.name_scope("Activation_Function"):
-    y = tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2  ### activation function ReLu
-    # y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function ReLu
-    # y = tf.tanh(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2) ### activation function TanH
-    # y = tf.nn.sigmoid(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function sigmoid
+    y = tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2
 
 # Softmax Output, loss-function
 # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
-loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
-# loss = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(targets=y_, logits=y, pos_weight=0.5))  # (Goldstandard, Output); Weighted Cross Entropy
+# loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
+loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
 
 # Training
 # Optimizer
@@ -285,6 +282,7 @@ start_time = time.time()
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
     sess.run(embedding_init, feed_dict={embedding_placeholder: embeddingInputs})
+    stepCount = 0
 
     # values1 = sess.run(W_conv_L1_2WC)
     # values2 = sess.run(W_conv_L1_3WC)
@@ -343,6 +341,12 @@ with tf.Session(config=config) as sess:
             # Run the optimizer to update weights.
             summary, l, train = sess.run([merged, loss, train_Step], feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout})
 
+            writer.add_run_metadata(run_metadata, 'step %d' % stepCount)
+            writer.add_summary(summary, stepCount)
+            # print("Adding run metadata for epoch " + str(stepCount))
+
+            stepCount += 1
+
             elapsed_time = time.time() - start_time
             start_time = time.time()
             # epochAccuracyList.append(training_accuracy)
@@ -356,9 +360,9 @@ with tf.Session(config=config) as sess:
             print('\t- step %d, training accuracy %g, learning rate %f, loss %f, %f s' % (epoch, training_accuracy,
                                                                                           learningRate, l,
                                                                                           1000 * elapsed_time))
-            writer.add_run_metadata(run_metadata, 'step %d' % epoch)
-            writer.add_summary(summary, epoch)
-            print("Adding run metadata for epoch " + str(epoch))
+            # writer.add_run_metadata(run_metadata, 'step %d' % epoch)
+            # writer.add_summary(summary, epoch)
+            # print("Adding run metadata for epoch " + str(epoch))
 
             logFileTmp += 'step %d, training accuracy %g, loss %f, learning rate %f, %f s\n' % (epoch, training_accuracy,
                                                                                              l, learningRate,
