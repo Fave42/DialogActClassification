@@ -23,18 +23,18 @@ import datetime
 import os
 
 
-batchSize = 100         # Batchsize for training
+batchSize = 100          # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
-numEpoch = 20            # Number of Epochs for training
+numEpoch = 5            # Number of Epochs for training
 numCPUs = 10            # Number of CPU's to be used
-filterNumber2WC = 10    # Number of filters for 2-Word-Context
-filterNumber3WC = 10    # Number of filters for 3-Word-Context
-filterNumber4WC = 10    # Number of filters for 4-Word-Context
+filterNumber2WC = 20    # Number of filters for 2-Word-Context
+filterNumber3WC = 20    # Number of filters for 3-Word-Context
+filterNumber4WC = 20    # Number of filters for 4-Word-Context
 trainableEmbeddings = False
-activationFunction = "CNN = tanh + FCL = Relu"
+activationFunction = "Relu"     #"CNN = tanh + FCL = Relu"
 lossFunction = "Cross Entropy"
-learningRate = 0.01
-dropout = 1.0
+learningRate = 0.02
+dropout = 0.75
 optimizerFunction = "Stochastic Gradient Descent"
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
@@ -179,9 +179,9 @@ with tf.name_scope("Two_Word_Context"):
         b_conv_L1_2WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-    #    h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
-        h_conv_L1_2WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
-    #	 h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
+        h_conv_L1_2WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
+        # h_conv_L1_2WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
+        # h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 99)
 
@@ -193,9 +193,9 @@ with tf.name_scope("Three_Word_Context"):
         b_conv_L1_3WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-    #    h_conv_L1_3WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
-        h_conv_L1_3WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
-    #    h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
+        h_conv_L1_3WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
+        # h_conv_L1_3WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
+        # h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 98)
 
@@ -207,8 +207,8 @@ with tf.name_scope("Four_Word_Context"):
         b_conv_L1_4WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        # h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
-        h_conv_L1_4WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
+        h_conv_L1_4WC = tf.nn.relu(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
+        # h_conv_L1_4WC = tf.tanh(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
         # h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x_4DTensor, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 97)
@@ -233,15 +233,15 @@ with tf.name_scope("FCL2_Bias"):
     b_FC_L2 = biasVariable([4])
 
 with tf.name_scope("Activation_Function"):
-    y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function ReLu
-#y = tf.tanh(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2) ### activation function TanH
-#y = tf.nn.sigmoid(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function sigmoid
+    y = tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2  ### activation function ReLu
+    # y = tf.nn.relu(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function ReLu
+    # y = tf.tanh(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2) ### activation function TanH
+    # y = tf.nn.sigmoid(tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2)  ### activation function sigmoid
 
 # Softmax Output, loss-function
-#loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
+# loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
 loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
-#loss = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(targets=y_, logits=y, pos_weight=0.5))  # (Goldstandard, Output); Weighted Cross Entropy
-
+# loss = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(targets=y_, logits=y, pos_weight=0.5))  # (Goldstandard, Output); Weighted Cross Entropy
 
 # Training
 # Optimizer
@@ -305,8 +305,13 @@ with tf.Session(config=config) as sess:
     training_accuracy = 0
     tf.summary.scalar("learning_rate", learningRate)
     tf.summary.histogram("training_accuracy", training_accuracy)
-    tf.summary.histogram("loss_function", loss)
+    tf.summary.scalar("loss_function", loss)
     tf.summary.histogram("accuracy", accuracy)
+    # tf.summary.histogram("bias_FCL2", b_FC_L2)
+    # tf.summary.histogram("bias_FCL1_2WC", b_conv_L1_2WC)
+    # tf.summary.histogram("bias_FCL1_3WC", b_conv_L1_3WC)
+    # tf.summary.histogram("bias_FCL1_4WC", b_conv_L1_4WC)
+
     merged = tf.summary.merge_all()
     writer = tf.summary.FileWriter(logPath, sess.graph)
 
@@ -340,33 +345,30 @@ with tf.Session(config=config) as sess:
 
             elapsed_time = time.time() - start_time
             start_time = time.time()
-            epochAccuracyList.append(training_accuracy)
-            epochLossList.append(l)
+            # epochAccuracyList.append(training_accuracy)
+            # epochLossList.append(l)
 
         # Evaluation output for direct user controll.
         if epoch % evalFrequency == 0:
-            epochAvgAccuracy = np.mean(epochAccuracyList)
-            epochAvgLoss = np.mean(epochLossList)
+            # epochAvgAccuracy = np.mean(epochAccuracyList)
+            # epochAvgLoss = np.mean(epochLossList)
 
-            print('\t- step %d, epoch accuracy %g, learning rate %f, loss %f, %f s' % (epoch, epochAvgAccuracy, learningRate,
-                                                                                   epochAvgLoss, 1000 * elapsed_time))
+            print('\t- step %d, training accuracy %g, learning rate %f, loss %f, %f s' % (epoch, training_accuracy,
+                                                                                          learningRate, l,
+                                                                                          1000 * elapsed_time))
             writer.add_run_metadata(run_metadata, 'step %d' % epoch)
             writer.add_summary(summary, epoch)
             print("Adding run metadata for epoch " + str(epoch))
 
-            logFileTmp += 'step %d, epoch accuracy %g, loss %f, learning rate %f, %f s\n' % (epoch, epochAvgAccuracy,
-                                                                                             epochAvgLoss, learningRate,
+            logFileTmp += 'step %d, training accuracy %g, loss %f, learning rate %f, %f s\n' % (epoch, training_accuracy,
+                                                                                             l, learningRate,
                                                                                              1000 * elapsed_time)
             logFileTmp += "####\n"
 
-            evaluationTuple = createEvalList(evaluationList)
-            testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
-            print('\t--> dev accuracy %g' % testAccuracy)
-
     overallEndTime = (time.time() - overallTime) / 60
 
-    # evaluationTuple = createEvalList(evaluationList)
-    # testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
+    evaluationTuple = createEvalList(evaluationList)
+    testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
 
     print('test accuracy %g' % testAccuracy)
     print("The program was executed in " + str(overallEndTime) + " minutes")
