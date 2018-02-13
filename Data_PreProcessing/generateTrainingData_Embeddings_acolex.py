@@ -63,24 +63,37 @@ def generateEmbeddingMatrix(model, typeList, unknownWordsDict):
 
 
 def generateFeatureVector(typeList, fileNameList, mfccDict):
+    unknownIDString = ""
     for fileName in fileNameList:
+        outputList = []
         tempPath = path
         tempPath += fileName
-        outputList = []
 
         with open(tempPath, 'r') as file:
             for sentence in file:
                 tmpMfccFeatures = []
+                mfccTmp = []
+                tmpTrainingTriple = []
+
+                # Sentence preprocessing
                 sentenceSplit = sentence.split()
-                fileID = sentenceSplit.pop(0)           # pop .wav filename
+                fileID = sentenceSplit.pop(0)           # pop .wav filename as string
                 dialogClass = sentenceSplit.pop(0)      # pop sentence class
                 tmpFeatureVec = np.full([100], len(typeList)+1)  # [sentence] + [unknown word Vector] + [|sentences| < 100]
-                #tmpTrainingTuple = ()              
-                # todo Add mfcc features
-                mfccTmp = mfccDict[fileID]
-                tmpMfccFeatures = mfccTmp[:1000]
-                tmpMfccFeatures.append(mfccTmp[-1000:])
-                tmpMfccFeatures = np.asarray(tmpMfccFeatures)
+                #tmpTrainingTuple = ()
+
+                # Generating a MFCC feature vector with the first and last 1000 datapoints
+                if (fileID in mfccDict):    # Check if the fileID is in the dictionary
+                    mfccTmp = mfccDict[fileID]
+                    tmpMfccFeatures = mfccTmp[:1000]
+                    tmpMfccFeatures.append(mfccTmp[-1000:])
+                    #print(tmpMfccFeatures)
+                    tmpMfccFeatures = np.asarray(tmpMfccFeatures, dtype=object)
+                    #print(tmpMfccFeatures)
+                else:
+                    print("\t\tID not found:", fileID)
+                    unknownIDString += str(fileName) + "\t" + str(fileID) + "\n"
+
                 
                 for i, word in enumerate(sentenceSplit):
                     word = word.lower()     # every word to lowercase
@@ -98,49 +111,56 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
                 elif dialogClass == "opinion":
                     tmpClassVec = np.array([0, 0, 0, 1])
 
-                tmpTrainingTuple = (tmpFeatureVec, tmpMfccFeatures, tmpClassVec)
-                tmpTrainingTuple = np.asarray(tmpTrainingTuple)
-                
-                print(tmpTrainingTuple)
-                exit()
+                tmpTrainingTriple = (tmpFeatureVec, tmpMfccFeatures, tmpClassVec)
+                tmpTrainingTriple = np.asarray(tmpTrainingTriple)
 
-                outputList.append(tmpTrainingTuple)
+                outputList.append(tmpTrainingTriple)
 
         outputList = np.asarray(outputList)
 
         # saves the outputList for every file
         if ("train" in fileName):
-            print("Dumping the training ouputList as pickle file...")
-            savePath = 'NN_Input_Files/trainData_acolex_Embeddings.pickle'
+            print("\t--> Dumping the training outputList as pickle file...")
+            with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
+                      'NN_Input_Files/trainData_acolex_Embeddings.pickle', 'wb') as handle:
+                pickle.dump(outputList, handle, protocol=2)
         if ("test" in fileName):
-            print("Dumping the test ouputList as pickle file...")
-            savePath = 'NN_Input_Files/testData_acolex_Embeddings.pickle'
+            print("\t--> Dumping the test outputList as pickle file...")
+            with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
+                      'NN_Input_Files/testData_acolex_Embeddings.pickle', 'wb') as handle:
+                pickle.dump(outputList, handle, protocol=2)
         if ("dev" in fileName):
-            print("Dumping the development ouputList as pickle file...")
-            savePath = 'NN_Input_Files/devData_acolex_Embeddings.pickle'
+            print("\t--> Dumping the development outputList as pickle file...")
+            with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
+                      'NN_Input_Files/devData_acolex_Embeddings.pickle', 'wb') as handle:
+                pickle.dump(outputList, handle, protocol=2)
 
-        with open(savePath, 'wb') as handle:
-            pickle.dump(outputList, handle, protocol=2)
+    # If there are unknown IDs, dump them in a text file
+    if (len(unknownIDString) > 1):
+        with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
+                  'unknownIDs.txt', 'w') as outputFile:
+            outputFile.write(str(unknownIDString))
 
 
 def generateMFCCDict(mfccNameList):
+    mfccDict = {}   # Should be declared out here, otherwise it won't contain all data dumbass -.-
     for fileName in mfccNameList:
         tempPath = path
         tempPath += fileName
-        mfccDict = {}
 
         with open(tempPath, 'r') as mfccFile:
             for line in mfccFile:
                 if ("'" in line):
                     lineSplitted = line.split(",")
-                    fileID = lineSplitted.pop(0) # remove the ID
-                    fileID = fileID.replace("'", "")
-                    lineSplitted.pop(-1) # remove the class
-                    
+                    fileID = lineSplitted.pop(0)    # remove the ID
+                    fileID = fileID.replace("'", "")    # Checked, it works
+                    lineSplitted.pop(-1)    # remove the class
+                    lineSplittedINT = list(map(float, lineSplitted))  # Map every number as INT instead of String
+
                     if (fileID not in mfccDict):
-                        mfccDict[fileID] = [np.asarray(lineSplitted)]
+                        mfccDict[fileID] = [np.asarray(lineSplittedINT)]
                     elif (fileID in mfccDict):
-                        mfccDict[fileID].append(np.asarray(lineSplitted))
+                        mfccDict[fileID].append(np.asarray(lineSplittedINT))
     return mfccDict
 
 
@@ -165,37 +185,45 @@ if __name__ == "__main__":
         'dict/GoogleNews-vectors-negative300.bin', binary=True)
     durationDictImport = time.time() - startTime
 
-    print("--- Dictionary was imported successfully! ---")
-    print("Import duration of dictionary was", durationDictImport, "seconds!")
+    print("\t--> Dictionary was imported successfully!")
+    print("\t--> Import duration of dictionary was", durationDictImport, "seconds!")
 
     # Loads "unknownWordsDict.txt that all every unknown words has unique 300 random float numbers
     print("Importing unknownWordsDict file...")
     unknownWordsDict = {}
     with open('dict/unknownWordsDict.pickle', 'wb') as handle:
         pickle.dump(unknownWordsDict, handle, protocol=2)
+    print("\t--> Done!")
 
     # generate the typelist, generate the embedding matrix
     print("Generating typeList and embedding matrix...")
     typeList = getTypes(knownWordFiles)
     unknownWordsDict, embeddingMatrix_np = generateEmbeddingMatrix(model, typeList, unknownWordsDict)
-
-    print("\t---> Length of typeList:", len(typeList))
-    print("\t---> Equals vocabulary size (|typeList|+2):", len(typeList)+2)
+    print("\t\t--> Length of typeList:", len(typeList))
+    print("\t\t--> Equals vocabulary size (|typeList|+2):", len(typeList)+2)
+    print("\t--> Done!")
 
     # Saves the unknown words with their respective 300 random numbers
     print("Dumping the unknownWordsDict as pickle file...")
-    with open('dict/unknownWordsDict.pickle', 'wb') as handle:
+    with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
+              'dict/unknownWordsDict.pickle', 'wb') as handle:
         pickle.dump(unknownWordsDict, handle, protocol=2)
+    print("\t--> Done!")
 
     # Saves the embedding matrix
     print("Dumping the embeddingMatrix_np as pickle file...")
-    with open('dict/embeddingMatrix_np.pickle', 'wb') as handle:
+    with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
+              'dict/embeddingMatrix_np_acolex.pickle', 'wb') as handle:
         pickle.dump(embeddingMatrix_np, handle, protocol=2)
+    print("\t--> Done!")
     
     # Generate a dictionary with all MFCC-features for every audiofile
+    print("Generating the MFCC dictionary...")
     mfccDict = generateMFCCDict(mfccNameList)
+    print("\t--> MFCC dictionary length:", len(mfccDict))
+    print("\t--> Done!")
     
     # generate the feature vector
+    print("Generating the feature vector!")
     generateFeatureVector(typeList, fileNameList, mfccDict)
-
-    print("Done!!!!")
+    print("\t--> Done!")
