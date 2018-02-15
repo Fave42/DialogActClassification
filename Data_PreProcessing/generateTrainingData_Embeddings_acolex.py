@@ -66,23 +66,18 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
     unknownIDString = ""
     mfccWindowSize = 1000
     for fileName in fileNameList:
-        sentenceCount = 0
         outputList = []
         tempPath = path
         tempPath += fileName
 
         with open(tempPath, 'r') as file:
             for sentence in file:
-                tmpMfccFeatures = []
-                mfccTmp = []
-                tmpTrainingTriple = []
 
                 # Sentence preprocessing
                 sentenceSplit = sentence.split()
                 fileID = sentenceSplit.pop(0)           # pop .wav filename as string
                 dialogClass = sentenceSplit.pop(0)      # pop sentence class
                 tmpFeatureVec = np.full([100], len(typeList)+1)  # [sentence] + [unknown word Vector] + [|sentences| < 100]
-                #tmpTrainingTuple = ()
 
                 # Generating a MFCC feature vector with the first and last 1000 datapoints
                 if (fileID in mfccDict):    # Check if the fileID is in the dictionary
@@ -100,22 +95,6 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
                         for i in range(0, 13):
                             for j in range(0, len(mfccTmp)):
                                 mfccFeatureMatrix[i][j] = mfccTmp[j][i]
-
-                    # if (len(mfccTmp) > (mfccWindowSize * 2)):
-                    #     tmpMfccFeatures = mfccTmp[:1000]
-                    #     tmpMfccFeatures.append(mfccTmp[-1000:])
-                    # else:
-                    #     for i in range(0, mfccWindowSize*2):
-                    #
-                    #         if (len(mfccTmp)-1 >= i):
-                    #             tmpMfccFeatures.append(mfccTmp[i])
-                    #         else:
-                    #             tmpNPArray = np.zeros((1, 13))
-                    #             tmpMfccFeatures.append(tmpNPArray)
-                    #
-                    # tmpMfccFeatures = np.asarray(tmpMfccFeatures, dtype=object)
-                    print("mfccFeatureMatrix: " + str(mfccFeatureMatrix.shape))
-
                 else:
                     print("\t\tID not found:", fileID)
                     unknownIDString += str(fileName) + "\t" + str(fileID) + "\n"
@@ -142,10 +121,6 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
                 tmpTrainingTriple = np.asarray(tmpTrainingTriple)
 
                 outputList.append(tmpTrainingTriple)
-
-                sentenceCount += 1
-                if (sentenceCount > 1):
-                    break
 
         outputList = np.asarray(outputList)
 
