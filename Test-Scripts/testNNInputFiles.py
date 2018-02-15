@@ -15,14 +15,15 @@ import pickle
 import numpy
 
 # Dev
-devData = pickle.load(open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/NN_Input_Files/devData_acolex_Embeddings.pickle', "rb"))
+devData = pickle.load(open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/NN_Input_Files/devData_acolex_Embeddings_short.pickle', "rb"))
 # for item in devData:
 #     print(item)
 
 #print(devData[0])
-devData = numpy.asarray(devData)
-print(devData[0][1].shape)
-print(devData[0][1][0].shape)
+# devData = numpy.asarray(devData)
+print(devData[1].shape)
+print(devData[1][0].shape)
+print(devData[1])
 # # Test
 # testData = pickle.load(open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/NN_Input_Files/devData_acolex_Embeddings.pickle', "rb"))
 #

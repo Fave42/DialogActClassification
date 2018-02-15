@@ -41,8 +41,8 @@ def getTypes(pathList):
 
 
 def generateEmbeddingMatrix(model, typeList, unknownWordsDict):
-    embeddingMatrix_np = np.zeros((len(typeList)+2, 300)) # No zero-line for the padding vector,
-                                                          # last line is for no words (if sentence is shorter then 100)
+    embeddingMatrix_np = np.zeros((len(typeList)+2, 300))  # No zero-line for the padding vector,
+                                                           # last line is for no words (if sentence is shorter then 100)
     for i, type in enumerate(typeList):
         if (type in model.vocab):
             typeVector = model[type]
@@ -66,6 +66,7 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
     unknownIDString = ""
     mfccWindowSize = 1000
     for fileName in fileNameList:
+        sentenceCount = 0
         outputList = []
         tempPath = path
         tempPath += fileName
@@ -87,25 +88,39 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
                 if (fileID in mfccDict):    # Check if the fileID is in the dictionary
                     mfccTmp = mfccDict[fileID]
 
-                    if (len(mfccTmp) > (mfccWindowSize * 2)):
-                        tmpMfccFeatures = mfccTmp[:1000]
-                        tmpMfccFeatures.append(mfccTmp[-1000:])
+                    mfccFeatureMatrix = np.zeros((13, mfccWindowSize*2))
 
+                    if (len(mfccTmp) >= (mfccWindowSize * 2)):
+                        for i in range(0, 13):
+                            for j in range(0, 1000):
+                                mfccFeatureMatrix[i][j] = mfccTmp[j][i]
+                            for j_ in range(len(mfccTmp)-1000, len(mfccTmp)-1):
+                                mfccFeatureMatrix[i][j] = mfccTmp[j][i]
                     else:
-                        for i in range(0, mfccWindowSize*2):
+                        for i in range(0, 13):
+                            for j in range(0, len(mfccTmp)):
+                                mfccFeatureMatrix[i][j] = mfccTmp[j][i]
 
-                            if (len(mfccTmp)-1 >= i):
-                                tmpMfccFeatures.append(mfccTmp[i])
-                            else:
-                                tmpNPArray = np.zeros((1, 13))
-                                tmpMfccFeatures.append(tmpNPArray)
-
-                    tmpMfccFeatures = np.asarray(tmpMfccFeatures, dtype=object)
+                    # if (len(mfccTmp) > (mfccWindowSize * 2)):
+                    #     tmpMfccFeatures = mfccTmp[:1000]
+                    #     tmpMfccFeatures.append(mfccTmp[-1000:])
+                    # else:
+                    #     for i in range(0, mfccWindowSize*2):
+                    #
+                    #         if (len(mfccTmp)-1 >= i):
+                    #             tmpMfccFeatures.append(mfccTmp[i])
+                    #         else:
+                    #             tmpNPArray = np.zeros((1, 13))
+                    #             tmpMfccFeatures.append(tmpNPArray)
+                    #
+                    # tmpMfccFeatures = np.asarray(tmpMfccFeatures, dtype=object)
+                    print("mfccFeatureMatrix: " + str(mfccFeatureMatrix.shape))
 
                 else:
                     print("\t\tID not found:", fileID)
                     unknownIDString += str(fileName) + "\t" + str(fileID) + "\n"
 
+                    mfccFeatureMatrix = np.zeros((13, mfccWindowSize*2))
                 
                 for i, word in enumerate(sentenceSplit):
                     word = word.lower()     # every word to lowercase
@@ -123,10 +138,14 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
                 elif dialogClass == "opinion":
                     tmpClassVec = np.array([0, 0, 0, 1])
 
-                tmpTrainingTriple = (tmpFeatureVec, tmpMfccFeatures, tmpClassVec)
+                tmpTrainingTriple = (tmpFeatureVec, mfccFeatureMatrix, tmpClassVec)
                 tmpTrainingTriple = np.asarray(tmpTrainingTriple)
 
                 outputList.append(tmpTrainingTriple)
+
+                sentenceCount += 1
+                if (sentenceCount > 1):
+                    break
 
         outputList = np.asarray(outputList)
 
@@ -134,17 +153,17 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
         if ("train" in fileName):
             print("\t--> Dumping the training outputList as pickle file...")
             with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
-                      'NN_Input_Files/trainData_acolex_Embeddings.pickle', 'wb') as handle:
+                      'NN_Input_Files/trainData_acolex_Embeddings_short.pickle', 'wb') as handle:
                 pickle.dump(outputList, handle, protocol=2)
         if ("test" in fileName):
             print("\t--> Dumping the test outputList as pickle file...")
             with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
-                      'NN_Input_Files/testData_acolex_Embeddings.pickle', 'wb') as handle:
+                      'NN_Input_Files/testData_acolex_Embeddings_short.pickle', 'wb') as handle:
                 pickle.dump(outputList, handle, protocol=2)
         if ("dev" in fileName):
             print("\t--> Dumping the development outputList as pickle file...")
             with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
-                      'NN_Input_Files/devData_acolex_Embeddings.pickle', 'wb') as handle:
+                      'NN_Input_Files/devData_acolex_Embeddings_short.pickle', 'wb') as handle:
                 pickle.dump(outputList, handle, protocol=2)
 
     # If there are unknown IDs, dump them in a text file

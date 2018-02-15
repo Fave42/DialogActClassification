@@ -307,7 +307,7 @@ with tf.Session(config=config) as sess:
     # reshapes the feature-matrix into a vector format
     # reshapes every 1hot-vector (labels) to a 2D shape
     for i in range(len(random_TrainingList)):
-        random_TrainingList[i][0] = random_TrainingList[i][0].reshape(1, 100)
+        random_TrainingList[i][0] = random_TrainingList[i][0].reshape((1, 100))
         random_TrainingList[i][1] = random_TrainingList[i][1].reshape((1, 4))
 
     # Tensorboard integration

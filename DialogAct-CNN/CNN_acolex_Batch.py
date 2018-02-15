@@ -21,15 +21,19 @@ import numpy as np
 import time
 import datetime
 import os
+import math
 
 
 batchSize = 100          # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
-numEpoch = 15            # Number of Epochs for training
+numEpoch = 5            # Number of Epochs for training
 numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 30    # Number of filters for 2-Word-Context
 filterNumber3WC = 18    # Number of filters for 3-Word-Context
 filterNumber4WC = 12    # Number of filters for 4-Word-Context
+filterNumberMFCC = 5    # Number of filters for the MFCC features
+mfccFilterSize = 50
+numberMFCCFeatures = 2000
 trainableEmbeddings = False
 activationFunction = "Relu"     #"CNN = tanh + FCL = Relu"
 lossFunction = "Hinge-Loss"
@@ -44,9 +48,13 @@ overallTime = time.time()
 
 # Server Paths
 # Without stopwords
-pathTraining = "NN_Input_Files/trainData_Embeddings.pickle"
-pathEvaluation = "NN_Input_Files/devData_Embeddings.pickle"
+# pathTraining = "NN_Input_Files/trainData_acolex_Embeddings.pickle"
+# pathEvaluation = "NN_Input_Files/devData_acolex_Embeddings.pickle"
 pathEmbeddings = "dict/embeddingMatrix_np.pickle"
+### Testing purposes only
+pathTraining = "NN_Input_Files/sanityTestFiles/trainData_acolex_Embeddings_short.pickle"
+pathEvaluation = "NN_Input_Files/sanityTestFiles/devData_acolex_Embeddings_short.pickle"
+
 # With stopwords
 #pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
 #pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
@@ -73,50 +81,67 @@ def conv2d(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 1, 300, 1], padding='VALID')
 
 
+def conv2d_MFCC(x, W):
+    return tf.nn.conv2d(x, W, strides=[1, 13, 1, 1], padding='VALID')
+
+
 def maxPool100x1(x, kernelDepth):
     return tf.nn.max_pool(x, ksize=[1, kernelDepth, 1, 1],
                           strides=[1, 1, 1, 1], padding='VALID')
 
 
+def maxPool_MFCC(x, kernelDepth):
+    return tf.nn.max_pool(x, ksize=[1, 1, kernelDepth, 1],
+                          strides=[1, 1, 100, 1], padding='VALID')
+
+
 ### Creates and returns a batchlist with the following format
-#   batchList = [ (1Batch-Features, 1Batch-Labels), (2Batch-Features, 2Batch-Labels), ...]
+#   batchList = [ (1Batch-Features, 1Batch-MFCC, 1Batch-Labels), (2Batch-Features, 2Batch-MFCC, 2Batch-Labels), ...]
 ###
 def createBatchList(random_TrainingList, batchSize):
     npArrayDepth = 0
     batchList = []
     tmpFeatureList = []
+    tmpMFCCList = []
     tmpLabelList = []
 
     for i in range(1, len(random_TrainingList) + 1):
         npArrayDepth += 1
         tmpFeatureList.append(random_TrainingList[i - 1][0])
-        tmpLabelList.append(random_TrainingList[i - 1][1])
+        tmpMFCCList.append(random_TrainingList[i - 1][1])
+        tmpLabelList.append(random_TrainingList[i - 1][2])
 
         if (i % batchSize == 0) and (i != 0):
             featureBatchArray = np.array(tmpFeatureList)
+            mfccBatchArray = np.array(tmpMFCCList)
             labelsBatchArray = np.array(tmpLabelList)
 
             featureBatchArray = featureBatchArray.reshape(npArrayDepth, 100)
+            mfccBatchArray = mfccBatchArray.reshape(npArrayDepth, numberMFCCFeatures*13)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
             # print(labelsBatchArray.shape)
 
-            batchList.append((featureBatchArray, labelsBatchArray))
+            batchList.append((featureBatchArray, mfccBatchArray, labelsBatchArray))
             tmpFeatureList = []
+            tmpMFCCList = []
             tmpLabelList = []
             npArrayDepth = 0
 
         elif (i == len(random_TrainingList) - 1):
             featureBatchArray = np.array(np.asarray(tmpFeatureList))
+            mfccBatchArray = np.array(np.asarray(tmpMFCCList))
             labelsBatchArray = np.array(np.asarray(tmpLabelList))
 
             featureBatchArray = featureBatchArray.reshape(npArrayDepth, 100)
+            mfccBatchArray = mfccBatchArray.reshape(npArrayDepth, numberMFCCFeatures*13)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
             # print(labelsBatchArray.shape)
 
-            batchList.append((featureBatchArray, labelsBatchArray))
+            batchList.append((featureBatchArray, mfccBatchArray, labelsBatchArray))
             tmpFeatureList = []
+            tmpMFCCList = []
             tmpLabelList = []
             npArrayDepth = 0
 
@@ -125,29 +150,36 @@ def createBatchList(random_TrainingList, batchSize):
 
 def createEvalList(rawEvalList):
     npArrayDepth = 0
-    evalTuple = ()
+    evalTriple = ()
     tmpFeatureList = []
+    tmpMFCCList = []
     tmpLabelList = []
 
     for i in range(1, len(rawEvalList) + 1):
         npArrayDepth += 1
         tmpFeatureList.append(rawEvalList[i - 1][0])
-        tmpLabelList.append(rawEvalList[i - 1][1])
+        tmpMFCCList.append(rawEvalList[i - 1][1])
+        tmpLabelList.append(rawEvalList[i - 1][2])
 
     featureEvalArray = np.array(tmpFeatureList)
+    mfccEvalArray = np.array(tmpMFCCList)
     labelsEvalArray = np.array(tmpLabelList)
 
     featureEvalArray = featureEvalArray.reshape(npArrayDepth, 100)
+    mfccEvalArray = mfccEvalArray.reshape(npArrayDepth, numberMFCCFeatures*13)
     labelsEvalArray = labelsEvalArray.reshape(npArrayDepth, 4)
 
-    evalTuple = (featureEvalArray, labelsEvalArray)
+    evalTriple = (featureEvalArray, mfccEvalArray ,labelsEvalArray)
 
-    return evalTuple
+    return evalTriple
 
 
 ### Graph definition ###
-x = tf.placeholder(tf.float32, shape=[None, 100])  # input vectors
+x = tf.placeholder(tf.float32, shape=[None, 100])  # lexical input vectors
+x_mfcc = tf.placeholder(tf.float32, shape=[None, numberMFCCFeatures*13])  # mfcc input vectors
 y_ = tf.placeholder(tf.float32, shape=[None, 4])  # gold standard labels; 1hot-vectors
+
+x_MFCC_4DTensor = tf.reshape(x_mfcc, shape=[-1, 13, numberMFCCFeatures, 1])
 
 ###
 # L1 = Layer 1
@@ -170,9 +202,28 @@ with tf.name_scope("Embedding_Layer"):
     with tf.name_scope("Embedded_4D_Tensor"):
         x_4DTensor = tf.reshape(x_embedded, shape=[-1, 100, 300, 1])  # input vecotrs as a 4D-Matrix
 
+
 with tf.name_scope("generate_padded_matrices"):
     paddings = tf.constant([[0,0],[3, 3],[0,0],[0, 0]])
     x4DTensor_padded = tf.pad(x_4DTensor, paddings, "CONSTANT")
+
+
+### MFCC-Layer
+with tf.name_scope("MFCC_Layer"):
+    with tf.name_scope("MFCC_Weights"):
+        W_conv_MFCC_L0 = weightVariable([13, mfccFilterSize, 1, filterNumberMFCC])
+    with tf.name_scope("MFCC_Bias"):
+        b_conv_MFCC_L0 = biasVariable([1])
+
+    with tf.name_scope("MFCC_CL1_HiddenLayer"):
+        h_conv_MFCC_L0 = tf.nn.relu(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function ReLu
+        # h_conv_MFCC_L0 = tf.tanh(conv2d(x_MFCC_4DTensor_padded, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function TanH
+        # h_conv_MFCC_L0 = tf.nn.sigmoid(conv2d(x_MFCC_4DTensor_padded, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function sigmoid
+    with tf.name_scope("MFCC_CL1_MaxPooling"):
+        poolingWindow = 1951
+        h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, poolingWindow)  # with 1951 input --> 40 output
+        h_pool_MFCC_L0_3D = tf.reshape(h_pool_MFCC_L0, shape=[1, filterNumberMFCC, -1])
+
 
 ### Layer 1
 ### Two-Word-Context
@@ -224,11 +275,12 @@ with tf.name_scope("Four_Word_Context"):
 
 # Concatenate the pooling outputs to get the feature vector
 with tf.name_scope("L1_OutputTensor"):
-#   outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
-    outputTensor_L1 = tf.concat([h_pool_L1_2D_2WC, h_pool_L1_2D_3WC, h_pool_L1_2D_4WC], 1)
+    outputTensor_L1 = tf.concat([h_pool_L1_2D_2WC, h_pool_L1_2D_3WC, h_pool_L1_2D_4WC, h_pool_MFCC_L0_3D], 1)
 # Reshape to 2D tensor
 with tf.name_scope("Concatination_Dimensions"):
-    numOutputConcat = filterNumber2WC + filterNumber3WC + filterNumber4WC
+    # mfccPoolingOutput_1F = math.ceil((numberMFCCFeatures - (mfccFilterSize - 1)) / float(poolingWindow))
+    mfccPoolingOutput_1F = (numberMFCCFeatures - (mfccFilterSize - 1)) / poolingWindow
+    numOutputConcat = filterNumber2WC + filterNumber3WC + filterNumber4WC + (filterNumberMFCC * mfccPoolingOutput_1F)
 with tf.name_scope("L1_OutputTensor_2D"):
     outputTensor_L1_2D = tf.reshape(outputTensor_L1, [-1, numOutputConcat])
 
@@ -304,11 +356,15 @@ with tf.Session(config=config) as sess:
 
     random_TrainingList = deepcopy(trainingList)
 
+    # print(random_TrainingList[0][1])
+    # print("\trandomTrainingList shape: " + str(random_TrainingList[0][1].shape))
     # reshapes the feature-matrix into a vector format
     # reshapes every 1hot-vector (labels) to a 2D shape
     for i in range(len(random_TrainingList)):
-        random_TrainingList[i][0] = random_TrainingList[i][0].reshape(1, 100)
-        random_TrainingList[i][1] = random_TrainingList[i][1].reshape((1, 4))
+        random_TrainingList[i][0] = random_TrainingList[i][0].reshape((1, 100))   # text
+        random_TrainingList[i][1] = random_TrainingList[i][1].flatten() #reshape((1, numberMFCCFeatures))   # mfcc
+        random_TrainingList[i][2] = random_TrainingList[i][2].reshape((1, 4))   # gold-standard
+    print(random_TrainingList[0][1].shape)
 
     # Tensorboard integration
     training_accuracy = 0
@@ -331,7 +387,7 @@ with tf.Session(config=config) as sess:
         epochAccuracyList = []
         epochLossList = []
         batchList = []
-        
+
         
         # Batch processing
         batchList = createBatchList(random_TrainingList, batchSize)
@@ -339,8 +395,9 @@ with tf.Session(config=config) as sess:
         for tupleBatch in batchList:
             # dividing data into the actual features and the gold standard one hot vectors.
             feature_Matrix = tupleBatch[0]
-            labels = tupleBatch[1]
-            batch = (feature_Matrix, labels)
+            mfcc_feature_Matrix = tupleBatch[1]
+            labels = tupleBatch[2]
+            batch = (feature_Matrix, mfcc_feature_Matrix, labels)
 
             # metadata for tensorboard
             run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
@@ -348,10 +405,10 @@ with tf.Session(config=config) as sess:
 
             # computes the actual accuracy for the current batch.
             training_accuracy = accuracy.eval(
-                feed_dict={x: batch[0], y_: batch[1], keep_Prob: 1.0})
+                feed_dict={x: batch[0], x_mfcc: batch[1], y_: batch[2], keep_Prob: 1.0})
 
             # Run the optimizer to update weights.
-            summary, l, train = sess.run([merged, loss, train_Step], feed_dict={x: batch[0], y_: batch[1], keep_Prob: dropout})
+            summary, l, train = sess.run([merged, loss, train_Step], feed_dict={x: batch[0], x_mfcc: batch[1], y_: batch[2], keep_Prob: dropout})
 
             writer.add_run_metadata(run_metadata, 'step %d' % stepCount)
             writer.add_summary(summary, stepCount)
@@ -383,8 +440,8 @@ with tf.Session(config=config) as sess:
 
     overallEndTime = (time.time() - overallTime) / 60
 
-    evaluationTuple = createEvalList(evaluationList)
-    testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
+    evaluationTriple = createEvalList(evaluationList)
+    testAccuracy = accuracy.eval(feed_dict={x: evaluationTriple[0], x_mfcc: evaluationTriple[1], y_: evaluationTriple[2], keep_Prob: 1.0})
 
     print('test accuracy %g' % testAccuracy)
     print("The program was executed in " + str(overallEndTime) + " minutes")
@@ -400,3 +457,4 @@ with tf.Session(config=config) as sess:
 writer.close()
 
 # todo Add adaptive learningrate
+# todo Add config file integration
