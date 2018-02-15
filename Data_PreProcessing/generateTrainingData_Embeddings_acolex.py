@@ -64,6 +64,7 @@ def generateEmbeddingMatrix(model, typeList, unknownWordsDict):
 
 def generateFeatureVector(typeList, fileNameList, mfccDict):
     unknownIDString = ""
+    mfccWindowSize = 1000
     for fileName in fileNameList:
         outputList = []
         tempPath = path
@@ -85,11 +86,22 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
                 # Generating a MFCC feature vector with the first and last 1000 datapoints
                 if (fileID in mfccDict):    # Check if the fileID is in the dictionary
                     mfccTmp = mfccDict[fileID]
-                    tmpMfccFeatures = mfccTmp[:1000]
-                    tmpMfccFeatures.append(mfccTmp[-1000:])
-                    #print(tmpMfccFeatures)
+
+                    if (len(mfccTmp) > (mfccWindowSize * 2)):
+                        tmpMfccFeatures = mfccTmp[:1000]
+                        tmpMfccFeatures.append(mfccTmp[-1000:])
+
+                    else:
+                        for i in range(0, mfccWindowSize*2):
+
+                            if (len(mfccTmp)-1 >= i):
+                                tmpMfccFeatures.append(mfccTmp[i])
+                            else:
+                                tmpNPArray = np.zeros((1, 13))
+                                tmpMfccFeatures.append(tmpNPArray)
+
                     tmpMfccFeatures = np.asarray(tmpMfccFeatures, dtype=object)
-                    #print(tmpMfccFeatures)
+
                 else:
                     print("\t\tID not found:", fileID)
                     unknownIDString += str(fileName) + "\t" + str(fileID) + "\n"
