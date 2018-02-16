@@ -22,24 +22,26 @@ import time
 import datetime
 import os
 
+### Tunable Variables
+numEpoch = 13            # Number of Epochs for training
+trainableEmbeddings = True
+activationFunction = "Relu"     #"CNN = tanh + FCL = Relu"
+lossFunction = "Hinge-Loss"
+learningRate = 0.01
+dropout = 0.50
+optimizerFunction = "Stochastic Gradient Descent"
 
+### Static Variables
 batchSize = 100          # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
-numEpoch = 15            # Number of Epochs for training
 numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 30    # Number of filters for 2-Word-Context
 filterNumber3WC = 18    # Number of filters for 3-Word-Context
 filterNumber4WC = 12    # Number of filters for 4-Word-Context
-trainableEmbeddings = False
-activationFunction = "Relu"     #"CNN = tanh + FCL = Relu"
-lossFunction = "Hinge-Loss"
-learningRate = 0.01
-dropout = 0.75
-optimizerFunction = "Stochastic Gradient Descent"
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
-logFileTmp = ""
 
+logFileTmp = ""
 overallTime = time.time()
 
 # Server Paths
@@ -217,7 +219,7 @@ with tf.name_scope("Four_Word_Context"):
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 103)
 
-#with tf.name_scope("reshape_tensors_into_2D"):
+with tf.name_scope("reshape_tensors_into_2D"):
     h_pool_L1_2D_2WC = tf.reshape(h_pool_L1_2WC, shape=[1,filterNumber2WC,-1])
     h_pool_L1_2D_3WC = tf.reshape(h_pool_L1_3WC, shape=[1,filterNumber3WC,-1])
     h_pool_L1_2D_4WC = tf.reshape(h_pool_L1_4WC, shape=[1,filterNumber4WC,-1])
@@ -288,7 +290,6 @@ logPath += programStartTime
 if not os.path.exists(logPath):
     os.makedirs(logPath)
 
-start_time = time.time()
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
     sess.run(embedding_init, feed_dict={embedding_placeholder: embeddingInputs})
@@ -325,6 +326,7 @@ with tf.Session(config=config) as sess:
     writer = tf.summary.FileWriter(logPath, sess.graph)
 
     for epoch in range(numEpoch):
+        start_time = time.time()
         print("Current epoch " + str(epoch))
         # Shuffle the traininglist
         shuffle(random_TrainingList)
@@ -359,8 +361,7 @@ with tf.Session(config=config) as sess:
 
             stepCount += 1
 
-            elapsed_time = time.time() - start_time
-            start_time = time.time()
+        elapsed_time = time.time() - start_time
             # epochAccuracyList.append(training_accuracy)
             # epochLossList.append(l)
 
@@ -371,14 +372,14 @@ with tf.Session(config=config) as sess:
 
             print('\t- step %d, training accuracy %g, learning rate %f, loss %f, %f s' % (epoch, training_accuracy,
                                                                                           learningRate, l,
-                                                                                          1000 * elapsed_time))
+                                                                                          elapsed_time))
             # writer.add_run_metadata(run_metadata, 'step %d' % epoch)
             # writer.add_summary(summary, epoch)
             # print("Adding run metadata for epoch " + str(epoch))
 
             logFileTmp += 'step %d, training accuracy %g, loss %f, learning rate %f, %f s\n' % (epoch, training_accuracy,
                                                                                              l, learningRate,
-                                                                                             1000 * elapsed_time)
+                                                                                             elapsed_time)
             logFileTmp += "####\n"
 
     overallEndTime = (time.time() - overallTime) / 60
