@@ -67,6 +67,7 @@ def generateFeatureVector(typeList, fileNameList):
         tempPath = path
         tempPath += fileName
         outputList = []
+        statementSmoother = 0
 
         with open(tempPath, 'r') as file:
             for sentence in file:
@@ -75,40 +76,42 @@ def generateFeatureVector(typeList, fileNameList):
                 dialogClass = sentenceSplit.pop(0)      # pop sentence class
                 tmpFeatureVec = np.full([100], len(typeList)+1)  # [sentence] + [unknown word Vector] + [|sentences| < 100]
                 #tmpTrainingTuple = ()              
-                for j, 
-                for i, word in enumerate(sentenceSplit):
-                    word = word.lower()     # every word to lowercase
-                    if (word in typeList) and (i <= 100):   # adds every word up to a sentence length of 100
-                        tmpFeatureVec[i] = typeList.index(word)
-                    elif (word not in typeList) and (i <= 100):
-                        tmpFeatureVec[i] = len(typeList)  # every unknown word gets the index of the random vector
+                # for j,
+                if (dialogClass != 'statement' or ((dialogClass == 'statement') and (statementSmoother % 2 == 0))):
+                    for i, word in enumerate(sentenceSplit):
+                        word = word.lower()     # every word to lowercase
+                        if (word in typeList) and (i <= 100):   # adds every word up to a sentence length of 100
+                            tmpFeatureVec[i] = typeList.index(word)
+                        elif (word not in typeList) and (i <= 100):
+                            tmpFeatureVec[i] = len(typeList)  # every unknown word gets the index of the random vector
 
-                if dialogClass == "backchannel":
-                    tmpClassVec = np.array([1, 0, 0, 0])
-                elif dialogClass == "statement":
-                    tmpClassVec = np.array([0, 1, 0, 0])
-                elif dialogClass == "question":
-                    tmpClassVec = np.array([0, 0, 1, 0])
-                elif dialogClass == "opinion":
-                    tmpClassVec = np.array([0, 0, 0, 1])
+                    if dialogClass == "backchannel":
+                        tmpClassVec = np.array([1, 0, 0, 0])
+                    elif dialogClass == "statement":
+                        tmpClassVec = np.array([0, 1, 0, 0])
+                        statementSmoother += 1
+                    elif dialogClass == "question":
+                        tmpClassVec = np.array([0, 0, 1, 0])
+                    elif dialogClass == "opinion":
+                        tmpClassVec = np.array([0, 0, 0, 1])
 
-                tmpTrainingTuple = (tmpFeatureVec, tmpClassVec)
-                tmpTrainingTuple = np.asarray(tmpTrainingTuple)
+                    tmpTrainingTuple = (tmpFeatureVec, tmpClassVec)
+                    tmpTrainingTuple = np.asarray(tmpTrainingTuple)
 
-                outputList.append(tmpTrainingTuple)
+                    outputList.append(tmpTrainingTuple)
 
         outputList = np.asarray(outputList)
 
         # saves the outputList for every file
         if ("train" in fileName):
             print("Dumping the training ouputList as pickle file...")
-            savePath = 'NN_Input_Files/trainData_Embeddings.pickle'
+            savePath = 'NN_Input_Files/trainData_Embeddings_smoothedClasses.pickle'
         if ("test" in fileName):
             print("Dumping the test ouputList as pickle file...")
-            savePath = 'NN_Input_Files/testData_Embeddings.pickle'
+            savePath = 'NN_Input_Files/testData_Embeddings_smoothedClasses.pickle'
         if ("dev" in fileName):
             print("Dumping the development ouputList as pickle file...")
-            savePath = 'NN_Input_Files/devData_Embeddings.pickle'
+            savePath = 'NN_Input_Files/devData_Embeddings_smoothedClasses.pickle'
 
         with open(savePath, 'wb') as handle:
             pickle.dump(outputList, handle, protocol=2)
@@ -130,7 +133,7 @@ def generateMFCCDict(mfccNameList):
                     
                     if (fileID not in mfccDict):
                         mfccDict[fileID] = [lineSplitted]
-                    elif:
+                    else:
                         mfccDict[fileID].append(lineSplitted)
     return mfccDict
 

@@ -23,11 +23,11 @@ import datetime
 import os
 
 ### Tunable Variables
-numEpoch = 13            # Number of Epochs for training
+numEpoch = 30            # Number of Epochs for training
 trainableEmbeddings = True
 activationFunction = "Relu"     #"CNN = tanh + FCL = Relu"
 lossFunction = "Hinge-Loss"
-learningRate = 0.01
+learningRate = 0.0001
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
 
@@ -46,7 +46,7 @@ overallTime = time.time()
 
 # Server Paths
 # Without stopwords
-pathTraining = "NN_Input_Files/trainData_Embeddings.pickle"
+pathTraining = "NN_Input_Files/trainData_Embeddings_smoothedClasses.pickle"
 pathEvaluation = "NN_Input_Files/devData_Embeddings.pickle"
 pathEmbeddings = "dict/embeddingMatrix_np.pickle"
 # With stopwords
@@ -270,7 +270,9 @@ logFileTmp += "Used Training Data: " + str(pathTraining) + "\n"
 logFileTmp += "Used Dev Data: " + str(pathEvaluation) + "\n"
 logFileTmp += "Type of CNN: " + str(typeOfCNN) + "\n"
 logFileTmp += "Number of epochs: " + str(numEpoch) + "\n"
-logFileTmp += "Number of filters: " + str(filterNumber4WC) + "\n"
+logFileTmp += "Number of filters 2WC: " + str(filterNumber2WC) + "\n"
+logFileTmp += "Number of filters 3WC: " + str(filterNumber3WC) + "\n"
+logFileTmp += "Number of filters 4WC: " + str(filterNumber4WC) + "\n"
 logFileTmp += "Trainable Embeddings: " + str(trainableEmbeddings) + "\n"
 logFileTmp += "Batchsize: " + str(batchSize) + "\n"
 logFileTmp += "Learning Rate: " + str(learningRate) + "\n"

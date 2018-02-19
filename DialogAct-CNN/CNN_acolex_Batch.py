@@ -26,11 +26,13 @@ import math
 ### Tunable Variables
 numEpoch = 15                    # Number of Epochs for training
 trainableEmbeddings = False
-activationFunction = "Relu"     #"CNN = tanh + FCL = Relu"
+activationFunction = "Sigmoid"     #"CNN = tanh + FCL = Relu"
 lossFunction = "Hinge-Loss"
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
+filterNumberMFCC = 30    # Number of filters for the MFCC features
+mfccFilterSize = 100
 
 ### Static Variables
 batchSize = 100         # Batchsize for training
@@ -39,8 +41,6 @@ numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 30    # Number of filters for 2-Word-Context
 filterNumber3WC = 18    # Number of filters for 3-Word-Context
 filterNumber4WC = 12    # Number of filters for 4-Word-Context
-filterNumberMFCC = 15    # Number of filters for the MFCC features
-mfccFilterSize = 50
 numberMFCCFeatures = 2000
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
@@ -218,11 +218,11 @@ with tf.name_scope("MFCC_Layer"):
         b_conv_MFCC_L0 = biasVariable([1])
 
     with tf.name_scope("MFCC_CL1_HiddenLayer"):
-        h_conv_MFCC_L0 = tf.nn.relu(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function ReLu
-        # h_conv_MFCC_L0 = tf.tanh(conv2d(x_MFCC_4DTensor_padded, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function TanH
-        # h_conv_MFCC_L0 = tf.nn.sigmoid(conv2d(x_MFCC_4DTensor_padded, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function sigmoid
+        # h_conv_MFCC_L0 = tf.nn.relu(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function ReLu
+        # h_conv_MFCC_L0 = tf.tanh(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function TanH
+        h_conv_MFCC_L0 = tf.nn.sigmoid(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function sigmoid
     with tf.name_scope("MFCC_CL1_MaxPooling"):
-        poolingWindow = 1951
+        poolingWindow = numberMFCCFeatures - (mfccFilterSize - 1)
         h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, poolingWindow)  # with 1951 input --> 40 output
         h_pool_MFCC_L0_3D = tf.reshape(h_pool_MFCC_L0, shape=[1, filterNumberMFCC, -1])
 
@@ -236,9 +236,9 @@ with tf.name_scope("Two_Word_Context"):
         b_conv_L1_2WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        h_conv_L1_2WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
+        # h_conv_L1_2WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
         # h_conv_L1_2WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
-        # h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
+        h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 105)
 
@@ -250,9 +250,9 @@ with tf.name_scope("Three_Word_Context"):
         b_conv_L1_3WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        h_conv_L1_3WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
+        # h_conv_L1_3WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
         # h_conv_L1_3WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
-        # h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
+        h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 104)
 
@@ -264,9 +264,9 @@ with tf.name_scope("Four_Word_Context"):
         b_conv_L1_4WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        h_conv_L1_4WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
+        # h_conv_L1_4WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
         # h_conv_L1_4WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
-        # h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
+        h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 103)
 
@@ -322,7 +322,11 @@ logFileTmp += "Used Training Data: " + str(pathTraining) + "\n"
 logFileTmp += "Used Dev Data: " + str(pathEvaluation) + "\n"
 logFileTmp += "Type of CNN: " + str(typeOfCNN) + "\n"
 logFileTmp += "Number of epochs: " + str(numEpoch) + "\n"
-logFileTmp += "Number of filters: " + str(filterNumber4WC) + "\n"
+logFileTmp += "Number of filters 2WC: " + str(filterNumber2WC) + "\n"
+logFileTmp += "Number of filters 3WC: " + str(filterNumber3WC) + "\n"
+logFileTmp += "Number of filters 4WC: " + str(filterNumber4WC) + "\n"
+logFileTmp += "Number of filters MFCC: " + str(filterNumberMFCC) + "\n"
+logFileTmp += "Filter size MFCC: " + str(mfccFilterSize) + "\n"
 logFileTmp += "Trainable Embeddings: " + str(trainableEmbeddings) + "\n"
 logFileTmp += "Batchsize: " + str(batchSize) + "\n"
 logFileTmp += "Learning Rate: " + str(learningRate) + "\n"
