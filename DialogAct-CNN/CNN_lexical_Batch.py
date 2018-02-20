@@ -23,11 +23,11 @@ import datetime
 import os
 
 ### Tunable Variables
-numEpoch = 30            # Number of Epochs for training
+numEpoch = 15            # Number of Epochs for training
 trainableEmbeddings = True
-activationFunction = "Relu"     #"CNN = tanh + FCL = Relu"
+activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
 lossFunction = "Hinge-Loss"
-learningRate = 0.0001
+learningRate = 0.05
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
 
@@ -35,9 +35,9 @@ optimizerFunction = "Stochastic Gradient Descent"
 batchSize = 100          # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
 numCPUs = 10            # Number of CPU's to be used
-filterNumber2WC = 30    # Number of filters for 2-Word-Context
-filterNumber3WC = 18    # Number of filters for 3-Word-Context
-filterNumber4WC = 12    # Number of filters for 4-Word-Context
+filterNumber2WC = 20    # Number of filters for 2-Word-Context
+filterNumber3WC = 20    # Number of filters for 3-Word-Context
+filterNumber4WC = 20    # Number of filters for 4-Word-Context
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
 
@@ -46,9 +46,9 @@ overallTime = time.time()
 
 # Server Paths
 # Without stopwords
-pathTraining = "NN_Input_Files/trainData_Embeddings_smoothedClasses.pickle"
+pathTraining = "NN_Input_Files/trainData_Embeddings.pickle"
 pathEvaluation = "NN_Input_Files/devData_Embeddings.pickle"
-pathEmbeddings = "dict/embeddingMatrix_np.pickle"
+pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
 # With stopwords
 #pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
 #pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
@@ -157,7 +157,8 @@ y_ = tf.placeholder(tf.float32, shape=[None, 4])  # gold standard labels; 1hot-v
 ###
 
 ### Layer 0
-vocab_size = 10017
+# vocab_size = 10017 # For normal dataset
+vocab_size = 11825 # For "full" dataset
 embedding_dim = 300
 with tf.name_scope("Embedding_Layer"):
     with tf.name_scope("Embedding_Matrix"):
@@ -185,8 +186,8 @@ with tf.name_scope("Two_Word_Context"):
         b_conv_L1_2WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        h_conv_L1_2WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
-        # h_conv_L1_2WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
+        # h_conv_L1_2WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
+        h_conv_L1_2WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
         # h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 105)
@@ -199,8 +200,8 @@ with tf.name_scope("Three_Word_Context"):
         b_conv_L1_3WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        h_conv_L1_3WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
-        # h_conv_L1_3WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
+        # h_conv_L1_3WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
+        h_conv_L1_3WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
         # h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 104)
@@ -213,21 +214,21 @@ with tf.name_scope("Four_Word_Context"):
         b_conv_L1_4WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        h_conv_L1_4WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
-        # h_conv_L1_4WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
+        # h_conv_L1_4WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
+        h_conv_L1_4WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
         # h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 103)
 
-with tf.name_scope("reshape_tensors_into_2D"):
-    h_pool_L1_2D_2WC = tf.reshape(h_pool_L1_2WC, shape=[1,filterNumber2WC,-1])
-    h_pool_L1_2D_3WC = tf.reshape(h_pool_L1_3WC, shape=[1,filterNumber3WC,-1])
-    h_pool_L1_2D_4WC = tf.reshape(h_pool_L1_4WC, shape=[1,filterNumber4WC,-1])
+# with tf.name_scope("reshape_tensors_into_2D"):
+#     h_pool_L1_2D_2WC = tf.reshape(h_pool_L1_2WC, shape=[1,filterNumber2WC,-1])
+#     h_pool_L1_2D_3WC = tf.reshape(h_pool_L1_3WC, shape=[1,filterNumber3WC,-1])
+#     h_pool_L1_2D_4WC = tf.reshape(h_pool_L1_4WC, shape=[1,filterNumber4WC,-1])
 
 # Concatenate the pooling outputs to get the feature vector
 with tf.name_scope("L1_OutputTensor"):
-#   outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
-    outputTensor_L1 = tf.concat([h_pool_L1_2D_2WC, h_pool_L1_2D_3WC, h_pool_L1_2D_4WC], 1)
+  outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
+    # outputTensor_L1 = tf.concat([h_pool_L1_2D_2WC, h_pool_L1_2D_3WC, h_pool_L1_2D_4WC], 1)
 # Reshape to 2D tensor
 with tf.name_scope("Concatination_Dimensions"):
     numOutputConcat = filterNumber2WC + filterNumber3WC + filterNumber4WC

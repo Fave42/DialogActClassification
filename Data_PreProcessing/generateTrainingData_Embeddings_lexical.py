@@ -77,6 +77,7 @@ def generateFeatureVector(typeList, fileNameList):
                 tmpFeatureVec = np.full([100], len(typeList)+1)  # [sentence] + [unknown word Vector] + [|sentences| < 100]
                 #tmpTrainingTuple = ()              
                 # for j,
+                # Discard every second "statement" sentence to better distribute the trainingsexamples
                 if (dialogClass != 'statement' or ((dialogClass == 'statement') and (statementSmoother % 2 == 0))):
                     for i, word in enumerate(sentenceSplit):
                         word = word.lower()     # every word to lowercase

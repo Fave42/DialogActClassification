@@ -21,7 +21,6 @@ import numpy as np
 import time
 import datetime
 import os
-import math
 
 ### Tunable Variables
 numEpoch = 15                    # Number of Epochs for training
@@ -31,16 +30,16 @@ lossFunction = "Hinge-Loss"
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
-filterNumberMFCC = 30    # Number of filters for the MFCC features
+filterNumberMFCC = 20    # Number of filters for the MFCC features
 mfccFilterSize = 100
 
 ### Static Variables
 batchSize = 100         # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
 numCPUs = 10            # Number of CPU's to be used
-filterNumber2WC = 30    # Number of filters for 2-Word-Context
-filterNumber3WC = 18    # Number of filters for 3-Word-Context
-filterNumber4WC = 12    # Number of filters for 4-Word-Context
+filterNumber2WC = 20    # Number of filters for 2-Word-Context
+filterNumber3WC = 20    # Number of filters for 3-Word-Context
+filterNumber4WC = 20    # Number of filters for 4-Word-Context
 numberMFCCFeatures = 2000
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
@@ -52,7 +51,7 @@ overallTime = time.time()
 # Without stopwords
 pathTraining = "NN_Input_Files/trainData_acolex_Embeddings.pickle"
 pathEvaluation = "NN_Input_Files/devData_acolex_Embeddings.pickle"
-pathEmbeddings = "dict/embeddingMatrix_np.pickle"
+pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
 ### Testing purposes only
 # pathTraining = "NN_Input_Files/sanityTestFiles/trainData_acolex_Embeddings_short.pickle"
 # pathEvaluation = "NN_Input_Files/sanityTestFiles/devData_acolex_Embeddings_short.pickle"
@@ -189,7 +188,8 @@ x_MFCC_4DTensor = tf.reshape(x_mfcc, shape=[-1, 13, numberMFCCFeatures, 1])
 ###
 
 ### Layer 0
-vocab_size = 10017
+# vocab_size = 10017 # For normal dataset
+vocab_size = 11825 # For "full" dataset
 embedding_dim = 300
 with tf.name_scope("Embedding_Layer"):
     with tf.name_scope("Embedding_Matrix"):
@@ -223,7 +223,7 @@ with tf.name_scope("MFCC_Layer"):
         h_conv_MFCC_L0 = tf.nn.sigmoid(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function sigmoid
     with tf.name_scope("MFCC_CL1_MaxPooling"):
         poolingWindow = numberMFCCFeatures - (mfccFilterSize - 1)
-        h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, poolingWindow)  # with 1951 input --> 40 output
+        h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, poolingWindow)  # with 1951 input --> 40 anoutput
         h_pool_MFCC_L0_3D = tf.reshape(h_pool_MFCC_L0, shape=[1, filterNumberMFCC, -1])
 
 
@@ -270,14 +270,15 @@ with tf.name_scope("Four_Word_Context"):
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 103)
 
-with tf.name_scope("reshape_tensors_into_2D"):
-    h_pool_L1_2D_2WC = tf.reshape(h_pool_L1_2WC, shape=[1,filterNumber2WC,-1])
-    h_pool_L1_2D_3WC = tf.reshape(h_pool_L1_3WC, shape=[1,filterNumber3WC,-1])
-    h_pool_L1_2D_4WC = tf.reshape(h_pool_L1_4WC, shape=[1,filterNumber4WC,-1])
+# with tf.name_scope("reshape_tensors_into_2D"):
+#     h_pool_L1_2D_2WC = tf.reshape(h_pool_L1_2WC, shape=[1,filterNumber2WC,-1])
+#     h_pool_L1_2D_3WC = tf.reshape(h_pool_L1_3WC, shape=[1,filterNumber3WC,-1])
+#     h_pool_L1_2D_4WC = tf.reshape(h_pool_L1_4WC, shape=[1,filterNumber4WC,-1])
 
 # Concatenate the pooling outputs to get the feature vector
 with tf.name_scope("L1_OutputTensor"):
-    outputTensor_L1 = tf.concat([h_pool_L1_2D_2WC, h_pool_L1_2D_3WC, h_pool_L1_2D_4WC, h_pool_MFCC_L0_3D], 1)
+    outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC, h_pool_MFCC_L0], 1)
+    # outputTensor_L1 = tf.concat([h_pool_L1_2D_2WC, h_pool_L1_2D_3WC, h_pool_L1_2D_4WC, h_pool_MFCC_L0_3D], 1)
 # Reshape to 2D tensor
 with tf.name_scope("Concatination_Dimensions"):
     # mfccPoolingOutput_1F = math.ceil((numberMFCCFeatures - (mfccFilterSize - 1)) / float(poolingWindow))
