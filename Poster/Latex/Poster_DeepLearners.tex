@@ -83,18 +83,35 @@
 \color{Black} % SaddleBrown color for the introduction
 
 \section*{Task Introduction}
+
+%Dialog act classification is the task to label utterances with a category of meaning. For example to recognize whether the utterance is a question. In this poster we present an approach using a Convolution Neural Network (CNN) to classify utterances in four different classes (statement, question, opinion, backchannel). We depict an architecture with two different inputs. The Lexical model and the acoustic model. The lexical model works with the pretrained word2vec model provided by Google and the acoustic model works with MFCC features we extracted with openSmile. We put the two models together and gain a slightly better performance. 
+
 \begin{itemize}
-	\item 
-	\item 
-	\item Short examples:
+	\item Dialog act classification is to label utterances with a specific category
+	\item We present an approach using a convolution neural network (CNN)
+	\item Classification of utterances in four different classes
+	\begin{itemize}
+		\item statement
+		\item question
+		\item opinion
+		\item backchannel
+	\end{itemize}
+	\item Two different inputs:
+	\begin{itemize}
+		\item Lexical features
+		\item Acoustic features
+	\end{itemize}
+	
+	
+	\item Examples:
 	\begin{itemize}
 		\item What is your name? - Question
 		\item It's raining. - Statement
 	\end{itemize}
 \end{itemize}
-- Dialog Act Classification\\
-- What are Dialog Acts\\
--- Short examples\\
+%- Dialog Act Classification\\
+%- What are Dialog Acts\\
+%-- Short examples\\
 
 %----------------------------------------------------------------------------------------
 %	MATERIALS AND METHODS
@@ -133,7 +150,7 @@
 
 \subsection*{word2vec}
 \begin{itemize}
-	\item For the word embedding layer we used the Google word2vector model
+	\item For the word embedding layer we used the pretrained Google word2vector model
 	\begin{itemize}
 		\item It contains 3 million words and phrases with a 300-dimensional vector each
 	\end{itemize}
@@ -189,14 +206,33 @@
 \section*{Intermediate Results}
 - Table with different configs and mean accuracies\\
 
+\large
+\begin{tabular}{ l | c | c | c }
+	epochs & learning rate & lexical model & acolex model \\
+	\hline
+	1 & 4984 & 2150  \\
+\end{tabular}
+\normalsize
+
 %----------------------------------------------------------------------------------------
 %	FORTHCOMING RESEARCH
 %----------------------------------------------------------------------------------------
 \section*{Potential Future Work}
-- Further optimizations\\
--- Maybe varying MFCC feature size\\
--- Including word2vec features for the test and development set\\
--- Introducing additional layer between CNN output and softmax\\
+
+\begin{itemize}
+	\item What we plan next:
+	\begin{itemize}
+		\item Varying MFCC feature size 
+		\item Including word2vec features for the test and development set
+		\item Implementation of an additional embedding layer between CNN output and output layer
+	
+	\end{itemize}		
+\end{itemize}
+
+%- Further optimizations\\
+%-- Maybe varying MFCC feature size\\
+%-- Including word2vec features for the test and development set\\
+%-- Introducing additional layer between CNN output and softmax\\
 
 %----------------------------------------------------------------------------------------
 %	REFERENCES
