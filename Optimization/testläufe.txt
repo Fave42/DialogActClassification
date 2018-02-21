@@ -48,7 +48,7 @@ Ohne reshape vor der konkatenation
     pathEvaluation = "NN_Input_Files/devData_Embeddings.pickle"
     pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
 
-    1. Lauf: Log: 18-02-20-14-43-43
+    1. Lauf: 0.778655 Log: 18-02-20-14-43-43
 
 
 Acolex
@@ -79,4 +79,4 @@ Ohne reshape vor der konkatenation
     pathEvaluation = "NN_Input_Files/devData_acolex_Embeddings.pickle"
     pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
 
-    1. Lauf: Log: 18-02-20-14-40-44
+    1. Lauf: 0.69824 Log: 18-02-20-14-40-44
