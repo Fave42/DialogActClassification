@@ -36,10 +36,13 @@
 \usepackage{amsfonts, amsmath, amsthm, amssymb} % For math fonts, symbols and environments
 \usepackage{wrapfig} % Allows wrapping text around tables and figures
 \usepackage{tgbonum}
-\usepackage{xcolor}
+\usepackage{xcolor, colortbl}
+\usepackage{multirow}
 
+% Set costum color
 \definecolor{lightgreen}{HTML}{D5E8D4}
 \definecolor{lightblue}{HTML}{DAE8FC}
+\definecolor{lightgrey}{HTML}{CECECE}
 
 \setlength\parindent{0pt}
 
@@ -87,26 +90,20 @@
 %Dialog act classification is the task to label utterances with a category of meaning. For example to recognize whether the utterance is a question. In this poster we present an approach using a Convolution Neural Network (CNN) to classify utterances in four different classes (statement, question, opinion, backchannel). We depict an architecture with two different inputs. The Lexical model and the acoustic model. The lexical model works with the pretrained word2vec model provided by Google and the acoustic model works with MFCC features we extracted with openSmile. We put the two models together and gain a slightly better performance. 
 
 \begin{itemize}
-	\item Dialog act classification is to label utterances with a specific category
-	\item We present an approach using a convolution neural network (CNN)
-	\item Classification of utterances in four different classes
+	\large
+	\item Dialog Act Classification describes the process of automatically predicting the dialog act
+	of the current speech and textual information
+	\item We present an approach using a Convolutional Neural Network (CNN) which classifies utterances in four classes:
 	\begin{itemize}
-		\item statement
-		\item question
-		\item opinion
-		\item backchannel
+		\item statement (I think I read about that in the paper)
+		\item question (Well where do you take those things)
+		\item opinion (It was really good)
+		\item backchannel (Uh-huh)
 	\end{itemize}
-	\item Two different inputs:
+	\item We combine two different inputs:
 	\begin{itemize}
 		\item Lexical features
-		\item Acoustic features
-	\end{itemize}
-	
-	
-	\item Examples:
-	\begin{itemize}
-		\item What is your name? - Question
-		\item It's raining. - Statement
+		\item Acoustic features 
 	\end{itemize}
 \end{itemize}
 %- Dialog Act Classification\\
@@ -118,17 +115,18 @@
 %----------------------------------------------------------------------------------------
 
 \color{Black} % DarkSlateGray color for the rest of the content
+\large
 
 \section*{Data}
 \subsection*{Switchboard}
 
 \begin{itemize}
-	\item Subset of the Switchboard Telephone Speech Corpus
-	\item The Switchboard Corpus has lexical and acoustic data
-	\item The lexical dataset are divided in training-, development- and test-sets
+	\item We use a subset of the Switchboard Telephone Speech Corpus which consists of lexical and acoustic data
+	\item Our subset includes 40,556 sentences
+	\item The lexical dataset is divided in training, development and test data
+	\item The acoustic dataset includes a recording for every utterance
 \end{itemize}
 
-\large
 \begin{tabular}{ l| c c c c || r}
 	Dataset\textbackslash Channel & opinion & question & backchannel & statement & Sum\\
 	\hline
@@ -136,48 +134,31 @@
 	development & 1068 & 460 & 1455 & 3098 & 6081\\
 	test & 1070 & 463 & 1458 & 3099 & 6090\\
 \end{tabular}
-\normalsize
-
-\begin{itemize}
-	\item The acoustic dataset includes a recording of every utterance
-\end{itemize}
 
 \subsection*{MFCC features}
 \begin{itemize}
-	\item Extraction of the MFCC features for every sentence with OpenSmile
-	\item Every 25ms the MFCC features where extracted, which resulted in 13 features for each measurement point
+	\item With OpenSmile we extract the MFCC features for every sentence
+	\item The MFCC features are extracted every 10ms with a frame size of 25ms
+	\item This results in 13 features for each measurement point
 \end{itemize}
 
 \subsection*{word2vec}
 \begin{itemize}
-	\item For the word embedding layer we used the pretrained Google word2vector model
-	\begin{itemize}
-		\item It contains 3 million words and phrases with a 300-dimensional vector each
-	\end{itemize}
+	\item For the word embedding layer we use the pre-trained Google word2vector model
+	\item It contains 3 million words and phrases with a 300-dimensional vector each
 \end{itemize}
 
-
-%- Background information about the corpus\\
-%- Lexical Data\\
-%- Acoustic Data\\
-
+\large
 \section*{Data Preprocessing}
-%\begin{enumerate}
-%	\item import word2vec
-%	\item import unknownwords dict
-%	\item generate embedding matrix
-%
-%	\item generate mfcc dict
-%	\item generate feature vector
-%\end{enumerate}
 
 \colorbox{lightblue}{
 	\parbox{1000pt}{
 		\begin{enumerate}
 			\item All words from the three datasets are indexed in a word list for use in the embedding matrix
-			\item Each word in word list, from the training set, was given the corresponding vector from the word2vec model
+			\item Each word from the training set is given it's corresponding vector from the word2vec model
 			\item A random vector is assigned if the word is not in the word2vec model or from the test and development set
 			\item Each sentence is converted to a sequence with the corresponding indexes from the word list
+			\item The maximum sentence length is set to 100 words if the sentence is shorter the remaining space is zeroized
 		\end{enumerate}
 }}
 \colorbox{lightgreen}{
@@ -194,7 +175,6 @@
 %----------------------------------------------------------------------------------------
 
 \section*{System Architecture}
-- Architecture visualization\\
 \includegraphics[width=\linewidth]{Bilder/CNN_Diagram.png}
 
 %----------------------------------------------------------------------------------------
@@ -202,17 +182,23 @@
 %----------------------------------------------------------------------------------------
 
 \color{Black} % SaddleBrown color for the conclusions to make them stand out
+\large
 
 \section*{Intermediate Results}
-- Table with different configs and mean accuracies\\
 
-\large
-\begin{tabular}{ l | c | c | c }
-	epochs & learning rate & lexical model & acolex model \\
+\begin{tabular}{c | l | c | c | c | c | c }
+	
+	& \rowcolor{lightgrey} Epochs & Accuracy (\%) & Trainable & Learning Rate & Activation func. & Loss func. \\
+	& \rowcolor{lightgrey} &  & Embeddings & & & \\
 	\hline
-	1 & 4984 & 2150  \\
+	\parbox[c]{1cm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{Lexical}}} & \rowcolor{lightblue} 15 & 72.2414 & False & 0.05 & TanH & Hinge-Loss\\
+	& \rowcolor{lightblue} 15 & 72.4881 & False & 0.05 & TanH & Hinge-Loss\\
+	& \rowcolor{lightblue} 15 & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
+
+	\parbox[c]{1cm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{Acolex}}} & \rowcolor{lightgreen} 15 & 69.824 & False & 0.01 & Sigmoid & Hinge-Loss\\
+	& \rowcolor{lightgreen} dummy & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
+	& \rowcolor{lightgreen} dummy & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
 \end{tabular}
-\normalsize
 
 %----------------------------------------------------------------------------------------
 %	FORTHCOMING RESEARCH
@@ -238,9 +224,9 @@
 %	REFERENCES
 %----------------------------------------------------------------------------------------
 %
-%\nocite{*} % Print all references regardless of whether they were cited in the poster or not
-%\bibliographystyle{plain} % Plain referencing style
-%\bibliography{sample} % Use the example bibliography file sample.bib
+\nocite{*} % Print all references regardless of whether they were cited in the poster or not
+\bibliographystyle{plain} % Plain referencing style
+\bibliography{bibliography} % Use the example bibliography file sample.bib
 %
 %----------------------------------------------------------------------------------------
 %	ACKNOWLEDGEMENTS

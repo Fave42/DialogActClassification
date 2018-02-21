@@ -62,7 +62,7 @@ print("\t---> Done with importing!")
 
 ### Functions ###
 def weightVariable(shape):
-    initial = tf.truncated_normal(shape, stddev=1.0, seed=1)
+    initial = tf.truncated_normal(shape, stddev=1.0, seed=111121)
     return tf.Variable(initial)
 
 
