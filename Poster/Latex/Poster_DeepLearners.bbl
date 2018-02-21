@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}
+
+\bibitem{Eyben:2010:OMV:1873951.1874246}
+Florian Eyben, Martin W\"{o}llmer, and Bj\"{o}rn Schuller.
+\newblock Opensmile: The munich versatile and fast open-source audio feature
+  extractor.
+\newblock In {\em Proceedings of the 18th ACM International Conference on
+  Multimedia}, MM '10, pages 1459--1462, New York, NY, USA, 2010. ACM.
+
+\bibitem{DBLP:journals/corr/Kim14f}
+Yoon Kim.
+\newblock Convolutional neural networks for sentence classification.
+\newblock {\em CoRR}, abs/1408.5882, 2014.
+
+\bibitem{DBLP:journals/corr/MikolovSCCD13}
+Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg Corrado, and Jeffrey Dean.
+\newblock Distributed representations of words and phrases and their
+  compositionality.
+\newblock {\em CoRR}, abs/1310.4546, 2013.
+
+\end{thebibliography}
