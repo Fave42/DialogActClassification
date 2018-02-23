@@ -95,12 +95,12 @@
 	of the current speech and textual information
 	\item We present an approach using a Convolutional Neural Network (CNN) which classifies utterances in four classes:
 	\begin{itemize}
-		\item statement (I think I read about that in the paper)
-		\item question (Well where do you take those things)
-		\item opinion (It was really good)
-		\item backchannel (Uh-huh)
+		\item statement (''I think I read about that in the paper'')
+		\item question (''Well where do you take those things'')
+		\item opinion (''It was really good'')
+		\item backchannel (''Uh-huh'')
 	\end{itemize}
-	\item We combine two different inputs:
+	\item Two kinds of features:
 	\begin{itemize}
 		\item Lexical features
 		\item Acoustic features 
@@ -145,26 +145,37 @@
 \subsection*{word2vec}
 \begin{itemize}
 	\item For the word embedding layer we use the pre-trained Google word2vector model
-	\item It contains 3 million words and phrases with a 300-dimensional vector each
+	\item Contains 3 million words representing one word as a 300-dimensional vector
 \end{itemize}
 
 \large
 \section*{Data Preprocessing}
-
 \colorbox{lightblue}{
-	\parbox{1000pt}{
+	\parbox{1025pt}{
+		\vspace{0.5cm}
+		{\LARGE \textbf{Embedding Matrix}}
 		\begin{enumerate}
-			\item All words from the three datasets are indexed in a word list for use in the embedding matrix
-			\item Each word from the training set is given it's corresponding vector from the word2vec model
-			\item A random vector is assigned if the word is not in the word2vec model or from the test and development set
-			\item Each sentence is converted to a sequence with the corresponding indexes from the word list
-			\item The maximum sentence length is set to 100 words if the sentence is shorter the remaining space is zeroized
+			\item All words from the training set are inserted into an embedding matrix
+			\item Each word is represented by it's corresponding vector from \textit{word2vec}
+			\item If a word is not contained in \textit{word2vec} it gets assigned a random vector
+			\item Unkown word and no word vectors added
+		\end{enumerate}
+		\vspace{0.5cm}
+		{\LARGE \textbf{Lexical Features}}
+		\begin{enumerate}	
+			\item Each sentence is converted into a sequence of indexes
+			\item Each index is the corresponding line in the embedding matrix for one word
+			\item The maximum sentence length is set to 100 words
 		\end{enumerate}
 }}
 \colorbox{lightgreen}{
-	\parbox{1000pt}{
+	\parbox{1025pt}{
+		\vspace{0.5cm}
+		{\LARGE \textbf{Acoustic Features}}
 		\begin{enumerate}
-			\item The MFCC feature matrix is reduced to the first 1000 and the last 1000 measurement points, which results in a 13 by 2000 matrix  
+			\item The MFCC features of the first 10 second are used
+			\item The MFCC feature of the last 10 second are used 
+			\item If audio file is shorter than 20 seconds the missing MFCC features are zeroized
 		\end{enumerate}
 	}}
 
@@ -175,7 +186,7 @@
 %----------------------------------------------------------------------------------------
 
 \section*{System Architecture}
-\includegraphics[width=\linewidth]{Bilder/CNN_Diagram.png}
+\includegraphics[width=0.9\linewidth]{Bilder/CNN_Diagram.png}
 
 %----------------------------------------------------------------------------------------
 %	CONCLUSIONS
@@ -186,18 +197,20 @@
 
 \section*{Intermediate Results}
 
-\begin{tabular}{c | l | c | c | c | c | c }
+\begin{tabular}{c | c | c | c | c | c | c }
 	
-	& \rowcolor{lightgrey} Epochs & Accuracy (\%) & Trainable & Learning Rate & Activation func. & Loss func. \\
-	& \rowcolor{lightgrey} &  & Embeddings & & & \\
+	& Epochs & Accuracy (\%) & Trainable & Learning  Rate & Activation func.& Loss func. \\
+	& &  & Embeddings & & & \\
 	\hline
-	\parbox[c]{1cm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{Lexical}}} & \rowcolor{lightblue} 15 & 72.2414 & False & 0.05 & TanH & Hinge-Loss\\
-	& \rowcolor{lightblue} 15 & 72.4881 & False & 0.05 & TanH & Hinge-Loss\\
-	& \rowcolor{lightblue} 15 & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
-
-	\parbox[c]{1cm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{Acolex}}} & \rowcolor{lightgreen} 15 & 69.824 & False & 0.01 & Sigmoid & Hinge-Loss\\
-	& \rowcolor{lightgreen} dummy & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
-	& \rowcolor{lightgreen} dummy & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
+	\hline
+	{\multirow{3}{*}{\centering \rotatebox[origin=c]{90}{Lexical}}} & 15 & 78.42 & True & 0.05 & TanH & Hinge-Loss\\
+	& 15 & 69.62 & False & 0.05 & TanH & Cross Entropy\\
+	& 15 & 78.66 & True & 0.05 & TanH & Cross Entropy\\
+	\hline
+	\hline
+	{\multirow{3}{*}{\rotatebox[origin=c]{90}{Acolex}}} & 15 & 69.82 & False & 0.01 & Sigmoid & Hinge-Loss\\
+	& 15 & 77.90 & True & 0.01 & TanH & Hinge-Loss\\
+	%& dummy & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
 \end{tabular}
 
 %----------------------------------------------------------------------------------------
@@ -208,9 +221,11 @@
 \begin{itemize}
 	\item What we plan next:
 	\begin{itemize}
-		\item Varying MFCC feature size 
-		\item Including word2vec features for the test and development set
-		\item Implementation of an additional embedding layer between CNN output and output layer
+		\item Varying MFCC feature amount
+		\item Using smoothed training data to better balance the classes
+		\item Using stop word filtering 
+		\item Including words of the test and development set into the embedding layer
+		\item Insertion of an additional fully connected layer between the CNN output and the softmax layer
 	
 	\end{itemize}		
 \end{itemize}
