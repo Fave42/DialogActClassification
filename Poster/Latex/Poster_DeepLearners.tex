@@ -203,9 +203,19 @@
 	& &  & Embeddings & & & \\
 	\hline
 	\hline
-	{\multirow{3}{*}{\centering \rotatebox[origin=c]{90}{Lexical}}} & 15 & 78.42 & True & 0.05 & TanH & Hinge-Loss\\
-	& 15 & 69.62 & False & 0.05 & TanH & Cross Entropy\\
+	{\multirow{12}{*}{\centering \rotatebox[origin=c]{90}{Lexical}}} & 15 & 78.42 & True & 0.05 & TanH & Hinge-Loss\\
+	& 15 & 70.89 & False & 0.05 & TanH & Hinge-Loss\\
+	& 15 &  & True & 0.05 & Relu & Hinge-Loss\\
+	& 15 & 60.50 & False & 0.05 & Relu & Hinge-Loss\\
+	& 15 &  & True & 0.05 & Sigmoid & Hinge-Loss\\
+	& 15 &  & False & 0.05 & Sigmoid & Hinge-Loss\\
 	& 15 & 78.66 & True & 0.05 & TanH & Cross Entropy\\
+	& 15 & 69.62 & False & 0.05 & TanH & Cross Entropy\\
+	& 15 &  & True & 0.05 & Relu & Cross Entropy\\
+	& 15 &  & False & 0.05 & Relu & Cross Entropy\\
+	& 15 &  & True & 0.05 & Sigmoid & Cross Entropy\\
+	& 15 &  & False & 0.05 & Sigmoid & Cross Entropy\\
+		
 	\hline
 	\hline
 	{\multirow{3}{*}{\rotatebox[origin=c]{90}{Acolex}}} & 15 & 69.82 & False & 0.01 & Sigmoid & Hinge-Loss\\

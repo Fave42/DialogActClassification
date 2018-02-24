@@ -24,9 +24,9 @@ import os
 
 ### Tunable Variables
 numEpoch = 15            # Number of Epochs for training
-trainableEmbeddings = True
-activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
-lossFunction = "Hinge-Loss"
+trainableEmbeddings = False
+activationFunction = "Relu"     #"CNN = tanh + FCL = Relu"
+lossFunction = "Cross Entropy"
 learningRate = 0.05
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
@@ -186,8 +186,8 @@ with tf.name_scope("Two_Word_Context"):
         b_conv_L1_2WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        # h_conv_L1_2WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
-        h_conv_L1_2WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
+        h_conv_L1_2WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
+        # h_conv_L1_2WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
         # h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 105)
@@ -200,8 +200,8 @@ with tf.name_scope("Three_Word_Context"):
         b_conv_L1_3WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        # h_conv_L1_3WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
-        h_conv_L1_3WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
+        h_conv_L1_3WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
+        # h_conv_L1_3WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
         # h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 104)
@@ -214,8 +214,8 @@ with tf.name_scope("Four_Word_Context"):
         b_conv_L1_4WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        # h_conv_L1_4WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
-        h_conv_L1_4WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
+        h_conv_L1_4WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
+        # h_conv_L1_4WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
         # h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 103)
@@ -249,9 +249,9 @@ with tf.name_scope("Final_Linear_Function"):
     y = tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2
 
 # Softmax Output, loss-function
-# loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
+loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
 # loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
-loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
+# loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
 
 # Training
 # Optimizer
