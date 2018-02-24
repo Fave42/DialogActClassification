@@ -197,29 +197,34 @@
 
 \section*{Intermediate Results}
 
-\begin{tabular}{c | c | c | c | c | c | c }
+\begin{tabular}{c | c |c | c | c | c | c | c }
 	
-	& Epochs & Accuracy (\%) & Trainable & Learning  Rate & Activation func.& Loss func. \\
-	& &  & Embeddings & & & \\
+	& Epochs & Dropout & Accuracy & Trainable & Learning & Activation & Loss \\
+	& & &  (\%) & Embeddings & Rate & function & function\\
 	\hline
 	\hline
-	{\multirow{12}{*}{\centering \rotatebox[origin=c]{90}{Lexical}}} & 15 & 78.42 & True & 0.05 & TanH & Hinge-Loss\\
-	& 15 & 70.89 & False & 0.05 & TanH & Hinge-Loss\\
-	& 15 &  & True & 0.05 & Relu & Hinge-Loss\\
-	& 15 & 60.50 & False & 0.05 & Relu & Hinge-Loss\\
-	& 15 &  & True & 0.05 & Sigmoid & Hinge-Loss\\
-	& 15 &  & False & 0.05 & Sigmoid & Hinge-Loss\\
-	& 15 & 78.66 & True & 0.05 & TanH & Cross Entropy\\
-	& 15 & 69.62 & False & 0.05 & TanH & Cross Entropy\\
-	& 15 &  & True & 0.05 & Relu & Cross Entropy\\
-	& 15 &  & False & 0.05 & Relu & Cross Entropy\\
-	& 15 &  & True & 0.05 & Sigmoid & Cross Entropy\\
-	& 15 &  & False & 0.05 & Sigmoid & Cross Entropy\\
+	{\multirow{12}{*}{\centering \rotatebox[origin=c]{90}{Lexical}}} & 15 & 0.5 & 78.42 & True & 0.05 & TanH & Hinge-Loss\\
+	& 15 & 0.5 & 70.89 & False & 0.05 & TanH & Hinge-Loss\\
+	& 15 & 0.5 & 77.73 & True & 0.05 & Relu & Hinge-Loss\\
+	& 15 & 0.5 & 60.50 & False & 0.05 & Relu & Hinge-Loss\\
+	& 15 & 0.5 & 76.86 & True & 0.05 & Sigmoid & Hinge-Loss\\
+	& 15 & 0.5 & 67.85 & False & 0.05 & Sigmoid & Hinge-Loss\\
+	& 15 & 0.5 & 78.66 & True & 0.05 & TanH & Cross Entropy\\
+	& 15 & 0.5 & 69.62 & False & 0.05 & TanH & Cross Entropy\\
+	& 15 & 0.5 & 78.10 & True & 0.05 & Relu & Cross Entropy\\
+	& 15 & 0.5 & 70.24 & False & 0.05 & Relu & Cross Entropy\\
+	& 15 & 0.5 &  & True & 0.05 & Sigmoid & Cross Entropy\\
+	& 15 & 0.5 &  & False & 0.05 & Sigmoid & Cross Entropy\\
 		
 	\hline
 	\hline
-	{\multirow{3}{*}{\rotatebox[origin=c]{90}{Acolex}}} & 15 & 69.82 & False & 0.01 & Sigmoid & Hinge-Loss\\
-	& 15 & 77.90 & True & 0.01 & TanH & Hinge-Loss\\
+	{\multirow{6}{*}{\rotatebox[origin=c]{90}{Acolex}}} & 15 & 0.5 & 77.90 & True & 0.01 & TanH & Hinge-Loss\\
+	& 15 & 0.5 & 73.18 & False & 0.01 & TanH & Hinge-Loss\\
+	& 15 & 0.5 &  & True & 0.01 & Relu & Hinge-Loss\\
+	& 15 & 0.5 &  & False & 0.01 & Relu & Hinge-Loss\\
+	& 15 & 0.5 & 73.34 & True & 0.01 & Sigmoid & Hinge-Loss\\
+	& 15 & 0.5 &  & False & 0.01 & Sigmoid & Hinge-Loss\\
+
 	%& dummy & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
 \end{tabular}
 
