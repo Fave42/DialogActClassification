@@ -24,10 +24,10 @@ import os
 
 ### Tunable Variables
 numEpoch = 15            # Number of Epochs for training
-trainableEmbeddings = False
+trainableEmbeddings = True
 activationFunction = "Sigmoid"     #"CNN = tanh + FCL = Relu"
 lossFunction = "Cross Entropy"
-learningRate = 0.05
+learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
 
