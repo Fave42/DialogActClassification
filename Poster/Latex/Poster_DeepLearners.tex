@@ -144,8 +144,8 @@
 
 \subsection*{word2vec}
 \begin{itemize}
-	\item For the word embedding layer we use the pre-trained Google word2vector model
-	\item Contains 3 million words representing one word as a 300-dimensional vector
+	\item For the embedding layer we use the pre-trained Google word2vector model
+	\item Contains 3 million words, representing each word as a 300-dimensional vector
 \end{itemize}
 
 \large
@@ -155,7 +155,7 @@
 		\vspace{0.5cm}
 		{\LARGE \textbf{Embedding Matrix}}
 		\begin{enumerate}
-			\item All words from the training set are inserted into an embedding matrix
+			\item All words of the corpus are inserted into an embedding matrix
 			\item Each word is represented by it's corresponding vector from \textit{word2vec}
 			\item If a word is not contained in \textit{word2vec} it gets assigned a random vector
 			\item Unkown word and no word vectors added
@@ -203,25 +203,28 @@
 	& & &  (\%) & Embeddings & Rate & function & function\\
 	\hline
 	\hline
-	{\multirow{12}{*}{\centering \rotatebox[origin=c]{90}{Lexical}}} & 15 & 0.5 & 78.42 & True & 0.05 & TanH & Hinge-Loss\\
+	{\multirow{15}{*}{\centering \rotatebox[origin=c]{90}{Lexical}}} & 15 & 0.5 & 78.42 & True & 0.05 & TanH & Hinge-Loss\\
 	& 15 & 0.5 & 70.89 & False & 0.05 & TanH & Hinge-Loss\\
 	& 15 & 0.5 & 77.73 & True & 0.05 & Relu & Hinge-Loss\\
 	& 15 & 0.5 & 60.50 & False & 0.05 & Relu & Hinge-Loss\\
 	& 15 & 0.5 & 76.86 & True & 0.05 & Sigmoid & Hinge-Loss\\
 	& 15 & 0.5 & 67.85 & False & 0.05 & Sigmoid & Hinge-Loss\\
+	& 15 & 0.5 & 78.56 & True & 0.01 & TanH & Cross Entropy\\
 	& 15 & 0.5 & 78.66 & True & 0.05 & TanH & Cross Entropy\\
 	& 15 & 0.5 & 69.62 & False & 0.05 & TanH & Cross Entropy\\
+	& 15 & 0.5 & 77.09 & True & 0.01 & Relu & Cross Entropy\\
 	& 15 & 0.5 & 78.10 & True & 0.05 & Relu & Cross Entropy\\
 	& 15 & 0.5 & 70.24 & False & 0.05 & Relu & Cross Entropy\\
-	& 15 & 0.5 &  & True & 0.05 & Sigmoid & Cross Entropy\\
-	& 15 & 0.5 &  & False & 0.05 & Sigmoid & Cross Entropy\\
+	& 15 & 0.5 & 77.14 & True & 0.01 & Sigmoid & Cross Entropy\\
+	& 15 & 0.5 & 78.98 & True & 0.05 & Sigmoid & Cross Entropy\\
+	& 15 & 0.5 & 66.11 & False & 0.05 & Sigmoid & Cross Entropy\\
 		
 	\hline
 	\hline
 	{\multirow{6}{*}{\rotatebox[origin=c]{90}{Acolex}}} & 15 & 0.5 & 77.90 & True & 0.01 & TanH & Hinge-Loss\\
 	& 15 & 0.5 & 73.18 & False & 0.01 & TanH & Hinge-Loss\\
-	& 15 & 0.5 &  & True & 0.01 & Relu & Hinge-Loss\\
-	& 15 & 0.5 &  & False & 0.01 & Relu & Hinge-Loss\\
+	& 15 & 0.5 & 74.58 & True & 0.01 & Relu & Hinge-Loss\\
+	& 15 & 0.5 & 62.26 & False & 0.01 & Relu & Hinge-Loss\\
 	& 15 & 0.5 & 73.34 & True & 0.01 & Sigmoid & Hinge-Loss\\
 	& 15 & 0.5 &  & False & 0.01 & Sigmoid & Hinge-Loss\\
 
@@ -231,6 +234,9 @@
 %----------------------------------------------------------------------------------------
 %	FORTHCOMING RESEARCH
 %----------------------------------------------------------------------------------------
+\color{Black} % SaddleBrown color for the conclusions to make them stand out
+\large
+
 \section*{Potential Future Work}
 
 \begin{itemize}
