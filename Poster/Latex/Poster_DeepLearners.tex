@@ -26,7 +26,10 @@
 
 \usepackage[svgnames]{xcolor} % Specify colors by their 'svgnames', for a full list of all colors available see here: http://www.latextemplates.com/svgnames-colors
 
-\usepackage{times} % Use the times font
+\usepackage[scaled]{berasans}
+\renewcommand*\familydefault{\sfdefault}  %% Only if the base font of the document is to be sans serif
+\usepackage[T1]{fontenc}
+%\usepackage{times} % Use the times font
 %\usepackage{palatino} % Uncomment to use the Palatino font
 
 \usepackage{graphicx} % Required for including images
@@ -47,7 +50,7 @@
 \setlength\parindent{0pt}
 
 \begin{document}
-	\fontfamily{cmss}\selectfont
+%	\fontfamily{cmss}\selectfont
 
 %----------------------------------------------------------------------------------------
 %	POSTER HEADER 
@@ -60,7 +63,7 @@
 % The widths of these boxes can be easily edited to accommodate your content as you see fit
 
 \begin{minipage}[b]{0.20\linewidth}
-	\centering\includegraphics[width=15cm]{Bilder/logo_UniStuttgart.jpg} % Logo or a photo of you, adjust its dimensions here
+	\centering\includegraphics[width=12cm]{Bilder/logo_UniStuttgart.jpg} % Logo or a photo of you, adjust its dimensions here
 \end{minipage}
 %
 \begin{minipage}[b]{0.60\linewidth}
@@ -68,10 +71,11 @@
 	\Huge\textit{using Word Embeddings \& Acoustic Features} \color{Black}\\[1cm] % Subtitle
 	\huge \textbf{Jens Beck, Fabian Fey, Richard Kollotzek}\\ % Author(s)
 	\huge Institute for Natural Language Processing, University of Stuttgart\\ % University/organization
+	\vspace{1.5cm}
 \end{minipage}
 %
 \begin{minipage}[b]{0.20\linewidth}
-	\centering\includegraphics[width=15cm]{Bilder/logo_IMS_klein.jpg} % Logo or a photo of you, adjust its dimensions here
+	\centering\includegraphics[width=12cm]{Bilder/logo_IMS_klein.jpg} % Logo or a photo of you, adjust its dimensions here
 \end{minipage}
 
 \vspace{1cm} % A bit of extra whitespace between the header and poster content
@@ -123,7 +127,7 @@
 \begin{itemize}
 	\item We use a subset of the Switchboard Telephone Speech Corpus which consists of lexical and acoustic data
 	\item Our subset includes 40,556 sentences
-	\item The lexical dataset is divided in training, development and test data
+	\item The lexical dataset is divided into training, development and test data
 	\item The acoustic dataset includes a recording for every utterance
 \end{itemize}
 
@@ -156,17 +160,17 @@
 \colorbox{lightblue}{
 	\parbox{1025pt}{
 		\vspace{0.5cm}
-		{\LARGE \textbf{Embedding Matrix}}
+		{\Large \textbf{Embedding Matrix}}
 		\begin{enumerate}
 			\item All words of the corpus are inserted into an embedding matrix
-			\item Each word is represented by it's corresponding vector from \textit{word2vec}
+			\item Each word is represented by it is corresponding vector from \textit{word2vec}
 			\item If a word is not contained in \textit{word2vec} it gets assigned a random vector
 			\item Unkown word and no word vectors added
 		\end{enumerate}
 		\vspace{0.5cm}
-		{\LARGE \textbf{Lexical Features}}
+		{\Large \textbf{Lexical Features}}
 		\begin{enumerate}	
-			\item Each sentence is converted into a sequence of indexes
+			\item Each sentence is converted into a sequence of indices
 			\item Each index is the corresponding line in the embedding matrix for one word
 			\item The maximum sentence length is set to 100 words
 		\end{enumerate}
@@ -174,7 +178,7 @@
 \colorbox{lightgreen}{
 	\parbox{1025pt}{
 		\vspace{0.5cm}
-		{\LARGE \textbf{Acoustic Features}}
+		{\Large \textbf{Acoustic Features}}
 		\begin{enumerate}
 			\item The MFCC features of the first 10 second are used
 			\item The MFCC feature of the last 10 second are used 
@@ -189,7 +193,10 @@
 %----------------------------------------------------------------------------------------
 
 \section*{System Architecture}
-\includegraphics[width=0.9\linewidth]{Bilder/CNN_Diagram.png}
+\begin{center}
+	\includegraphics[width=0.9\linewidth]{Bilder/CNN_Diagram.png}
+\end{center}
+
 
 %----------------------------------------------------------------------------------------
 %	CONCLUSIONS
@@ -242,17 +249,13 @@
 
 \section*{Potential Future Work}
 
-\begin{itemize}
-	\item What we plan next:
 	\begin{itemize}
 		\item Varying MFCC feature amount
 		\item Using smoothed training data to better balance the classes
 		\item Using stop word filtering 
-		\item Including words of the test and development set into the embedding layer
 		\item Insertion of an additional fully connected layer between the CNN output and the softmax layer
 	
 	\end{itemize}		
-\end{itemize}
 
 %- Further optimizations\\
 %-- Maybe varying MFCC feature size\\
