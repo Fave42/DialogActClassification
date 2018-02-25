@@ -127,13 +127,16 @@
 	\item The acoustic dataset includes a recording for every utterance
 \end{itemize}
 
-\begin{tabular}{ l| c c c c || r}
-	Dataset\textbackslash Channel & opinion & question & backchannel & statement & Sum\\
-	\hline
-	training & 4984 & 2150 & 6792 & 14459 & 28385\\
-	development & 1068 & 460 & 1455 & 3098 & 6081\\
-	test & 1070 & 463 & 1458 & 3099 & 6090\\
-\end{tabular}
+%\begin{center}
+	\begin{tabular}{ c l| c c c c || r}
+		&\multicolumn{1}{c}{} & \multicolumn{4}{c}{Channel} & \\
+		& & opinion & question & backchannel & statement & Sum\\
+		\cline{2-7}
+		{\multirow{3}{2cm}{\centering \rotatebox[origin=c]{90}{Dataset}}}& training & 4984 & 2150 & 6792 & 14459 & 28385\\
+		& development & 1068 & 460 & 1455 & 3098 & 6081\\
+		& test & 1070 & 463 & 1458 & 3099 & 6090\\
+	\end{tabular}
+%\end{center}
 
 \subsection*{MFCC features}
 \begin{itemize}
@@ -196,41 +199,41 @@
 \large
 
 \section*{Intermediate Results}
-
-\begin{tabular}{c | c |c | c | c | c | c | c }
-	
-	& Epochs & Dropout & Accuracy & Trainable & Learning & Activation & Loss \\
-	& & &  (\%) & Embeddings & Rate & function & function\\
-	\hline
-	\hline
-	{\multirow{15}{*}{\centering \rotatebox[origin=c]{90}{Lexical}}} & 15 & 0.5 & 78.42 & True & 0.05 & TanH & Hinge-Loss\\
-	& 15 & 0.5 & 70.89 & False & 0.05 & TanH & Hinge-Loss\\
-	& 15 & 0.5 & 77.73 & True & 0.05 & Relu & Hinge-Loss\\
-	& 15 & 0.5 & 60.50 & False & 0.05 & Relu & Hinge-Loss\\
-	& 15 & 0.5 & 76.86 & True & 0.05 & Sigmoid & Hinge-Loss\\
-	& 15 & 0.5 & 67.85 & False & 0.05 & Sigmoid & Hinge-Loss\\
-	& 15 & 0.5 & 78.56 & True & 0.01 & TanH & Cross Entropy\\
-	& 15 & 0.5 & 78.66 & True & 0.05 & TanH & Cross Entropy\\
-	& 15 & 0.5 & 69.62 & False & 0.05 & TanH & Cross Entropy\\
-	& 15 & 0.5 & 77.09 & True & 0.01 & Relu & Cross Entropy\\
-	& 15 & 0.5 & 78.10 & True & 0.05 & Relu & Cross Entropy\\
-	& 15 & 0.5 & 70.24 & False & 0.05 & Relu & Cross Entropy\\
-	& 15 & 0.5 & 77.14 & True & 0.01 & Sigmoid & Cross Entropy\\
-	& 15 & 0.5 & 78.98 & True & 0.05 & Sigmoid & Cross Entropy\\
-	& 15 & 0.5 & 66.11 & False & 0.05 & Sigmoid & Cross Entropy\\
+\begin{center}
+	\begin{tabular}{c | c |c | c | c | c | c | c }
 		
-	\hline
-	\hline
-	{\multirow{6}{*}{\rotatebox[origin=c]{90}{Acolex}}} & 15 & 0.5 & 77.90 & True & 0.01 & TanH & Hinge-Loss\\
-	& 15 & 0.5 & 73.18 & False & 0.01 & TanH & Hinge-Loss\\
-	& 15 & 0.5 & 74.58 & True & 0.01 & Relu & Hinge-Loss\\
-	& 15 & 0.5 & 62.26 & False & 0.01 & Relu & Hinge-Loss\\
-	& 15 & 0.5 & 73.34 & True & 0.01 & Sigmoid & Hinge-Loss\\
-	& 15 & 0.5 &  & False & 0.01 & Sigmoid & Hinge-Loss\\
-
-	%& dummy & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
-\end{tabular}
-
+		& Epochs & Dropout & Accuracy & Trainable & Learning & Activation & Loss \\
+		& & &  (\%) & Embeddings & Rate & function & function\\
+		\hline
+		\hline
+		{\multirow{15}{*}{\centering \rotatebox[origin=c]{90}{Lexical}}} & 15 & 0.5 & 78.42 & True & 0.05 & TanH & Hinge-Loss\\
+		& 15 & 0.5 & 70.89 & False & 0.05 & TanH & Hinge-Loss\\
+		& 15 & 0.5 & 77.73 & True & 0.05 & Relu & Hinge-Loss\\
+		& 15 & 0.5 & 60.50 & False & 0.05 & Relu & Hinge-Loss\\
+		& 15 & 0.5 & 76.86 & True & 0.05 & Sigmoid & Hinge-Loss\\
+		& 15 & 0.5 & 67.85 & False & 0.05 & Sigmoid & Hinge-Loss\\
+		& 15 & 0.5 & 78.56 & True & 0.01 & TanH & Cross Entropy\\
+		& \cellcolor{lightblue}15 & \cellcolor{lightblue}0.5 & \cellcolor{lightblue}78.66 & \cellcolor{lightblue}True & \cellcolor{lightblue}0.05 & \cellcolor{lightblue}TanH & \cellcolor{lightblue}Cross Entropy\\
+		& 15 & 0.5 & 69.62 & False & 0.05 & TanH & Cross Entropy\\
+		& 15 & 0.5 & 77.09 & True & 0.01 & Relu & Cross Entropy\\
+		& \cellcolor{lightblue}15 & \cellcolor{lightblue}0.5 & \cellcolor{lightblue}78.10 & \cellcolor{lightblue}True & \cellcolor{lightblue}0.05 & \cellcolor{lightblue}Relu & \cellcolor{lightblue}Cross Entropy\\
+		& 15 & 0.5 & 70.24 & False & 0.05 & Relu & Cross Entropy\\
+		& 15 & 0.5 & 77.14 & True & 0.01 & Sigmoid & Cross Entropy\\
+		& \cellcolor{lightblue}15 & \cellcolor{lightblue}0.5 & \cellcolor{lightblue}78.98 & \cellcolor{lightblue}True & \cellcolor{lightblue}0.05 & \cellcolor{lightblue}Sigmoid & \cellcolor{lightblue}Cross Entropy\\
+		& 15 & 0.5 & 66.11 & False & 0.05 & Sigmoid & Cross Entropy\\
+			
+		\hline
+		\hline
+		{\multirow{6}{*}{\rotatebox[origin=c]{90}{Acolex}}} & \cellcolor{lightgreen}15 & \cellcolor{lightgreen}0.5 & \cellcolor{lightgreen}77.90 & \cellcolor{lightgreen}True & \cellcolor{lightgreen}0.01 & \cellcolor{lightgreen}TanH & \cellcolor{lightgreen}Hinge-Loss\\
+		& 15 & 0.5 & 73.18 & False & 0.01 & TanH & Hinge-Loss\\
+		& \cellcolor{lightgreen}15 & \cellcolor{lightgreen}0.5 & \cellcolor{lightgreen}74.58 & \cellcolor{lightgreen}True & \cellcolor{lightgreen}0.01 & \cellcolor{lightgreen}Relu & \cellcolor{lightgreen}Hinge-Loss\\
+		& 15 & 0.5 & 62.26 & False & 0.01 & Relu & Hinge-Loss\\
+		& \cellcolor{lightgreen}15 & \cellcolor{lightgreen}0.5 & \cellcolor{lightgreen}73.34 & \cellcolor{lightgreen}True & \cellcolor{lightgreen}0.01 & \cellcolor{lightgreen}Sigmoid & \cellcolor{lightgreen}Hinge-Loss\\
+		& 15 & 0.5 & 61.67 & False & 0.01 & Sigmoid & Hinge-Loss\\
+	
+		%& dummy & 77.8655 & True & 0.05 & TanH & Hinge-Loss\\
+	\end{tabular}
+\end{center}
 %----------------------------------------------------------------------------------------
 %	FORTHCOMING RESEARCH
 %----------------------------------------------------------------------------------------
