@@ -23,7 +23,7 @@ import datetime
 import os
 
 ### Tunable Variables
-numEpoch = 15            # Number of Epochs for training
+numEpoch = 25          # Number of Epochs for training
 trainableEmbeddings = True
 activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
 lossFunction = "Hinge-Loss"
