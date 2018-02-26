@@ -26,10 +26,11 @@ import os
 numEpoch = 15            # Number of Epochs for training
 trainableEmbeddings = True
 activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
-lossFunction = "Cross Entropy"
-learningRate = 0.01
+lossFunction = "Hinge-Loss"
+learningRate = 0.05
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
+weightSeed = 111121
 
 ### Static Variables
 batchSize = 100          # Batchsize for training
@@ -62,7 +63,7 @@ print("\t---> Done with importing!")
 
 ### Functions ###
 def weightVariable(shape):
-    initial = tf.truncated_normal(shape, stddev=1.0, seed=111121)
+    initial = tf.truncated_normal(shape, stddev=1.0, seed=weightSeed)
     return tf.Variable(initial)
 
 
@@ -249,9 +250,9 @@ with tf.name_scope("Final_Linear_Function"):
     y = tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2
 
 # Softmax Output, loss-function
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
+# loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
 # loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
-# loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
+loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
 
 # Training
 # Optimizer
@@ -277,6 +278,7 @@ logFileTmp += "Number of filters 4WC: " + str(filterNumber4WC) + "\n"
 logFileTmp += "Trainable Embeddings: " + str(trainableEmbeddings) + "\n"
 logFileTmp += "Batchsize: " + str(batchSize) + "\n"
 logFileTmp += "Learning Rate: " + str(learningRate) + "\n"
+logFileTmp += "Weightmatrix Seed: " + str(weightSeed) + "\n"
 logFileTmp += "Activation Function: " + str(activationFunction) + "\n"
 logFileTmp += "Loss Function: " + str(lossFunction) + "\n"
 logFileTmp += "Dropout: " + str(dropout) + "\n"
