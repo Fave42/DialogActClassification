@@ -36,7 +36,7 @@ def getTypes(pathList):
                     word = word.lower()     # every word to lowercase
                     if word not in typeList:
                         typeList.append(word)
-
+    print(len(typeList))
     return typeList
 
 
@@ -78,41 +78,41 @@ def generateFeatureVector(typeList, fileNameList):
                 #tmpTrainingTuple = ()              
                 # for j,
                 # Discard every second "statement" sentence to better distribute the trainingsexamples
-                if (dialogClass != 'statement' or ((dialogClass == 'statement') and (statementSmoother % 2 == 0))):
-                    for i, word in enumerate(sentenceSplit):
-                        word = word.lower()     # every word to lowercase
-                        if (word in typeList) and (i <= 100):   # adds every word up to a sentence length of 100
-                            tmpFeatureVec[i] = typeList.index(word)
-                        elif (word not in typeList) and (i <= 100):
-                            tmpFeatureVec[i] = len(typeList)  # every unknown word gets the index of the random vector
+                # if (dialogClass != 'statement' or ((dialogClass == 'statement') and (statementSmoother % 2 == 0))):
+                for i, word in enumerate(sentenceSplit):
+                    word = word.lower()     # every word to lowercase
+                    if (word in typeList) and (i <= 100):   # adds every word up to a sentence length of 100
+                        tmpFeatureVec[i] = typeList.index(word)
+                    elif (word not in typeList) and (i <= 100):
+                        tmpFeatureVec[i] = len(typeList)  # every unknown word gets the index of the random vector
 
-                    if dialogClass == "backchannel":
-                        tmpClassVec = np.array([1, 0, 0, 0])
-                    elif dialogClass == "statement":
-                        tmpClassVec = np.array([0, 1, 0, 0])
-                        statementSmoother += 1
-                    elif dialogClass == "question":
-                        tmpClassVec = np.array([0, 0, 1, 0])
-                    elif dialogClass == "opinion":
-                        tmpClassVec = np.array([0, 0, 0, 1])
+                if dialogClass == "backchannel":
+                    tmpClassVec = np.array([1, 0, 0, 0])
+                elif dialogClass == "statement":
+                    tmpClassVec = np.array([0, 1, 0, 0])
+                    statementSmoother += 1
+                elif dialogClass == "question":
+                    tmpClassVec = np.array([0, 0, 1, 0])
+                elif dialogClass == "opinion":
+                    tmpClassVec = np.array([0, 0, 0, 1])
 
-                    tmpTrainingTuple = (tmpFeatureVec, tmpClassVec)
-                    tmpTrainingTuple = np.asarray(tmpTrainingTuple)
+                tmpTrainingTuple = (tmpFeatureVec, tmpClassVec)
+                tmpTrainingTuple = np.asarray(tmpTrainingTuple)
 
-                    outputList.append(tmpTrainingTuple)
+                outputList.append(tmpTrainingTuple)
 
         outputList = np.asarray(outputList)
 
         # saves the outputList for every file
         if ("train" in fileName):
             print("Dumping the training ouputList as pickle file...")
-            savePath = 'NN_Input_Files/trainData_Embeddings_smoothedClasses.pickle'
+            savePath = 'NN_Input_Files/trainData_Embeddings_lex_final_test.pickle'
         if ("test" in fileName):
             print("Dumping the test ouputList as pickle file...")
-            savePath = 'NN_Input_Files/testData_Embeddings_smoothedClasses.pickle'
+            savePath = 'NN_Input_Files/testData_Embeddings_lex_final_test.pickle'
         if ("dev" in fileName):
             print("Dumping the development ouputList as pickle file...")
-            savePath = 'NN_Input_Files/devData_Embeddings_smoothedClasses.pickle'
+            savePath = 'NN_Input_Files/devData_Embeddings_lex_final_test.pickle'
 
         with open(savePath, 'wb') as handle:
             pickle.dump(outputList, handle, protocol=2)
@@ -151,7 +151,8 @@ def getRandomDimensions():
 if __name__ == "__main__":
     fileNameList = ["Train/train.txt", "Dev/dev.txt", "Test/test.txt"]
     mfccNameList = ["Train/train_MFCC_features.arff", "Dev/dev_MFCC_features.arff", "Test/test_MFCC_features.arff"]
-    knownWordFiles = ["Train/train.txt"]
+    # knownWordFiles = ["Train/train.txt", "Dev/dev.txt", "Test/test.txt"]
+    knownWordFiles = ["Train/train.txt", "Dev/dev.txt"]
 
     # Load Google's pre-trained Word2Vec model and time the import
     startTime = time.time()
@@ -184,7 +185,7 @@ if __name__ == "__main__":
 
     # Saves the embedding matrix
     print("Dumping the embeddingMatrix_np as pickle file...")
-    with open('dict/embeddingMatrix_np.pickle', 'wb') as handle:
+    with open('dict/embeddingMatrix_np_lex_final_test.pickle', 'wb') as handle:
         pickle.dump(embeddingMatrix_np, handle, protocol=2)
 
     # generate the feature vector

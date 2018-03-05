@@ -23,10 +23,11 @@ import datetime
 import os
 
 ### Tunable Variables
-numEpoch = 25          # Number of Epochs for training
+numEpoch = 20          # Number of Epochs for training
 trainableEmbeddings = True
 activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
 lossFunction = "Hinge-Loss"
+# lossFunction = "Mean Squared Error"
 learningRate = 0.05
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
@@ -47,9 +48,10 @@ overallTime = time.time()
 
 # Server Paths
 # Without stopwords
-pathTraining = "NN_Input_Files/trainData_Embeddings.pickle"
-pathEvaluation = "NN_Input_Files/devData_Embeddings.pickle"
-pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
+pathTraining = "NN_Input_Files/trainData_Embeddings_lex_final.pickle"
+pathEvaluation = "NN_Input_Files/devData_Embeddings_lex_final.pickle"
+pathTest = "NN_Input_Files/testData_Embeddings_lex_final.pickle"
+pathEmbeddings = "dict/embeddingMatrix_np_lex_final.pickle"
 # With stopwords
 #pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
 #pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
@@ -57,6 +59,7 @@ pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
 print("### Importing Training, Evaluation and Embedding Data! ###")
 trainingList = pickle.load(open(pathTraining, "rb"))
 evaluationList = pickle.load(open(pathEvaluation, "rb"))
+testList = pickle.load(open(pathTest, "rb"))
 embeddingInputs = pickle.load(open(pathEmbeddings, "rb"))
 print("\t---> Done with importing!")
 
@@ -253,6 +256,7 @@ with tf.name_scope("Final_Linear_Function"):
 # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
 # loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
 loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
+# loss = tf.losses.mean_squared_error(labels=y_, predictions=y)
 
 # Training
 # Optimizer
@@ -390,12 +394,17 @@ with tf.Session(config=config) as sess:
     overallEndTime = (time.time() - overallTime) / 60
 
     evaluationTuple = createEvalList(evaluationList)
-    testAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
+    devAccuracy = accuracy.eval(feed_dict={x: evaluationTuple[0], y_: evaluationTuple[1], keep_Prob: 1.0})
 
+    testTuple = createEvalList(testList)
+    testAccuracy = accuracy.eval(feed_dict={x: testTuple[0], y_: testTuple[1], keep_Prob: 1.0})
+
+    print('dev accuracy %g' % devAccuracy)
     print('test accuracy %g' % testAccuracy)
     print("The program was executed in " + str(overallEndTime) + " minutes")
 
     logFileTmp += "########\n"
+    logFileTmp += "Dev Accuracy: " + str(devAccuracy) + "\n"
     logFileTmp += "Test Accuracy: " + str(testAccuracy) + "\n"
     logFileTmp += "The program was executed in " + str(overallEndTime) + " minutes\n"
 

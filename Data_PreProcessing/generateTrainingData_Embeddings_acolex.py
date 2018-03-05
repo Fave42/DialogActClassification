@@ -128,17 +128,17 @@ def generateFeatureVector(typeList, fileNameList, mfccDict):
         if ("train" in fileName):
             print("\t--> Dumping the training outputList as pickle file...")
             with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
-                      'NN_Input_Files/trainData_acolex_Embeddings_full.pickle', 'wb') as handle:
+                      'NN_Input_Files/trainData_acolex_Embeddings_final.pickle', 'wb') as handle:
                 pickle.dump(outputList, handle, protocol=2)
         if ("test" in fileName):
             print("\t--> Dumping the test outputList as pickle file...")
             with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
-                      'NN_Input_Files/testData_acolex_Embeddings_full.pickle', 'wb') as handle:
+                      'NN_Input_Files/testData_acolex_Embeddings_final.pickle', 'wb') as handle:
                 pickle.dump(outputList, handle, protocol=2)
         if ("dev" in fileName):
             print("\t--> Dumping the development outputList as pickle file...")
             with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
-                      'NN_Input_Files/devData_acolex_Embeddings_full.pickle', 'wb') as handle:
+                      'NN_Input_Files/devData_acolex_Embeddings_final.pickle', 'wb') as handle:
                 pickle.dump(outputList, handle, protocol=2)
 
     # If there are unknown IDs, dump them in a text file
@@ -182,7 +182,7 @@ def getRandomDimensions():
 if __name__ == "__main__":
     fileNameList = ["Train/train.txt", "Dev/dev.txt", "Test/test.txt"]
     mfccNameList = ["Train/train_MFCC_features.arff", "Dev/dev_MFCC_features.arff", "Test/test_MFCC_features.arff"]
-    knownWordFiles = ["Train/train.txt", "Dev/dev.txt"]
+    knownWordFiles = ["Train/train.txt", "Dev/dev.txt", "Test/test.txt"]
 
     # Load Google's pre-trained Word2Vec model and time the import
     startTime = time.time()
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     # Saves the embedding matrix
     print("Dumping the embeddingMatrix_np as pickle file...")
     with open('/mount/arbeitsdaten31/studenten1/deeplearning/2017/Deep_Learners/Processing_Resources/'
-              'dict/embeddingMatrix_np_acolex_full.pickle', 'wb') as handle:
+              'dict/embeddingMatrix_np_acolex_final.pickle', 'wb') as handle:
         pickle.dump(embeddingMatrix_np, handle, protocol=2)
     print("\t--> Done!")
     

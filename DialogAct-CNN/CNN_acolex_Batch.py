@@ -51,6 +51,7 @@ overallTime = time.time()
 # Without stopwords
 pathTraining = "NN_Input_Files/trainData_acolex_Embeddings.pickle"
 pathEvaluation = "NN_Input_Files/devData_acolex_Embeddings.pickle"
+pathTest = "NN_Input_Files/testData_acolex_Embeddings.pickle"
 pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
 ### Testing purposes only
 # pathTraining = "NN_Input_Files/sanityTestFiles/trainData_acolex_Embeddings_short.pickle"
@@ -63,6 +64,7 @@ pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
 print("### Importing Training, Evaluation and Embedding Data! ###")
 trainingList = pickle.load(open(pathTraining, "rb"))
 evaluationList = pickle.load(open(pathEvaluation, "rb"))
+testList = pickle.load(open(pathTest, "rb"))
 embeddingInputs = pickle.load(open(pathEmbeddings, "rb"))
 print("\t---> Done with importing!")
 
@@ -447,12 +449,17 @@ with tf.Session(config=config) as sess:
     overallEndTime = (time.time() - overallTime) / 60
 
     evaluationTriple = createEvalList(evaluationList)
-    testAccuracy = accuracy.eval(feed_dict={x: evaluationTriple[0], x_mfcc: evaluationTriple[1], y_: evaluationTriple[2], keep_Prob: 1.0})
+    devAccuracy = accuracy.eval(feed_dict={x: evaluationTriple[0], x_mfcc: evaluationTriple[1], y_: evaluationTriple[2], keep_Prob: 1.0})
 
+    testTriple = createEvalList(testList)
+    testAccuracy = accuracy.eval(feed_dict={x: testTriple[0], x_mfcc: testTriple[1], y_: testTriple[2], keep_Prob: 1.0})
+
+    print('dev accuracy %g' % devAccuracy)
     print('test accuracy %g' % testAccuracy)
     print("The program was executed in " + str(overallEndTime) + " minutes")
 
     logFileTmp += "########\n"
+    logFileTmp += "Dev Accuracy: " + str(devAccuracy) + "\n"
     logFileTmp += "Test Accuracy: " + str(testAccuracy) + "\n"
     logFileTmp += "The program was executed in " + str(overallEndTime) + " minutes\n"
 
