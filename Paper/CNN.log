@@ -1,0 +1,148 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6600) (preloaded format=pdflatex 2018.2.19)  6 MAR 2018 13:21
+entering extended mode
+**./CNN.tex
+(CNN.tex
+LaTeX2e <2017-04-15>
+Babel <3.18> and hyphenation patterns for 0 language(s) loaded.
+(/home/fabian/.miktex/texmfs/install/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/home/fabian/.miktex/texmfs/install/tex/latex/base/size11.clo
+File: size11.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (acl2015.sty
+Conference Style for ACL 2015 -- released December 7, 2014
+\titlebox=\skip43
+) (/home/fabian/.miktex/texmfs/install/tex/latex/psnfss/times.sty
+Package: times 2005/04/12 PSNFSS-v9.2a (SPQR) 
+)
+(/home/fabian/.miktex/texmfs/install/tex/latex/url/url.sty
+\Urlmuskip=\muskip10
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+(/home/fabian/.miktex/texmfs/install/tex/latex/base/latexsym.sty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 52.
+)
+(/home/fabian/.miktex/texmfs/install/tex/latex/lipsum/lipsum.sty
+Package: lipsum 2014/07/27 v1.3 150 paragraphs of Lorem Ipsum dummy text
+\c@lips@count=\count87
+) (CNN.aux)
+\openout1 = `CNN.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 45.
+
+(/home/fabian/.miktex/texmfs/install/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 46.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 46.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 46.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 46.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 46.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 46.
+
+(/home/fabian/.miktex/texmfs/install/tex/latex/base/ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 46.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 46.
+
+(/home/fabian/.miktex/texmfs/install/tex/latex/psnfss/ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Underfull \hbox (badness 3068) in paragraph at lines 49--49
+[]\OT1/ptm/m/n/10.95 Nam dui ligula, fringilla a, euismod
+ []
+
+
+Underfull \hbox (badness 1242) in paragraph at lines 49--49
+\OT1/ptm/m/n/10.95 sodales, sollicitudin vel, wisi. Morbi
+ []
+
+
+Underfull \hbox (badness 2452) in paragraph at lines 49--49
+\OT1/ptm/m/n/10.95 auctor lorem non justo. Nam lacus
+ []
+
+
+Underfull \hbox (badness 1997) in paragraph at lines 49--49
+\OT1/ptm/m/n/10.95 et, tellus. Donec aliquet, tortor sed
+ []
+
+
+Underfull \hbox (badness 1057) in paragraph at lines 49--49
+\OT1/ptm/m/n/10.95 magna, vitae ornare odio metus a mi.
+ []
+
+
+Underfull \hbox (badness 2181) in paragraph at lines 53--53
+\OT1/ptm/m/n/10.95 facilisis. Morbi fringilla, wisi in dignissim
+ []
+
+
+Underfull \hbox (badness 1681) in paragraph at lines 53--53
+\OT1/ptm/m/n/10.95 cursus, magna. Donec eu purus. Quisque
+ []
+
+
+Underfull \hbox (badness 1694) in paragraph at lines 53--53
+\OT1/ptm/m/n/10.95 commodo pretium, ultricies non, pharetra in,
+ []
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 57.
+[1{/home/fabian/.miktex/texmfs/data/pdftex/config/pdftex.map}
+
+
+
+] (CNN.aux) ) 
+Here is how much of TeX's memory you used:
+ 634 strings out of 495223
+ 8116 string characters out of 3181619
+ 155023 words of memory out of 3000000
+ 3977 multiletter control sequences out of 15000+200000
+ 16615 words of font info for 41 fonts, out of 3000000 for 9000
+ 0 hyphenation exceptions out of 8191
+ 22i,9n,19p,160b,258s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/home/fabian/.miktex/texmfs/install/fonts/enc/dvips/base/8r.enc}<
+/home/fabian/.miktex/texmfs/install/fonts/type1/urw/courier/ucrr8a.pfb></home/f
+abian/.miktex/texmfs/install/fonts/type1/urw/times/utmb8a.pfb></home/fabian/.mi
+ktex/texmfs/install/fonts/type1/urw/times/utmbi8a.pfb></home/fabian/.miktex/tex
+mfs/install/fonts/type1/urw/times/utmr8a.pfb>
+Output written on CNN.pdf (1 page, 53036 bytes).
+PDF statistics:
+ 23 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

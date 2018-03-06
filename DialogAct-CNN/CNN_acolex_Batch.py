@@ -26,8 +26,8 @@ import os
 numEpoch = 20                    # Number of Epochs for training
 trainableEmbeddings = True
 activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
-lossFunction = "Hinge-Loss"
-learningRate = 0.05
+lossFunction = "Cross Entropy"
+learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
 filterNumberMFCC = 20    # Number of filters for the MFCC features
@@ -49,10 +49,10 @@ overallTime = time.time()
 
 # Server Paths
 # Without stopwords
-pathTraining = "NN_Input_Files/trainData_acolex_Embeddings.pickle"
-pathEvaluation = "NN_Input_Files/devData_acolex_Embeddings.pickle"
-pathTest = "NN_Input_Files/testData_acolex_Embeddings.pickle"
-pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
+pathTraining = "NN_Input_Files/trainData_acolex_Embeddings_final.pickle"
+pathEvaluation = "NN_Input_Files/devData_acolex_Embeddings_final.pickle"
+pathTest = "NN_Input_Files/Test_data/testData_acolex_Embeddings_final.pickle"
+pathEmbeddings = "dict/embeddingMatrix_np_acolex_final.pickle"
 ### Testing purposes only
 # pathTraining = "NN_Input_Files/sanityTestFiles/trainData_acolex_Embeddings_short.pickle"
 # pathEvaluation = "NN_Input_Files/sanityTestFiles/devData_acolex_Embeddings_short.pickle"
@@ -225,7 +225,7 @@ with tf.name_scope("MFCC_Layer"):
         # h_conv_MFCC_L0 = tf.nn.sigmoid(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function sigmoid
     with tf.name_scope("MFCC_CL1_MaxPooling"):
         poolingWindow = numberMFCCFeatures - (mfccFilterSize - 1)
-        h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, poolingWindow)  # with 1951 input --> 40 anoutput
+        h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, poolingWindow)  # with 1951 input --> 40 output
         h_pool_MFCC_L0_3D = tf.reshape(h_pool_MFCC_L0, shape=[1, filterNumberMFCC, -1])
 
 
@@ -303,9 +303,9 @@ with tf.name_scope("Final_Linear_Function"):
     y = tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2
 
 # Softmax Output, loss-function
-# loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
+loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
 # loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
-loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
+# loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
 
 # Training
 # Optimizer
