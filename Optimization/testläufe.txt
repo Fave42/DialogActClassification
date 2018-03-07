@@ -80,3 +80,21 @@ Ohne reshape vor der konkatenation
     pathEmbeddings = "dict/embeddingMatrix_np_acolex_full.pickle"
 
     1. Lauf: 0.69824 Log: 18-02-20-14-40-44
+
+#########################################
+Anzahl der MFCC Features in jedem Datenset
+-------------
+Test:
+Durchschnitt: 251.88226600985223
+Maximum: 2556
+Minimum: 4
+
+Train:
+Durchschnitt: 251.5069757609921
+Maximum: 3360
+Minimum: 1
+
+Dev:
+Durchschnitt: 248.8741983226443
+Maximum: 2737
+Minimum: 6

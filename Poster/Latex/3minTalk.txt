@@ -1,0 +1,13 @@
+1. Fabian
+    Introduction
+        Who are we
+    Goals
+        What do want to achieve
+    Data
+2. Richard
+    System Architecture
+3. Jens
+    Intermediate and current results
+        Which system (lex/acolex) works best (activation func. etc.)
+    We are investigating why lexical is better than acolex
+        More filters? To few MFCC features?

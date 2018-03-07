@@ -26,7 +26,7 @@ import os
 numEpoch = 20                    # Number of Epochs for training
 trainableEmbeddings = True
 activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
-lossFunction = "Cross Entropy"
+lossFunction = "Mean Squared Error"
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
@@ -303,9 +303,10 @@ with tf.name_scope("Final_Linear_Function"):
     y = tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2
 
 # Softmax Output, loss-function
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
+# loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
 # loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
 # loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
+loss = tf.losses.mean_squared_error(labels=y_, predictions=y)
 
 # Training
 # Optimizer
