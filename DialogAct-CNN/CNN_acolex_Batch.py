@@ -26,7 +26,7 @@ import os
 numEpoch = 20                    # Number of Epochs for training
 trainableEmbeddings = True
 activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
-lossFunction = "Mean Squared Error"
+lossFunction = "Cross Entropy"
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
@@ -85,7 +85,7 @@ def conv2d(x, W):
 
 
 def conv2d_MFCC(x, W):
-    return tf.nn.conv2d(x, W, strides=[1, 13, 1, 1], padding='VALID')
+    return tf.nn.conv2d(x, W, strides=[1, 13, 50, 1], padding='VALID')
 
 
 def maxPool100x1(x, kernelDepth):
@@ -95,7 +95,7 @@ def maxPool100x1(x, kernelDepth):
 
 def maxPool_MFCC(x, kernelDepth):
     return tf.nn.max_pool(x, ksize=[1, 1, kernelDepth, 1],
-                          strides=[1, 1, 100, 1], padding='VALID')
+                          strides=[1, 1, 1, 1], padding='VALID')  #old config: strides=[1, 1, 100, 1]
 
 
 ### Creates and returns a batchlist with the following format
@@ -224,8 +224,8 @@ with tf.name_scope("MFCC_Layer"):
         h_conv_MFCC_L0 = tf.tanh(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function TanH
         # h_conv_MFCC_L0 = tf.nn.sigmoid(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function sigmoid
     with tf.name_scope("MFCC_CL1_MaxPooling"):
-        poolingWindow = numberMFCCFeatures - (mfccFilterSize - 1)
-        h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, poolingWindow)  # with 1951 input --> 40 output
+        outputdepthMFCCConv = (numberMFCCFeatures / 50) - 1  #Computes the
+        h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, outputdepthMFCCConv)
         h_pool_MFCC_L0_3D = tf.reshape(h_pool_MFCC_L0, shape=[1, filterNumberMFCC, -1])
 
 
@@ -284,8 +284,8 @@ with tf.name_scope("L1_OutputTensor"):
 # Reshape to 2D tensor
 with tf.name_scope("Concatination_Dimensions"):
     # mfccPoolingOutput_1F = math.ceil((numberMFCCFeatures - (mfccFilterSize - 1)) / float(poolingWindow))
-    mfccPoolingOutput_1F = (numberMFCCFeatures - (mfccFilterSize - 1)) / poolingWindow
-    numOutputConcat = filterNumber2WC + filterNumber3WC + filterNumber4WC + (filterNumberMFCC * mfccPoolingOutput_1F)
+    mfccPoolingOutput_1L = 1  #(numberMFCCFeatures - (mfccFilterSize - 1)) / outputdepthMFCCConv
+    numOutputConcat = filterNumber2WC + filterNumber3WC + filterNumber4WC + (filterNumberMFCC * mfccPoolingOutput_1L)
 with tf.name_scope("L1_OutputTensor_2D"):
     outputTensor_L1_2D = tf.reshape(outputTensor_L1, [-1, numOutputConcat])
 
