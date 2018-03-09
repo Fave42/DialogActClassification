@@ -23,29 +23,42 @@ import datetime
 import os
 
 ### Tunable Variables
-numEpoch = 20                    # Number of Epochs for training
+numEpoch = 25                    # Number of Epochs for training
 trainableEmbeddings = True
 activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
-lossFunction = "Cross Entropy"
+lossFunction = "Cross-Entropy"
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
-filterNumberMFCC = 20    # Number of filters for the MFCC features
+filterNumberMFCC = 100    # Number of filters for the MFCC features
 mfccFilterSize = 100
 
 ### Static Variables
 batchSize = 100         # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
 numCPUs = 10            # Number of CPU's to be used
-filterNumber2WC = 20    # Number of filters for 2-Word-Context
-filterNumber3WC = 20    # Number of filters for 3-Word-Context
-filterNumber4WC = 20    # Number of filters for 4-Word-Context
+filterNumber2WC = 100    # Number of filters for 2-Word-Context
+filterNumber3WC = 100    # Number of filters for 3-Word-Context
+filterNumber4WC = 100    # Number of filters for 4-Word-Context
 numberMFCCFeatures = 2000
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
-
 logFileTmp = ""
 overallTime = time.time()
+
+### Checking  Hyperparameters
+# Lossfunction
+lossFunctionList = ["Cross-Entropy", "Hinge-Loss", "Mean-Squared-Error"]
+if (lossFunction not in lossFunctionList):
+    print("Lossfunction not defined!!!")
+    exit()
+
+# Activationfunction
+activationFunctionList = ["TanH", "Relu", "Sigmoid"]
+if (activationFunction not in activationFunctionList):
+    print("Activationfunction not defined!!!")
+    exit()
+###
 
 # Server Paths
 # Without stopwords
@@ -220,9 +233,19 @@ with tf.name_scope("MFCC_Layer"):
         b_conv_MFCC_L0 = biasVariable([1])
 
     with tf.name_scope("MFCC_CL1_HiddenLayer"):
-        # h_conv_MFCC_L0 = tf.nn.relu(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function ReLu
-        h_conv_MFCC_L0 = tf.tanh(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function TanH
-        # h_conv_MFCC_L0 = tf.nn.sigmoid(conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0) ### activation function sigmoid
+        if (activationFunction == "Relu"):
+            h_conv_MFCC_L0 = tf.nn.relu(
+                conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function ReLu
+        elif (activationFunction == "TanH"):
+            h_conv_MFCC_L0 = tf.tanh(
+                conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function TanH
+        elif (activationFunction == "Sigmoid"):
+            h_conv_MFCC_L0 = tf.nn.sigmoid(
+                conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function sigmoid
+        else:
+            print("Activationfunction not defined!!!")
+            exit()
+
     with tf.name_scope("MFCC_CL1_MaxPooling"):
         outputdepthMFCCConv = (numberMFCCFeatures / 50) - 1  #Computes the
         h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, outputdepthMFCCConv)
@@ -238,9 +261,19 @@ with tf.name_scope("Two_Word_Context"):
         b_conv_L1_2WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        # h_conv_L1_2WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
-        h_conv_L1_2WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
-        # h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
+        if (activationFunction == "Relu"):
+            h_conv_L1_2WC = tf.nn.relu(
+                conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function ReLu
+        elif (activationFunction == "TanH"):
+            h_conv_L1_2WC = tf.tanh(
+                conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function TanH
+        elif (activationFunction == "Sigmoid"):
+            h_conv_L1_2WC = tf.nn.sigmoid(
+                conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function sigmoid
+        else:
+            print("Activationfunction not defined!!!")
+            exit()
+
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 105)
 
@@ -252,9 +285,19 @@ with tf.name_scope("Three_Word_Context"):
         b_conv_L1_3WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        # h_conv_L1_3WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
-        h_conv_L1_3WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
-        # h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
+        if (activationFunction == "Relu"):
+            h_conv_L1_3WC = tf.nn.relu(
+                conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function ReLu
+        elif (activationFunction == "TanH"):
+            h_conv_L1_3WC = tf.tanh(
+                conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function TanH
+        elif (activationFunction == "Sigmoid"):
+            h_conv_L1_3WC = tf.nn.sigmoid(
+                conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function sigmoid
+        else:
+            print("Activationfunction not defined!!!")
+            exit()
+
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 104)
 
@@ -266,16 +309,21 @@ with tf.name_scope("Four_Word_Context"):
         b_conv_L1_4WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        # h_conv_L1_4WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
-        h_conv_L1_4WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
-        # h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
+        if (activationFunction == "Relu"):
+            h_conv_L1_4WC = tf.nn.relu(
+                conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function ReLu
+        elif (activationFunction == "TanH"):
+            h_conv_L1_4WC = tf.tanh(
+                conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function TanH
+        elif (activationFunction == "Sigmoid"):
+            h_conv_L1_4WC = tf.nn.sigmoid(
+                conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function sigmoid
+        else:
+            print("Activationfunction not defined!!!")
+            exit()
+
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 103)
-
-# with tf.name_scope("reshape_tensors_into_2D"):
-#     h_pool_L1_2D_2WC = tf.reshape(h_pool_L1_2WC, shape=[1,filterNumber2WC,-1])
-#     h_pool_L1_2D_3WC = tf.reshape(h_pool_L1_3WC, shape=[1,filterNumber3WC,-1])
-#     h_pool_L1_2D_4WC = tf.reshape(h_pool_L1_4WC, shape=[1,filterNumber4WC,-1])
 
 # Concatenate the pooling outputs to get the feature vector
 with tf.name_scope("L1_OutputTensor"):
@@ -303,10 +351,16 @@ with tf.name_scope("Final_Linear_Function"):
     y = tf.matmul(h_FC_L2_drop, W_FC_L2) + b_FC_L2
 
 # Softmax Output, loss-function
-# loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
-# loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
-# loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
-loss = tf.losses.mean_squared_error(labels=y_, predictions=y)
+if (lossFunction == "Cross-Entropy"):
+    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_,
+                                                                  logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
+    # loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
+elif (lossFunction == "Hinge-Loss"):
+    loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
+elif (lossFunction == "Mean-Squared-Error"):
+    loss = tf.losses.mean_squared_error(labels=y_, predictions=y)
+else:
+    exit()
 
 # Training
 # Optimizer

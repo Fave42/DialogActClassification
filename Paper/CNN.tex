@@ -46,15 +46,17 @@
 \maketitle
 
 \begin{abstract}
-\lipsum[2]
+
 \end{abstract}
 
-\section{Task Introduction}
-\lipsum[5-7]
+\section{Introduction}
+The general task is to classify lexical and auditory speech into one of four predefined \textit{dialog act classes}. A \textit{dialog act}, in this context, represents informal information of how a dialog system should respond to a users input. The four provided classes are \textit{statement, opinion, question} and \textit{backchannel}. To solve this task we developed \textit{convolutional neural networks} (CNN) that use lexical and acoustic features. For the development and training of the systems a subset of the \textit{Switchboard Dialog Act Corpus} was used. In next chapters we discuss the development of the systems and subsequently to that the research question \textbf{INSERT HERE}.
 
 \section{Data \& Data Preperation}
+In this section we discuss the \textit{Switchboard Dialog Act Corpus} and the extraction of the lexical and acoustic features.
 
-	\subsection{The Switchboard Corpus}
+	\subsection{The Switchboard Dialog Act Corpus}
+	The \textit{Switchboard Dialog Act Corpus}, from now on abbreviated as \textit{SwDA}, consists of recordings with corresponding transcripts and \textit{dialog act classes}. 
 
 	\subsection{Data Preprocessing}
 
@@ -66,15 +68,8 @@
 
 \section{Conclusion}
 
-% include your own bib file like this:
-%\bibliographystyle{acl}
-%\bibliography{acl2015}
-
-%\begin{thebibliography}{}
-%
-%\bibliographystyle{natbib}
-%\bibliography{bibliography}
-%
-%\end{thebibliography}
+\bibliographystyle{plain}
+\bibliography{bibliography}
+\nocite{*}
 
 \end{document}
