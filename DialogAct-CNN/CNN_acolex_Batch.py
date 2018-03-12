@@ -23,15 +23,17 @@ import datetime
 import os
 
 ### Tunable Variables
-numEpoch = 25                    # Number of Epochs for training
+numEpoch = 21                    # Number of Epochs for training
 trainableEmbeddings = True
-activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
+activationFunctionCNN = "TanH"     #tanh or relu or sigmoid
+activationFunctionAMFCL = "Relu"     #tanh or relu or sigmoid
 lossFunction = "Cross-Entropy"
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
 filterNumberMFCC = 100    # Number of filters for the MFCC features
 mfccFilterSize = 100
+AM_Feature_Output_Number = 200  # Output size of AM FCL
 
 ### Static Variables
 batchSize = 100         # Batchsize for training
@@ -40,7 +42,7 @@ numCPUs = 10            # Number of CPU's to be used
 filterNumber2WC = 100    # Number of filters for 2-Word-Context
 filterNumber3WC = 100    # Number of filters for 3-Word-Context
 filterNumber4WC = 100    # Number of filters for 4-Word-Context
-numberMFCCFeatures = 2000
+numberMFCCFrames = 2000
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
 logFileTmp = ""
@@ -55,10 +57,9 @@ if (lossFunction not in lossFunctionList):
 
 # Activationfunction
 activationFunctionList = ["TanH", "Relu", "Sigmoid"]
-if (activationFunction not in activationFunctionList):
+if (activationFunctionCNN not in activationFunctionList):
     print("Activationfunction not defined!!!")
     exit()
-###
 
 # Server Paths
 # Without stopwords
@@ -133,7 +134,7 @@ def createBatchList(random_TrainingList, batchSize):
             labelsBatchArray = np.array(tmpLabelList)
 
             featureBatchArray = featureBatchArray.reshape(npArrayDepth, 100)
-            mfccBatchArray = mfccBatchArray.reshape(npArrayDepth, numberMFCCFeatures*13)
+            mfccBatchArray = mfccBatchArray.reshape(npArrayDepth, numberMFCCFrames * 13)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
             # print(labelsBatchArray.shape)
@@ -150,7 +151,7 @@ def createBatchList(random_TrainingList, batchSize):
             labelsBatchArray = np.array(np.asarray(tmpLabelList))
 
             featureBatchArray = featureBatchArray.reshape(npArrayDepth, 100)
-            mfccBatchArray = mfccBatchArray.reshape(npArrayDepth, numberMFCCFeatures*13)
+            mfccBatchArray = mfccBatchArray.reshape(npArrayDepth, numberMFCCFrames * 13)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
             # print(labelsBatchArray.shape)
@@ -182,7 +183,7 @@ def createEvalList(rawEvalList):
     labelsEvalArray = np.array(tmpLabelList)
 
     featureEvalArray = featureEvalArray.reshape(npArrayDepth, 100)
-    mfccEvalArray = mfccEvalArray.reshape(npArrayDepth, numberMFCCFeatures*13)
+    mfccEvalArray = mfccEvalArray.reshape(npArrayDepth, numberMFCCFrames * 13)
     labelsEvalArray = labelsEvalArray.reshape(npArrayDepth, 4)
 
     evalTriple = (featureEvalArray, mfccEvalArray ,labelsEvalArray)
@@ -192,17 +193,60 @@ def createEvalList(rawEvalList):
 
 ### Graph definition ###
 x = tf.placeholder(tf.float32, shape=[None, 100])  # lexical input vectors
-x_mfcc = tf.placeholder(tf.float32, shape=[None, numberMFCCFeatures*13])  # mfcc input vectors
+x_mfcc = tf.placeholder(tf.float32, shape=[None, numberMFCCFrames * 13])  # mfcc input vectors
 y_ = tf.placeholder(tf.float32, shape=[None, 4])  # gold standard labels; 1hot-vectors
 
-x_MFCC_4DTensor = tf.reshape(x_mfcc, shape=[-1, 13, numberMFCCFeatures, 1])
+x_MFCC_4DTensor = tf.reshape(x_mfcc, shape=[-1, 13, numberMFCCFrames, 1])
 
-###
-# L1 = Layer 1
-# 2WC = Two-Word-Context
-###
+### Acoustic Model
+with tf.name_scope("Acoustic_Model"):
+    with tf.name_scope("CNN_Layer"):
+        with tf.name_scope("MFCC_Weights"):
+            W_conv_MFCC_L0 = weightVariable([13, mfccFilterSize, 1, filterNumberMFCC])
+        with tf.name_scope("MFCC_Bias"):
+            b_conv_MFCC_L0 = biasVariable([1])
 
-### Layer 0
+        with tf.name_scope("MFCC_CL1_HiddenLayer"):
+            if (activationFunctionCNN == "Relu"):
+                h_conv_MFCC_L0 = tf.nn.relu(
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function ReLu
+            elif (activationFunctionCNN == "TanH"):
+                h_conv_MFCC_L0 = tf.tanh(
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function TanH
+            elif (activationFunctionCNN == "Sigmoid"):
+                h_conv_MFCC_L0 = tf.nn.sigmoid(
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function sigmoid
+            else:
+                print("Activationfunction not defined!!!")
+                exit()
+
+        with tf.name_scope("MFCC_CL1_MaxPooling"):
+            outputdepthMFCCConv = (numberMFCCFrames / 50) - 1  #Computes the
+            h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, outputdepthMFCCConv)
+
+    with tf.name_scope("Fully_Connected_Layer"):
+        with tf.name_scope("AM_FCL_Weights"):
+            W_AM_FC = weightVariable([filterNumberMFCC, AM_Feature_Output_Number])
+        with tf.name_scope("AM_FCL_Bias"):
+            b_AM_FC = biasVariable([AM_Feature_Output_Number])
+        with tf.name_scope("AM_Output_2D"):
+            h_pool_MFCC_L0_2D = tf.reshape(h_pool_MFCC_L0, [-1, filterNumberMFCC])
+        with tf.name_scope("FCL"):
+            if (activationFunctionAMFCL == "Relu"):
+                AM_Output = tf.nn.relu(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function ReLu
+            elif (activationFunctionAMFCL == "TanH"):
+                AM_Output = tf.nn.tanh(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function TanH
+            elif (activationFunctionAMFCL == "Sigmoid"):
+                AM_Output = tf.nn.sigmoid(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function sigmoid
+            else:
+                print("Activationfunction AM FCL not defined!!!")
+                exit()
+
+            AM_Output_4D = tf.reshape(AM_Output, [-1, 1, 1, AM_Feature_Output_Number])
+
+
+### Lexical Model
+### Embedding Layer
 # vocab_size = 10017 # For normal dataset
 vocab_size = 11825 # For "full" dataset
 embedding_dim = 300
@@ -221,38 +265,10 @@ with tf.name_scope("Embedding_Layer"):
 
 
 with tf.name_scope("generate_padded_matrices"):
-    paddings = tf.constant([[0,0],[3, 3],[0,0],[0, 0]])
+    paddings = tf.constant([[0, 0], [3, 3], [0, 0], [0, 0]])
     x4DTensor_padded = tf.pad(x_4DTensor, paddings, "CONSTANT")
 
 
-### MFCC-Layer
-with tf.name_scope("MFCC_Layer"):
-    with tf.name_scope("MFCC_Weights"):
-        W_conv_MFCC_L0 = weightVariable([13, mfccFilterSize, 1, filterNumberMFCC])
-    with tf.name_scope("MFCC_Bias"):
-        b_conv_MFCC_L0 = biasVariable([1])
-
-    with tf.name_scope("MFCC_CL1_HiddenLayer"):
-        if (activationFunction == "Relu"):
-            h_conv_MFCC_L0 = tf.nn.relu(
-                conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function ReLu
-        elif (activationFunction == "TanH"):
-            h_conv_MFCC_L0 = tf.tanh(
-                conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function TanH
-        elif (activationFunction == "Sigmoid"):
-            h_conv_MFCC_L0 = tf.nn.sigmoid(
-                conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function sigmoid
-        else:
-            print("Activationfunction not defined!!!")
-            exit()
-
-    with tf.name_scope("MFCC_CL1_MaxPooling"):
-        outputdepthMFCCConv = (numberMFCCFeatures / 50) - 1  #Computes the
-        h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, outputdepthMFCCConv)
-        h_pool_MFCC_L0_3D = tf.reshape(h_pool_MFCC_L0, shape=[1, filterNumberMFCC, -1])
-
-
-### Layer 1
 ### Two-Word-Context
 with tf.name_scope("Two_Word_Context"):
     with tf.name_scope("CL1_Weights"):
@@ -261,13 +277,13 @@ with tf.name_scope("Two_Word_Context"):
         b_conv_L1_2WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        if (activationFunction == "Relu"):
+        if (activationFunctionCNN == "Relu"):
             h_conv_L1_2WC = tf.nn.relu(
                 conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function ReLu
-        elif (activationFunction == "TanH"):
+        elif (activationFunctionCNN == "TanH"):
             h_conv_L1_2WC = tf.tanh(
                 conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function TanH
-        elif (activationFunction == "Sigmoid"):
+        elif (activationFunctionCNN == "Sigmoid"):
             h_conv_L1_2WC = tf.nn.sigmoid(
                 conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function sigmoid
         else:
@@ -285,13 +301,13 @@ with tf.name_scope("Three_Word_Context"):
         b_conv_L1_3WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        if (activationFunction == "Relu"):
+        if (activationFunctionCNN == "Relu"):
             h_conv_L1_3WC = tf.nn.relu(
                 conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function ReLu
-        elif (activationFunction == "TanH"):
+        elif (activationFunctionCNN == "TanH"):
             h_conv_L1_3WC = tf.tanh(
                 conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function TanH
-        elif (activationFunction == "Sigmoid"):
+        elif (activationFunctionCNN == "Sigmoid"):
             h_conv_L1_3WC = tf.nn.sigmoid(
                 conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function sigmoid
         else:
@@ -309,13 +325,13 @@ with tf.name_scope("Four_Word_Context"):
         b_conv_L1_4WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        if (activationFunction == "Relu"):
+        if (activationFunctionCNN == "Relu"):
             h_conv_L1_4WC = tf.nn.relu(
                 conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function ReLu
-        elif (activationFunction == "TanH"):
+        elif (activationFunctionCNN == "TanH"):
             h_conv_L1_4WC = tf.tanh(
                 conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function TanH
-        elif (activationFunction == "Sigmoid"):
+        elif (activationFunctionCNN == "Sigmoid"):
             h_conv_L1_4WC = tf.nn.sigmoid(
                 conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function sigmoid
         else:
@@ -327,8 +343,7 @@ with tf.name_scope("Four_Word_Context"):
 
 # Concatenate the pooling outputs to get the feature vector
 with tf.name_scope("L1_OutputTensor"):
-    outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC, h_pool_MFCC_L0], 1)
-    # outputTensor_L1 = tf.concat([h_pool_L1_2D_2WC, h_pool_L1_2D_3WC, h_pool_L1_2D_4WC, h_pool_MFCC_L0_3D], 1)
+    outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC, AM_Output_4D], 1)
 # Reshape to 2D tensor
 with tf.name_scope("Concatination_Dimensions"):
     # mfccPoolingOutput_1F = math.ceil((numberMFCCFeatures - (mfccFilterSize - 1)) / float(poolingWindow))
@@ -341,7 +356,7 @@ with tf.name_scope("L1_OutputTensor_2D"):
 keep_Prob = tf.placeholder(tf.float32)
 h_FC_L2_drop = tf.nn.dropout(outputTensor_L1_2D, keep_Prob)
 
-# Second Fully Connected Layer
+# Output
 with tf.name_scope("FCL2_Weights"):
     W_FC_L2 = weightVariable([numOutputConcat, 4])
 with tf.name_scope("FCL2_Bias"):
@@ -358,7 +373,7 @@ if (lossFunction == "Cross-Entropy"):
 elif (lossFunction == "Hinge-Loss"):
     loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
 elif (lossFunction == "Mean-Squared-Error"):
-    loss = tf.losses.mean_squared_error(labels=y_, predictions=y)
+    loss = tf.losses.mean_squared_error(labels=y_, predictions=tf.nn.softmax(y))    #Introduced softmax before y
 else:
     exit()
 
@@ -372,7 +387,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # Start the session
 # Configure how many threads are used for batch processing
-config = tf.ConfigProto(intra_op_parallelism_threads=numCPUs, inter_op_parallelism_threads=numCPUs)
+# config = tf.ConfigProto(intra_op_parallelism_threads=numCPUs, inter_op_parallelism_threads=numCPUs)
 
 # Dump for logfile
 logFileTmp += "##########\n"
@@ -385,10 +400,12 @@ logFileTmp += "Number of filters 3WC: " + str(filterNumber3WC) + "\n"
 logFileTmp += "Number of filters 4WC: " + str(filterNumber4WC) + "\n"
 logFileTmp += "Number of filters MFCC: " + str(filterNumberMFCC) + "\n"
 logFileTmp += "Filter size MFCC: " + str(mfccFilterSize) + "\n"
+logFileTmp += "Output size AM FCL: " + str(AM_Feature_Output_Number) + "\n"
 logFileTmp += "Trainable Embeddings: " + str(trainableEmbeddings) + "\n"
 logFileTmp += "Batchsize: " + str(batchSize) + "\n"
 logFileTmp += "Learning Rate: " + str(learningRate) + "\n"
-logFileTmp += "Activation Function: " + str(activationFunction) + "\n"
+logFileTmp += "Activation Function CNN: " + str(activationFunctionCNN) + "\n"
+logFileTmp += "Activation Function AM FCL: " + str(activationFunctionAMFCL) + "\n"
 logFileTmp += "Loss Function: " + str(lossFunction) + "\n"
 logFileTmp += "Dropout: " + str(dropout) + "\n"
 logFileTmp += "Optimizer: " + str(optimizerFunction) + "\n"
@@ -404,7 +421,8 @@ logPath += programStartTime
 if not os.path.exists(logPath):
     os.makedirs(logPath)
 
-with tf.Session(config=config) as sess:
+# with tf.Session(config=config) as sess:
+with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     sess.run(embedding_init, feed_dict={embedding_placeholder: embeddingInputs})
     stepCount = 0
