@@ -25,15 +25,15 @@ import os
 ### Tunable Variables
 numEpoch = 21                    # Number of Epochs for training
 trainableEmbeddings = True
-activationFunctionCNN = "TanH"     #tanh or relu or sigmoid
-activationFunctionAMFCL = "Relu"     #tanh or relu or sigmoid
+activationFunction_LM = "Sigmoid"     #TanH or Relu or Sigmoid
+activationFunction_AM = "Relu"     #TanH or Relu or Sigmoid
 lossFunction = "Cross-Entropy"
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
 filterNumberMFCC = 100    # Number of filters for the MFCC features
 mfccFilterSize = 100
-AM_Feature_Output_Number = 200  # Output size of AM FCL
+AM_Feature_Output_Number = 100  # Output size of AM FCL
 
 ### Static Variables
 batchSize = 100         # Batchsize for training
@@ -57,7 +57,7 @@ if (lossFunction not in lossFunctionList):
 
 # Activationfunction
 activationFunctionList = ["TanH", "Relu", "Sigmoid"]
-if (activationFunctionCNN not in activationFunctionList):
+if (activationFunction_LM not in activationFunctionList):
     print("Activationfunction not defined!!!")
     exit()
 
@@ -207,13 +207,13 @@ with tf.name_scope("Acoustic_Model"):
             b_conv_MFCC_L0 = biasVariable([1])
 
         with tf.name_scope("MFCC_CL1_HiddenLayer"):
-            if (activationFunctionCNN == "Relu"):
+            if (activationFunction_AM == "Relu"):
                 h_conv_MFCC_L0 = tf.nn.relu(
                     conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function ReLu
-            elif (activationFunctionCNN == "TanH"):
+            elif (activationFunction_AM == "TanH"):
                 h_conv_MFCC_L0 = tf.tanh(
                     conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function TanH
-            elif (activationFunctionCNN == "Sigmoid"):
+            elif (activationFunction_AM == "Sigmoid"):
                 h_conv_MFCC_L0 = tf.nn.sigmoid(
                     conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function sigmoid
             else:
@@ -232,11 +232,11 @@ with tf.name_scope("Acoustic_Model"):
         with tf.name_scope("AM_Output_2D"):
             h_pool_MFCC_L0_2D = tf.reshape(h_pool_MFCC_L0, [-1, filterNumberMFCC])
         with tf.name_scope("FCL"):
-            if (activationFunctionAMFCL == "Relu"):
+            if (activationFunction_AM == "Relu"):
                 AM_Output = tf.nn.relu(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function ReLu
-            elif (activationFunctionAMFCL == "TanH"):
+            elif (activationFunction_AM == "TanH"):
                 AM_Output = tf.nn.tanh(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function TanH
-            elif (activationFunctionAMFCL == "Sigmoid"):
+            elif (activationFunction_AM == "Sigmoid"):
                 AM_Output = tf.nn.sigmoid(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function sigmoid
             else:
                 print("Activationfunction AM FCL not defined!!!")
@@ -277,13 +277,13 @@ with tf.name_scope("Two_Word_Context"):
         b_conv_L1_2WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        if (activationFunctionCNN == "Relu"):
+        if (activationFunction_LM == "Relu"):
             h_conv_L1_2WC = tf.nn.relu(
                 conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function ReLu
-        elif (activationFunctionCNN == "TanH"):
+        elif (activationFunction_LM == "TanH"):
             h_conv_L1_2WC = tf.tanh(
                 conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function TanH
-        elif (activationFunctionCNN == "Sigmoid"):
+        elif (activationFunction_LM == "Sigmoid"):
             h_conv_L1_2WC = tf.nn.sigmoid(
                 conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function sigmoid
         else:
@@ -301,13 +301,13 @@ with tf.name_scope("Three_Word_Context"):
         b_conv_L1_3WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        if (activationFunctionCNN == "Relu"):
+        if (activationFunction_LM == "Relu"):
             h_conv_L1_3WC = tf.nn.relu(
                 conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function ReLu
-        elif (activationFunctionCNN == "TanH"):
+        elif (activationFunction_LM == "TanH"):
             h_conv_L1_3WC = tf.tanh(
                 conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function TanH
-        elif (activationFunctionCNN == "Sigmoid"):
+        elif (activationFunction_LM == "Sigmoid"):
             h_conv_L1_3WC = tf.nn.sigmoid(
                 conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function sigmoid
         else:
@@ -325,13 +325,13 @@ with tf.name_scope("Four_Word_Context"):
         b_conv_L1_4WC = biasVariable([1])
 
     with tf.name_scope("CL1_HiddenLayer"):
-        if (activationFunctionCNN == "Relu"):
+        if (activationFunction_LM == "Relu"):
             h_conv_L1_4WC = tf.nn.relu(
                 conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function ReLu
-        elif (activationFunctionCNN == "TanH"):
+        elif (activationFunction_LM == "TanH"):
             h_conv_L1_4WC = tf.tanh(
                 conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function TanH
-        elif (activationFunctionCNN == "Sigmoid"):
+        elif (activationFunction_LM == "Sigmoid"):
             h_conv_L1_4WC = tf.nn.sigmoid(
                 conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function sigmoid
         else:
@@ -404,8 +404,8 @@ logFileTmp += "Output size AM FCL: " + str(AM_Feature_Output_Number) + "\n"
 logFileTmp += "Trainable Embeddings: " + str(trainableEmbeddings) + "\n"
 logFileTmp += "Batchsize: " + str(batchSize) + "\n"
 logFileTmp += "Learning Rate: " + str(learningRate) + "\n"
-logFileTmp += "Activation Function CNN: " + str(activationFunctionCNN) + "\n"
-logFileTmp += "Activation Function AM FCL: " + str(activationFunctionAMFCL) + "\n"
+logFileTmp += "Activation Function LM: " + str(activationFunction_LM) + "\n"
+logFileTmp += "Activation Function AM: " + str(activationFunction_AM) + "\n"
 logFileTmp += "Loss Function: " + str(lossFunction) + "\n"
 logFileTmp += "Dropout: " + str(dropout) + "\n"
 logFileTmp += "Optimizer: " + str(optimizerFunction) + "\n"

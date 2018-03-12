@@ -22,14 +22,10 @@
 \usepackage{url}
 \usepackage{latexsym}
 \usepackage{lipsum}
+\usepackage{natbib}
+\usepackage[font=small, labelfont=bf]{caption}
 
 %\setlength\titlebox{5cm}
-
-% You can expand the titlebox if you need extra space
-% to show all the authors. Please do not make the titlebox
-% smaller than 5cm (the original size); we will check this
-% in the camera-ready version and ask you to change it back.
-
 
 \title{Report: Dialog Act Classification\\\textit{using Word Embeddings \& Acoustic Features}}
 
@@ -46,7 +42,7 @@
 \maketitle
 
 \begin{abstract}
-
+\lipsum[2-2]
 \end{abstract}
 
 \section{Introduction}
@@ -56,9 +52,26 @@ The general task is to classify lexical and auditory speech into one of four pre
 In this section we discuss the \textit{Switchboard Dialog Act Corpus} and the extraction of the lexical and acoustic features.
 
 	\subsection{The Switchboard Dialog Act Corpus}
-	The \textit{Switchboard Dialog Act Corpus} \cite{switchboard}, from now on abbreviated as \textit{SwDA}, consists of recordings with corresponding transcripts. Each of these recordings is assigned to one of 42 \textit{dialog act classes}. In this project we reduced the amount of classes down to four which are \textit{statement, opinion, question} and \textit{backchannel}. These classes are supersets of the 42 \textit{dialog act classes} defined in the \textit{SwDA}.
+	The \textit{Switchboard Dialog Act Corpus} \cite{switchboard}, from now on abbreviated as \textit{SwDA}, consists of recordings with corresponding transcripts. Each of these recordings is assigned to one of 42 \textit{dialog act classes}. For this project we reduced the amount of classes down to four which are \textit{statement, opinion, question} and \textit{backchannel}. These classes are supersets of the 42 \textit{dialog act classes} defined in the \textit{SwDA}. The distribution of the four classes within the training, development and test set are shown in Table \ref{tab:dataDistribution}.
+	%todo Examples for the four classes if more text is needed
+	\begin{table}
+		\begin{tabular}{ r | c c c }
+			& training set & dev set & test set \\
+			\hline
+			opinion ($\sim$17\%) & 4984 & 1068 & 1070 \\
+			question ($\sim$8\%) & 2150 & 460 & 463 \\
+			backchannel ($\sim$24\%) & 6792 & 1455 & 1458  \\
+			statement ($\sim$51\%) & 14459 & 3098 &  3099  \\
+			\hline
+			sum & 28385 & 6081 & 6090 \\
+		\end{tabular}
+		\caption{Displays the distribution of the four classes in the three data sets.}
+		\label{tab:dataDistribution}
+	\end{table}	
+	The numbers illustrate a huge imbalance between the \textit{statement} class and the other three classes. However, we decided against reducing the data into equally distributed sets because this would exclude at least one third of the training data. This is important to keep in mind for the evaluation of the systems because an educated guess would have an accuracy of around 51\% by assigning all test examples to the \textit{statement} class.
 
 	\subsection{Data Preprocessing}
+	Two different kinds of features are employed in our systems, lexical and acoustic features. For the lexical features we used pretrained word embeddings which are freely accessible 	
 
 \section{Baseline Systems}
 
@@ -70,6 +83,8 @@ In this section we discuss the \textit{Switchboard Dialog Act Corpus} and the ex
 
 \bibliographystyle{abbrv}
 \bibliography{bibliography}
-%\nocite{*}
+\nocite{*}
+%todo Own cite style
 
 \end{document}
+

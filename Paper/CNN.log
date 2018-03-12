@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  12 MAR 2018 12:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  12 MAR 2018 16:16
 entering extended mode
 **./CNN.tex
 (CNN.tex
@@ -39,74 +39,121 @@ LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
 ("D:\Software\MiKTeX 2.9\tex\latex\lipsum\lipsum.sty"
 Package: lipsum 2014/07/27 v1.3 150 paragraphs of Lorem Ipsum dummy text
 \c@lips@count=\count87
+)
+("D:\Software\MiKTeX 2.9\tex\latex\natbib\natbib.sty"
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip44
+\bibsep=\skip45
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count88
+)
+("D:\Software\MiKTeX 2.9\tex\latex\caption\caption.sty"
+Package: caption 2016/02/21 v3.3-144 Customizing captions (AR)
+
+("D:\Software\MiKTeX 2.9\tex\latex\caption\caption3.sty"
+Package: caption3 2016/05/22 v1.7-166 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 67.
+
+("D:\Software\MiKTeX 2.9\tex\latex\graphics\keyval.sty"
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+\captionmargin=\dimen103
+\captionmargin@=\dimen104
+\captionwidth=\dimen105
+\caption@tempdima=\dimen106
+\caption@indent=\dimen107
+\caption@parindent=\dimen108
+\caption@hangindent=\dimen109
+)
+\c@ContinuedFloat=\count89
 ) (CNN.aux)
 \openout1 = `CNN.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 45.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 41.
 
 ("D:\Software\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd"
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 46.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 42.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 46.
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 42.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 46.
+(Font)              <12> on input line 42.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 46.
+(Font)              <8> on input line 42.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 46.
-LaTeX Font Info:    Try loading font information for U+lasy on input line 46.
+(Font)              <6> on input line 42.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 42.
 
 ("D:\Software\MiKTeX 2.9\tex\latex\base\ulasy.fd"
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 46.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 46.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 42.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 42.
 
 ("D:\Software\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 53.
- (CNN.bbl
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 49.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 58.
+
+Overfull \hbox (31.7795pt too wide) in paragraph at lines 58--68
+[][] 
+ []
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 68.
+(CNN.bbl
+Underfull \hbox (badness 1810) in paragraph at lines 4--9
+[]\OT1/ptm/m/n/10.95 F. Ey-ben, M. W[]ollmer, and B. Schul-ler.
+ []
+
+
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-) [1{C:/Users/Fabian/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
+ [1{C:/Users/Fabian/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
 
 
+
+]) [2
 
 ] (CNN.aux) ) 
 Here is how much of TeX's memory you used:
- 644 strings out of 493352
- 7594 string characters out of 3141830
- 160479 words of memory out of 3000000
- 4207 multiletter control sequences out of 15000+200000
- 21568 words of font info for 47 fonts, out of 3000000 for 9000
+ 2091 strings out of 493352
+ 31518 string characters out of 3141830
+ 199957 words of memory out of 3000000
+ 5640 multiletter control sequences out of 15000+200000
+ 22232 words of font info for 50 fonts, out of 3000000 for 9000
  1127 hyphenation exceptions out of 8191
- 22i,9n,19p,727b,258s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,9n,39p,727b,313s stack positions out of 5000i,500n,10000p,200000b,50000s
 {D:/Software/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}<D:/Software/M
-iKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pfb><D:/Software/MiKTeX 2.9/fonts/type
-1/urw/times/utmb8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmbi8a.pf
-b><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><D:/Software/MiKTeX 
-2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on CNN.pdf (1 page, 68107 bytes).
+iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><D:/Software/MiKTeX 2.9/fon
+ts/type1/urw/courier/ucrr8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/u
+tmb8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmbi8a.pfb><D:/Softwar
+e/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><D:/Software/MiKTeX 2.9/fonts/typ
+e1/urw/times/utmri8a.pfb>
+Output written on CNN.pdf (2 pages, 82051 bytes).
 PDF statistics:
- 27 PDF objects out of 1000 (max. 8388607)
+ 34 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
