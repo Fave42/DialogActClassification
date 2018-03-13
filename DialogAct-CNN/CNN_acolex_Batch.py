@@ -25,8 +25,8 @@ import os
 ### Tunable Variables
 numEpoch = 21                    # Number of Epochs for training
 trainableEmbeddings = True
-activationFunction_LM = "Sigmoid"     #TanH or Relu or Sigmoid
-activationFunction_AM = "Relu"     #TanH or Relu or Sigmoid
+activationFunction_LM = "TanH"     #TanH or Relu or Sigmoid
+activationFunction_AM = "TanH"     #TanH or Relu or Sigmoid
 lossFunction = "Cross-Entropy"
 learningRate = 0.01
 dropout = 0.50
@@ -387,7 +387,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # Start the session
 # Configure how many threads are used for batch processing
-# config = tf.ConfigProto(intra_op_parallelism_threads=numCPUs, inter_op_parallelism_threads=numCPUs)
+config = tf.ConfigProto(intra_op_parallelism_threads=numCPUs, inter_op_parallelism_threads=numCPUs)
 
 # Dump for logfile
 logFileTmp += "##########\n"
@@ -421,8 +421,8 @@ logPath += programStartTime
 if not os.path.exists(logPath):
     os.makedirs(logPath)
 
-# with tf.Session(config=config) as sess:
-with tf.Session() as sess:
+with tf.Session(config=config) as sess:
+# with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     sess.run(embedding_init, feed_dict={embedding_placeholder: embeddingInputs})
     stepCount = 0

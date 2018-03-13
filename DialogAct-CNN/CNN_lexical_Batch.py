@@ -23,13 +23,13 @@ import datetime
 import os
 
 ### Tunable Variables
-numEpoch = 25          # Number of Epochs for training
+numEpoch = 21          # Number of Epochs for training
 trainableEmbeddings = True
-activationFunction = "Sigmoid"     #"CNN = tanh + FCL = Relu"
+activationFunction = "TanH"     #"CNN = tanh + FCL = Relu"
 # lossFunction = "Hinge-Loss"
 lossFunction = "Cross Entropy"
 # lossFunction = "Mean Squared Error"
-learningRate = 0.05
+learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
 weightSeed = 111121
@@ -192,8 +192,8 @@ with tf.name_scope("Two_Word_Context"):
 
     with tf.name_scope("CL1_HiddenLayer"):
         # h_conv_L1_2WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function ReLu
-        # h_conv_L1_2WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
-        h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
+        h_conv_L1_2WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function TanH
+        # h_conv_L1_2WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_2WC = maxPool100x1(h_conv_L1_2WC, 105)
 
@@ -206,8 +206,8 @@ with tf.name_scope("Three_Word_Context"):
 
     with tf.name_scope("CL1_HiddenLayer"):
         # h_conv_L1_3WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function ReLu
-        # h_conv_L1_3WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
-        h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
+        h_conv_L1_3WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function TanH
+        # h_conv_L1_3WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_3WC = maxPool100x1(h_conv_L1_3WC, 104)
 
@@ -220,8 +220,8 @@ with tf.name_scope("Four_Word_Context"):
 
     with tf.name_scope("CL1_HiddenLayer"):
         # h_conv_L1_4WC = tf.nn.relu(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function ReLu
-        # h_conv_L1_4WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
-        h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
+        h_conv_L1_4WC = tf.tanh(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function TanH
+        # h_conv_L1_4WC = tf.nn.sigmoid(conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC) ### activation function sigmoid
     with tf.name_scope("CL1_MaxPooling"):
         h_pool_L1_4WC = maxPool100x1(h_conv_L1_4WC, 103)
 
@@ -269,7 +269,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # Start the session
 # Configure how many threads are used for batch processing
-# config = tf.ConfigProto(intra_op_parallelism_threads=numCPUs, inter_op_parallelism_threads=numCPUs)
+config = tf.ConfigProto(intra_op_parallelism_threads=numCPUs, inter_op_parallelism_threads=numCPUs)
 
 # Dump for logfile
 logFileTmp += "##########\n"
@@ -300,8 +300,8 @@ logPath += programStartTime
 if not os.path.exists(logPath):
     os.makedirs(logPath)
 
-# with tf.Session(config=config) as sess:
-with tf.Session() as sess:
+with tf.Session(config=config) as sess:
+# with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     sess.run(embedding_init, feed_dict={embedding_placeholder: embeddingInputs})
     stepCount = 0
