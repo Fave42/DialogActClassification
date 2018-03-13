@@ -25,8 +25,8 @@ import os
 ### Tunable Variables
 numEpoch = 21                    # Number of Epochs for training
 trainableEmbeddings = True
+activationFunction_AM = "Sigmoid"     #TanH or Relu or Sigmoid
 activationFunction_LM = "TanH"     #TanH or Relu or Sigmoid
-activationFunction_AM = "TanH"     #TanH or Relu or Sigmoid
 lossFunction = "Cross-Entropy"
 learningRate = 0.01
 dropout = 0.50

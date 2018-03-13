@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  12 MAR 2018 16:16
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  13 MAR 2018 11:50
 entering extended mode
 **./CNN.tex
 (CNN.tex
@@ -113,6 +113,11 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 49.
+
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 57.
+
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <10.95> on input line 58.
 
@@ -122,19 +127,16 @@ Overfull \hbox (31.7795pt too wide) in paragraph at lines 58--68
 
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 68.
-(CNN.bbl
+[1{C:/Users/Fabian/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
+
+
+
+] (CNN.bbl
 Underfull \hbox (badness 1810) in paragraph at lines 4--9
 []\OT1/ptm/m/n/10.95 F. Ey-ben, M. W[]ollmer, and B. Schul-ler.
  []
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [1{C:/Users/Fabian/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
-
-
-
-]) [2
+) [2
 
 ] (CNN.aux) ) 
 Here is how much of TeX's memory you used:
@@ -151,7 +153,7 @@ ts/type1/urw/courier/ucrr8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/u
 tmb8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmbi8a.pfb><D:/Softwar
 e/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><D:/Software/MiKTeX 2.9/fonts/typ
 e1/urw/times/utmri8a.pfb>
-Output written on CNN.pdf (2 pages, 82051 bytes).
+Output written on CNN.pdf (2 pages, 84450 bytes).
 PDF statistics:
  34 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
