@@ -25,23 +25,23 @@ import os
 ### Tunable Variables
 numEpoch = 21                    # Number of Epochs for training
 trainableEmbeddings = True
-activationFunction_AM = "Sigmoid"     #TanH or Relu or Sigmoid
-activationFunction_LM = "TanH"     #TanH or Relu or Sigmoid
-lossFunction = "Cross-Entropy"
+activationFunction_AM = "TanH"     # TanH or Relu or Sigmoid
+activationFunction_LM = "Relu"     # TanH or Relu or Sigmoid
+lossFunction = "Cross-Entropy"      # Cross-Entropy or Hinge-Loss or Mean-Squared-Error
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
-filterNumberMFCC = 100    # Number of filters for the MFCC features
+filterNumberMFCC = 90    # Number of filters for the MFCC features
 mfccFilterSize = 100
-AM_Feature_Output_Number = 100  # Output size of AM FCL
+AM_Feature_Output_Number = 90  # Output size of AM FCL
 
 ### Static Variables
 batchSize = 100         # Batchsize for training
 evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
 numCPUs = 10            # Number of CPU's to be used
-filterNumber2WC = 100    # Number of filters for 2-Word-Context
-filterNumber3WC = 100    # Number of filters for 3-Word-Context
-filterNumber4WC = 100    # Number of filters for 4-Word-Context
+filterNumber2WC = 90    # Number of filters for 2-Word-Context
+filterNumber3WC = 90    # Number of filters for 3-Word-Context
+filterNumber4WC = 90    # Number of filters for 4-Word-Context
 numberMFCCFrames = 2000
 typeOfCNN = "CNN + 1 Fully-Connected-Layer"
 
@@ -421,8 +421,8 @@ logPath += programStartTime
 if not os.path.exists(logPath):
     os.makedirs(logPath)
 
-with tf.Session(config=config) as sess:
-# with tf.Session() as sess:
+# with tf.Session(config=config) as sess:
+with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     sess.run(embedding_init, feed_dict={embedding_placeholder: embeddingInputs})
     stepCount = 0
