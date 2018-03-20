@@ -25,8 +25,8 @@ import os
 ### Tunable Variables
 numEpoch = 21          # Number of Epochs for training
 trainableEmbeddings = True
-activationFunction_LM = "Sigmoid"       # TanH or Relu or Sigmoid
-lossFunction = "Cross Entropy"          # Cross-Entropy or Hinge-Loss or Mean-Squared-Error
+activationFunction_LM = "Relu"       # TanH or Relu or Sigmoid
+lossFunction = "Cross-Entropy"          # Cross-Entropy or Hinge-Loss or Mean-Squared-Error
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"

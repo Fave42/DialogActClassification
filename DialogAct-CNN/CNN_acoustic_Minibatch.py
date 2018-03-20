@@ -29,9 +29,10 @@ lossFunction = "Cross-Entropy"      # Cross-Entropy or Hinge-Loss or Mean-Square
 learningRate = 0.01
 dropout = 0.50
 optimizerFunction = "Stochastic Gradient Descent"
-filterNumberMFCC = 200    # Number of filters for the MFCC features
+filterNumberMFCC = 100    # Number of filters for the MFCC features
 mfccFilterSize = 100
-AM_Feature_Output_Number = 200  # Output size of AM FCL
+AM_Feature_Output_Number = 100  # Output size of AM FCL
+weightSeed = 1
 
 ### Static Variables
 batchSize = 100         # Batchsize for training
@@ -78,7 +79,7 @@ print("\t---> Done with importing!")
 
 ### Functions ###
 def weightVariable(shape):
-    initial = tf.truncated_normal(shape, stddev=1.0, seed=1)
+    initial = tf.truncated_normal(shape, stddev=1.0, seed=weightSeed)
     return tf.Variable(initial)
 
 
@@ -283,6 +284,7 @@ logFileTmp += "Activation Function AM: " + str(activationFunction_AM) + "\n"
 logFileTmp += "Loss Function: " + str(lossFunction) + "\n"
 logFileTmp += "Dropout: " + str(dropout) + "\n"
 logFileTmp += "Optimizer: " + str(optimizerFunction) + "\n"
+logFileTmp += "Seed: " + str(weightSeed) + "\n"
 logFileTmp += "##########\n"
 
 
