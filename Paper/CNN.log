@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  20 MAR 2018 11:52
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  20 MAR 2018 16:05
 entering extended mode
 **./CNN.tex
 (CNN.tex
@@ -369,24 +369,16 @@ e 102.
 
 Underfull \vbox (badness 2582) has occurred while \output is active []
 
- [2 <./Bilder/acolex_CNN_paper.png>]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-(CNN.bbl
+ [2 <./Bilder/acolex_CNN_paper.png>] (CNN.bbl
 Underfull \hbox (badness 1810) in paragraph at lines 4--9
 []\OT1/ptm/m/n/10.95 F. Ey-ben, M. W[]ollmer, and B. Schul-ler.
  []
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
 
 )
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 166.
  [3]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 166.
-
-(CNN.aux)
+ (CNN.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 166.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 166.
 Package rerunfilecheck Info: File `CNN.out' has not changed.
@@ -412,9 +404,9 @@ s/type1/public/amsfonts/cm/cmsy6.pfb><D:/Software/MiKTeX 2.9/fonts/type1/public
 fb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><D:/Software/MiKTeX
  2.9/fonts/type1/urw/times/utmbi8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/
 times/utmr8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on CNN.pdf (3 pages, 339178 bytes).
+Output written on CNN.pdf (3 pages, 339555 bytes).
 PDF statistics:
- 152 PDF objects out of 1000 (max. 8388607)
+ 153 PDF objects out of 1000 (max. 8388607)
  28 named destinations out of 1000 (max. 500000)
  102 words of extra memory for PDF output out of 10000 (max. 10000000)
 

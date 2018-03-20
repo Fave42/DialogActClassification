@@ -116,7 +116,7 @@ The \textit{acoustic model} (\textit{AM}), shown on the left side in Figure \ref
 Our proposed \textit{AcoLex Model} employs a \textit{bi-CNN} that consists of the \textit{LM} and the \textit{AM} to simultaneously process lexical and acoustic features. The outputs are then concatenated into one 400 element long vector which is then passed into a \textit{softmax layer} to perform the \textit{dialog act classification task}. The final output is a four element long vector were each element represents the probability for one \textit{dialog act class}.
 
 \section{Training}
-The system was trained for 21 epochs with the \textit{stochastic gradient descent} optimization algorithm over mini-batches of size 100. The learning rate was fixed to 0.01. The tunable hyperparameters are shown in Table \ref{tab:hyperparameters}.
+The system was trained for 21 epochs with the \textit{stochastic gradient descent} optimization algorithm over mini-batches of size 100. To obtain the best configuration the hyperparameters were tuned incrementally by fixing all hyperparameters except the tuned parameter. The hyperparameters of the best performing system are summarized in Table \ref{tab:hyperparameters}. For the \textit{LM} \textit{word2vec} \cite{word2vec} word embeddings were used and automatically tuned during the training process.
 
 \begin{table}[h]
 	%todo Own tabel design
