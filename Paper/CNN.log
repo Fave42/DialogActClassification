@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  18 MAR 2018 12:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  20 MAR 2018 11:52
 entering extended mode
 **./CNN.tex
 (CNN.tex
@@ -145,86 +145,159 @@ File: pdftex.def 2017/06/24 v1.0g Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen119
 \Gin@req@width=\dimen120
-) (CNN.aux)
-\openout1 = `CNN.aux'.
-
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 23.
-
-("D:\Software\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd"
-File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
-Package caption Info: Begin \AtBeginDocument code.
-Package caption Info: End \AtBeginDocument code.
+("D:\Software\MiKTeX 2.9\tex\latex\hyperref\hyperref.sty"
+Package: hyperref 2017/03/14 v6.85a Hypertext links for LaTeX
 
-("D:\Software\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
-[Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count102
-\scratchdimen=\dimen121
-\scratchbox=\box28
-\nofMPsegments=\count103
-\nofMParguments=\count104
-\everyMPshowfont=\toks20
-\MPscratchCnt=\count105
-\MPscratchDim=\dimen122
-\MPnumerator=\count106
-\makeMPintoPDFobject=\count107
-\everyMPtoPDFconversion=\toks21
-) ("D:\Software\MiKTeX 2.9\tex\latex\oberdiek\epstopdf-base.sty"
-Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\hobsub-hyperref.sty"
+Package: hobsub-hyperref 2016/05/16 v1.14 Bundle oberdiek, subset hyperref (HO)
 
-("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\infwarerr.sty"
+
+("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\hobsub-generic.sty"
+Package: hobsub-generic 2016/05/16 v1.14 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2016/05/16 v1.14 Construct package bundles (HO)
 Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
-)
-("D:\Software\MiKTeX 2.9\tex\latex\oberdiek\grfext.sty"
-Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
-
-("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\kvdefinekeys.sty"
-Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
-
-("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\ltxcmds.sty"
 Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
-)))
-("D:\Software\MiKTeX 2.9\tex\latex\oberdiek\kvoptions.sty"
-Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
-
-("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\kvsetkeys.sty"
-Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
-
-("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\etexcmds.sty"
-Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
-
-("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\ifluatex.sty"
 Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
 Package ifluatex Info: LuaTeX not detected.
-)
+Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+Package: intcalc 2016/05/16 v1.2 Expandable calculations with integers (HO)
+Package: ifpdf 2017/03/15 v3.2 Provides the ifpdf switch
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
 Package etexcmds Info: Could not find \expanded.
 (etexcmds)             That can mean that you are not using pdfTeX 1.50 or
 (etexcmds)             that some package has redefined \expanded.
 (etexcmds)             In the latter case, load this package earlier.
-)))
-("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\pdftexcmds.sty"
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
 Package: pdftexcmds 2017/03/19 v0.25 Utility functions of pdfTeX for LuaTeX (HO
-)
-
-("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\ifpdf.sty"
-Package: ifpdf 2017/03/15 v3.2 Provides the ifpdf switch
 )
 Package pdftexcmds Info: LuaTeX not detected.
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode found.
+Package: pdfescape 2016/05/16 v1.14 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2016/05/16 v1.4 Expandable calculations on big integers (HO
+)
+Package: bitset 2016/05/16 v1.2 Handle bit-vector datatype (HO)
+Package: uniquecounter 2016/05/16 v1.3 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
+Package: hopatch 2016/05/16 v1.3 Wrapper for package hooks (HO)
+Package: xcolor-patch 2016/05/16 xcolor patch
+Package: atveryend 2016/05/16 v1.9 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
+Package: refcount 2016/05/16 v3.5 Data extraction from label references (HO)
+Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
+)
+("D:\Software\MiKTeX 2.9\tex\generic\ifxetex\ifxetex.sty"
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+("D:\Software\MiKTeX 2.9\tex\latex\oberdiek\auxhook.sty"
+Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
+)
+("D:\Software\MiKTeX 2.9\tex\latex\oberdiek\kvoptions.sty"
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+)
+\@linkdim=\dimen121
+\Hy@linkcounter=\count102
+\Hy@pagecounter=\count103
+
+("D:\Software\MiKTeX 2.9\tex\latex\hyperref\pd1enc.def"
+File: pd1enc.def 2017/03/14 v6.85a Hyperref: PDFDocEncoding definition (HO)
+)
+\Hy@SavedSpaceFactor=\count104
+
+("D:\Software\MiKTeX 2.9\tex\latex\00miktex\hyperref.cfg"
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Hyper figures OFF on input line 4498.
+Package hyperref Info: Link nesting OFF on input line 4503.
+Package hyperref Info: Hyper index ON on input line 4506.
+Package hyperref Info: Plain pages OFF on input line 4513.
+Package hyperref Info: Backreferencing OFF on input line 4518.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4751.
+\c@Hy@tempcnt=\count105
+LaTeX Info: Redefining \url on input line 5104.
+\XeTeXLinkMargin=\dimen122
+\Fld@menulength=\count106
+\Field@Width=\dimen123
+\Fld@charsize=\dimen124
+Package hyperref Info: Hyper figures OFF on input line 6358.
+Package hyperref Info: Link nesting OFF on input line 6363.
+Package hyperref Info: Hyper index ON on input line 6366.
+Package hyperref Info: backreferencing OFF on input line 6373.
+Package hyperref Info: Link coloring OFF on input line 6378.
+Package hyperref Info: Link coloring with OCG OFF on input line 6383.
+Package hyperref Info: PDF/A mode OFF on input line 6388.
+LaTeX Info: Redefining \ref on input line 6428.
+LaTeX Info: Redefining \pageref on input line 6432.
+\Hy@abspage=\count107
+\c@Item=\count108
+\c@Hfootnote=\count109
+)
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+("D:\Software\MiKTeX 2.9\tex\latex\hyperref\hpdftex.def"
+File: hpdftex.def 2017/03/14 v6.85a Hyperref driver for pdfTeX
+\Fld@listcount=\count110
+\c@bookmark@seq@number=\count111
+
+("D:\Software\MiKTeX 2.9\tex\latex\oberdiek\rerunfilecheck.sty"
+Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip49
+) (CNN.aux)
+\openout1 = `CNN.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 24.
+
+("D:\Software\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd"
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: hyperref package is loaded.
+Package caption Info: End \AtBeginDocument code.
+
+("D:\Software\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count112
+\scratchdimen=\dimen125
+\scratchbox=\box28
+\nofMPsegments=\count113
+\nofMParguments=\count114
+\everyMPshowfont=\toks20
+\MPscratchCnt=\count115
+\MPscratchDim=\dimen126
+\MPnumerator=\count116
+\makeMPintoPDFobject=\count117
+\everyMPtoPDFconversion=\toks21
+) ("D:\Software\MiKTeX 2.9\tex\latex\oberdiek\epstopdf-base.sty"
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+("D:\Software\MiKTeX 2.9\tex\latex\oberdiek\grfext.sty"
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
 )
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 38.
@@ -233,44 +306,74 @@ Package grfext Info: Graphics extension search list:
 G,.JBIG2,.JB2,.eps]
 (grfext)             \AppendGraphicsExtensions on input line 456.
 )
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 24.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 24.
-LaTeX Font Info:    Try loading font information for U+lasy on input line 24.
+\AtBeginShipoutBox=\box29
+Package hyperref Info: Link coloring OFF on input line 24.
 
-("D:\Software\MiKTeX 2.9\tex\latex\base\ulasy.fd"
+("D:\Software\MiKTeX 2.9\tex\latex\hyperref\nameref.sty"
+Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
+
+("D:\Software\MiKTeX 2.9\tex\generic\oberdiek\gettitlestring.sty"
+Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
+)
+\c@section@level=\count118
+)
+LaTeX Info: Redefining \ref on input line 24.
+LaTeX Info: Redefining \pageref on input line 24.
+LaTeX Info: Redefining \nameref on input line 24.
+ (CNN.out)
+(CNN.out)
+\@outlinefile=\write3
+\openout3 = `CNN.out'.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 26.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 26.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 26.
+ ("D:\Software\MiKTeX 2.9\tex\latex\base\ulasy.fd"
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 24.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 24.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 26.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 26.
 
 ("D:\Software\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 31.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 32.
 
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 39.
+               Default added (so using `tbp') on input line 40.
+
+
+Overfull \hbox (3.7817pt too wide) in paragraph at lines 43--53
+ [][] 
+ []
 
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 50.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 53.
 [1{C:/Users/Fabian/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
 
 
 
 ]
-<Bilder/acolex_CNN_paper.png, id=11, 2058.69125pt x 3048.38875pt>
+<Bilder/acolex_CNN_paper.png, id=71, 2058.69125pt x 3048.38875pt>
 File: Bilder/acolex_CNN_paper.png Graphic file (type png)
 <use Bilder/acolex_CNN_paper.png>
-Package pdftex.def Info: Bilder/acolex_CNN_paper.png  used on input line 99. on
- input line 99.
+Package pdftex.def Info: Bilder/acolex_CNN_paper.png  used on input line 102. o
+n input line 102.
 Package pdftex.def Info: Requested size: 219.08612pt x 324.39287pt on input lin
-e 99.
- (CNN.bbl
+e 102.
+
+Underfull \vbox (badness 2582) has occurred while \output is active []
+
+ [2 <./Bilder/acolex_CNN_paper.png>]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+(CNN.bbl
 Underfull \hbox (badness 1810) in paragraph at lines 4--9
 []\OT1/ptm/m/n/10.95 F. Ey-ben, M. W[]ollmer, and B. Schul-ler.
  []
@@ -278,30 +381,40 @@ Underfull \hbox (badness 1810) in paragraph at lines 4--9
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [2 <./Bilder/acolex_CNN_paper.png>]) [3
+)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 166.
+ [3]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 166.
 
-] (CNN.aux) ) 
+(CNN.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 166.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 166.
+Package rerunfilecheck Info: File `CNN.out' has not changed.
+(rerunfilecheck)             Checksum: 66144E01971EACFDE2DAD058DAE63B87;700.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 166.
+ ) 
 Here is how much of TeX's memory you used:
- 3874 strings out of 493352
- 55706 string characters out of 3141830
- 217281 words of memory out of 3000000
- 7344 multiletter control sequences out of 15000+200000
- 23130 words of font info for 54 fonts, out of 3000000 for 9000
+ 7368 strings out of 493352
+ 108601 string characters out of 3141830
+ 297720 words of memory out of 3000000
+ 10789 multiletter control sequences out of 15000+200000
+ 24706 words of font info for 61 fonts, out of 3000000 for 9000
  1127 hyphenation exceptions out of 8191
- 41i,10n,39p,890b,315s stack positions out of 5000i,500n,10000p,200000b,50000s
-{D:/Software/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}<D:/Software/M
-iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><D:/Software/MiKTeX 2.9/fon
-ts/type1/public/amsfonts/cm/cmmi10.pfb><D:/Software/MiKTeX 2.9/fonts/type1/publ
-ic/amsfonts/cm/cmmi8.pfb><D:/Software/MiKTeX 2.9/fonts/type1/public/amsfonts/cm
-/cmr10.pfb><D:/Software/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><D:/
-Software/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><D:/Software/MiKT
-eX 2.9/fonts/type1/urw/courier/ucrr8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/u
-rw/times/utmb8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmbi8a.pfb><
-D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><D:/Software/MiKTeX 2.9
-/fonts/type1/urw/times/utmri8a.pfb>
-Output written on CNN.pdf (3 pages, 335778 bytes).
+ 36i,10n,39p,1119b,343s stack positions out of 5000i,500n,10000p,200000b,50000s
+{D:/Software/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}<D:/Software/MiKTeX 2.9/f
+onts/type1/public/amsfonts/cm/cmex10.pfb><D:/Software/MiKTeX 2.9/fonts/type1/pu
+blic/amsfonts/cm/cmmi10.pfb><D:/Software/MiKTeX 2.9/fonts/type1/public/amsfonts
+/cm/cmmi8.pfb><D:/Software/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb>
+<D:/Software/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><D:/Software/Mi
+KTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><D:/Software/MiKTeX 2.9/font
+s/type1/public/amsfonts/cm/cmsy6.pfb><D:/Software/MiKTeX 2.9/fonts/type1/public
+/amsfonts/cm/cmsy8.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.p
+fb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><D:/Software/MiKTeX
+ 2.9/fonts/type1/urw/times/utmbi8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/
+times/utmr8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
+Output written on CNN.pdf (3 pages, 339178 bytes).
 PDF statistics:
- 60 PDF objects out of 1000 (max. 8388607)
- 0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 152 PDF objects out of 1000 (max. 8388607)
+ 28 named destinations out of 1000 (max. 500000)
+ 102 words of extra memory for PDF output out of 10000 (max. 10000000)
 

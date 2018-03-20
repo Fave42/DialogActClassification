@@ -8,6 +8,7 @@
 \usepackage[font=small, labelfont=bf]{caption}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
 
 \title{Report: Dialog Act Classification\\\textit{using Word Embeddings \& Acoustic Features}}
 
@@ -37,8 +38,10 @@ In this section we discuss the \textit{Switchboard Dialog Act Corpus} and the ex
 	The \textit{Switchboard Dialog Act Corpus} \cite{switchboard}, from now on abbreviated as \textit{SwDA}, consists of recordings with corresponding transcripts. Each of these recordings is assigned to one of 42 \textit{dialog act classes}. For this project we reduced the amount of classes down to four which are \textit{statement, opinion, question} and \textit{backchannel}. These classes are supersets of the 42 \textit{dialog act classes} defined in the \textit{SwDA}. The distribution of the four classes within the training, development and test set are shown in Table \ref{tab:dataDistribution}.
 	%todo Examples for the four classes if more text is needed
 	\begin{table}[]
+		%todo Own tabel design
+		\centering
 		\begin{tabular}{ r | c c c }
-			& training & dev & test \\
+			& \textbf{training} & \textbf{dev} & \textbf{test} \\
 			\hline
 			opinion ($\sim$17\%) & 4984 & 1068 & 1070 \\
 			question ($\sim$8\%) & 2150 & 460 & 463 \\
@@ -99,21 +102,57 @@ The architecture of the proposed \textit{AcoLex} system is depicted in Figure \r
 	\includegraphics[width=1\linewidth]{Bilder/acolex_CNN_paper.png}
 	\caption{bla bla bla}
 	\label{pic:sysArchitecture}
-	%todo Bild verbessern, maxpooling bei LM hinzufügen
+	%todo Bild verbessern, maxpooling bei LM hinzufügen, Bildunterschrift hinzufügen
 \end{figure}
 
 \subsection{Lexical Model}
-%todo cite Kim
-The lexical model (LM), depicted on the right side in Figure \ref{pic:sysArchitecture}, consists of three layers. The first layer is an \textit{embedding layer} $E$ followed by a \textit{convolution layer} which uses three different filter sizes and finally a \textit{max-pooling layer}. The \textit{embedding layer} yields the same \textit{embedding matrix} as explained in Section \ref{sec:lexicalFeatures}. The filters of the \textit{convolution layer} capture three different word contexts, namely \textit{2-Word-}, \textit{3-Word-} and \textit{4-Word-Contexts}. Overall 300 filters are applied in the LM, were each filter type is used 100 times. After the convolution the outputs are passed to a \textit{max-pooling layer} which returns the highest value of each filter output. Therefore, the final output of the LM are three 100 element long vectors.
+The \textit{lexical model} (\textit{LM}), depicted on the right side in Figure \ref{pic:sysArchitecture}, consists of three layers. The architecture is based on the system introduced by Kim (2014) \cite{Kim_2014}. The first layer is an \textit{embedding layer} which was initialized with the \textit{embedding matrix} $E$ described in Section \ref{sec:lexicalFeatures}. The benefits of using an embedding layer is a significant reduction of the time needed to import the input files due to storing the vector of each word only once. Furthermore it enables the tuning of the \textit{embedding vectors} for the classification task. The second layer is a \textit{convolution layer} which uses three different filter sizes to capture different word contexts, namely \textit{2-word-}, \textit{3-word-} and \textit{4-word-contexts}. Overall 300 filters are applied in the LM, were each filter type is used 100 times. The last layer is a \textit{max-pooling layer} that returns the highest value of each filter output. Therefore, the final output of the LM are three 100 element long vectors.
 
 \subsection{Acoustic Model}
-%todo cite Ortega
-%The general structure of our \textit{convolutional neural network} consists of three stages. The first one is the \textit{input dependent} stage which can use the acoustic and/or lexical inputs and extracts useful features for the classification. Following that, the second stage concatenates the outputs into one vector which then is passed to the third where the utterance, with the help of a \textit{softmax layer}, is classified. The complete architecture is depicted in Figure \ref{pic:sysArchitecture}.
+%todo cite Ortega 
+The \textit{acoustic model} (\textit{AM}), shown on the left side in Figure \ref{pic:sysArchitecture}, is developed similarly to the acoustic model presented by Ortega et. al (2018) \cite{OrtegaVu_2018}. Like the \textit{LM} it utilizes three different layers. The first layer is a \textit{convolution layer} with one filter type that captures 100 \textit{MFCC-frames} at a time. We decided to use a stride of 50 to significantly reduce the processing time. The second layer is a \textit{max-pooling layer} similar to the one in the \textit{LM}. This layer returns a 100 element long vector. This output is fed into a \textit{fully connected layer} which returns the final output of the \textit{AM} which is a 100 element long vector.
 
 \subsection{AcoLex Model}
+Our proposed \textit{AcoLex Model} employs a \textit{bi-CNN} that consists of the \textit{LM} and the \textit{AM} to simultaneously process lexical and acoustic features. The outputs are then concatenated into one 400 element long vector which is then passed into a \textit{softmax layer} to perform the \textit{dialog act classification task}. The final output is a four element long vector were each element represents the probability for one \textit{dialog act class}.
+
+\section{Training}
+The system was trained for 21 epochs with the \textit{stochastic gradient descent} optimization algorithm over mini-batches of size 100. The learning rate was fixed to 0.01. The tunable hyperparameters are shown in Table \ref{tab:hyperparameters}.
+
+\begin{table}[h]
+	%todo Own tabel design
+	\centering
+	\begin{tabular}{ l | c | c}
+		\textbf{Hyperparameter} & \textbf{LM} & \textbf{AM} \\
+		\hline
+		Filter width & 2, 3, 4 & 100 \\
+		Activation function & Relu & TanH \\
+		Word embeddings & word2vec & -- \\
+		MFCC features & -- & 13 \\
+		Dropout$^\ast$ & 0.5 & 0.5 \\
+		Learning Rate$^\ast$ & 0.01 & 0.01 \\
+		Mini-batch size$^\ast$ & 100 & 100 \\
+		\# Feature maps$^\ast$ & 100 & 100 \\
+	\end{tabular}
+	\caption{Hyperparameters marked with $^\ast$ are model independent and were set for the whole system.}
+	\label{tab:hyperparameters}
+\end{table}	
 
 \section{Results}
-%todo Tabelle mit der verwendeten Konfiguration
+
+\begin{table}[h]
+	%todo Own tabel design
+	\centering
+	\begin{tabular}{ l | c c}
+		\textbf{Model} & Dev Accuracy & Test Accuracy\\
+		\hline
+		Acoustic & &  \\
+		Lexical & 77.52 & 77.40 \\
+		AcoLex & 80.24 & 79.93 \\
+
+	\end{tabular}
+	\caption{Hyperparameters marked with $^\ast$ are model independent and were set for the whole system.}
+	\label{tab:results}
+\end{table}	
 
 \section{Research Question: None}
 

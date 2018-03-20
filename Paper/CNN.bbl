@@ -25,4 +25,9 @@ T.~Mikolov, I.~Sutskever, K.~Chen, G.~Corrado, and J.~Dean.
   compositionality.
 \newblock {\em CoRR}, abs/1310.4546, 2013.
 
+\bibitem{OrtegaVu_2018}
+D.~{Ortega} and N.~{Thang Vu}.
+\newblock {Lexico-acoustic Neural-based Models for Dialog Act Classification}.
+\newblock {\em ArXiv e-prints}, Mar. 2018.
+
 \end{thebibliography}

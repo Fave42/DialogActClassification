@@ -61,6 +61,9 @@ activationFunctionList = ["TanH", "Relu", "Sigmoid"]
 if (activationFunction_LM not in activationFunctionList):
     print("Activationfunction not defined!!!")
     exit()
+if (activationFunction_AM not in activationFunctionList):
+    print("Activationfunction not defined!!!")
+    exit()
 
 # Server Paths
 # Without stopwords
