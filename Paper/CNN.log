@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  20 MAR 2018 17:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6400) (preloaded format=pdflatex 2017.8.5)  20 MAR 2018 17:21
 entering extended mode
 **./CNN.tex
 (CNN.tex
@@ -257,21 +257,21 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 ) (CNN.aux)
 \openout1 = `CNN.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 24.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 27.
 
 ("D:\Software\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd"
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
@@ -307,7 +307,7 @@ G,.JBIG2,.JB2,.eps]
 (grfext)             \AppendGraphicsExtensions on input line 456.
 )
 \AtBeginShipoutBox=\box29
-Package hyperref Info: Link coloring OFF on input line 24.
+Package hyperref Info: Link coloring OFF on input line 27.
 
 ("D:\Software\MiKTeX 2.9\tex\latex\hyperref\nameref.sty"
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -317,43 +317,43 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count118
 )
-LaTeX Info: Redefining \ref on input line 24.
-LaTeX Info: Redefining \pageref on input line 24.
-LaTeX Info: Redefining \nameref on input line 24.
+LaTeX Info: Redefining \ref on input line 27.
+LaTeX Info: Redefining \pageref on input line 27.
+LaTeX Info: Redefining \nameref on input line 27.
  (CNN.out)
 (CNN.out)
 \@outlinefile=\write3
 \openout3 = `CNN.out'.
 
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 26.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 29.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 26.
-LaTeX Font Info:    Try loading font information for U+lasy on input line 26.
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 29.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 29.
  ("D:\Software\MiKTeX 2.9\tex\latex\base\ulasy.fd"
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 26.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 26.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 29.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 29.
 
 ("D:\Software\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 32.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 35.
 
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 40.
+               Default added (so using `tbp') on input line 43.
 
 
-Overfull \hbox (3.7817pt too wide) in paragraph at lines 43--53
+Overfull \hbox (3.7817pt too wide) in paragraph at lines 46--56
  [][] 
  []
 
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 53.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 56.
 [1{C:/Users/Fabian/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
 
 
@@ -362,34 +362,34 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
 <Bilder/acolex_CNN_paper.png, id=71, 2058.69125pt x 3048.38875pt>
 File: Bilder/acolex_CNN_paper.png Graphic file (type png)
 <use Bilder/acolex_CNN_paper.png>
-Package pdftex.def Info: Bilder/acolex_CNN_paper.png  used on input line 103. o
-n input line 103.
+Package pdftex.def Info: Bilder/acolex_CNN_paper.png  used on input line 106. o
+n input line 106.
 Package pdftex.def Info: Requested size: 219.08612pt x 324.39287pt on input lin
-e 103.
+e 106.
  [2 <./Bilder/acolex_CNN_paper.png>] (CNN.bbl
 Underfull \hbox (badness 1810) in paragraph at lines 4--9
 []\OT1/ptm/m/n/10.95 F. Ey-ben, M. W[]ollmer, and B. Schul-ler.
  []
 
 [3])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 166.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 169.
  [4
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 166.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 169.
  (CNN.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 166.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 166.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 169.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 169.
 Package rerunfilecheck Info: File `CNN.out' has not changed.
 (rerunfilecheck)             Checksum: 66144E01971EACFDE2DAD058DAE63B87;700.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 166.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 169.
  ) 
 Here is how much of TeX's memory you used:
- 7369 strings out of 493352
- 108607 string characters out of 3141830
+ 7370 strings out of 493352
+ 108613 string characters out of 3141830
  296720 words of memory out of 3000000
  10789 multiletter control sequences out of 15000+200000
- 24706 words of font info for 61 fonts, out of 3000000 for 9000
+ 25784 words of font info for 62 fonts, out of 3000000 for 9000
  1127 hyphenation exceptions out of 8191
  36i,10n,39p,1119b,434s stack positions out of 5000i,500n,10000p,200000b,50000s
 {D:/Software/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}<D:/Software/MiKTeX 2.9/f
@@ -403,7 +403,7 @@ s/type1/public/amsfonts/cm/cmsy6.pfb><D:/Software/MiKTeX 2.9/fonts/type1/public
 fb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><D:/Software/MiKTeX
  2.9/fonts/type1/urw/times/utmbi8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/
 times/utmr8a.pfb><D:/Software/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on CNN.pdf (4 pages, 340932 bytes).
+Output written on CNN.pdf (4 pages, 340961 bytes).
 PDF statistics:
  158 PDF objects out of 1000 (max. 8388607)
  29 named destinations out of 1000 (max. 500000)
