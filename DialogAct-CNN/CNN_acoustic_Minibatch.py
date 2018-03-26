@@ -24,7 +24,7 @@ import os
 
 ### Tunable Variables
 numEpoch = 21                    # Number of Epochs for training
-activationFunction_AM = "TanH"     # TanH or Relu or Sigmoid
+activationFunction_AM = "ELU"     # TanH or Relu or Sigmoid or ELU
 lossFunction = "Cross-Entropy"      # Cross-Entropy or Hinge-Loss or Mean-Squared-Error
 learningRate = 0.01
 dropout = 0.50
@@ -52,7 +52,7 @@ if (lossFunction not in lossFunctionList):
     exit()
 
 # Activationfunction
-activationFunctionList = ["TanH", "Relu", "Sigmoid"]
+activationFunctionList = ["TanH", "Relu", "Sigmoid", "ELU"]
 if (activationFunction_AM not in activationFunctionList):
     print("Activationfunction not defined!!!")
     exit()
@@ -198,6 +198,9 @@ with tf.name_scope("Acoustic_Model"):
             elif (activationFunction_AM == "Sigmoid"):
                 h_conv_MFCC_L0 = tf.nn.sigmoid(
                     conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function sigmoid
+            elif (activationFunction_AM == "ELU"):
+                h_conv_MFCC_L0 = tf.nn.elu(
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function ELU
             else:
                 print("Activationfunction not defined!!!")
                 exit()
@@ -220,6 +223,8 @@ with tf.name_scope("Acoustic_Model"):
                 AM_Output = tf.nn.tanh(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function TanH
             elif (activationFunction_AM == "Sigmoid"):
                 AM_Output = tf.nn.sigmoid(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function sigmoid
+            elif (activationFunction_AM == "ELU"):
+                AM_Output = tf.nn.elu(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function ELU
             else:
                 print("Activationfunction AM FCL not defined!!!")
                 exit()

@@ -25,7 +25,7 @@ import os
 ### Tunable Variables
 numEpoch = 21          # Number of Epochs for training
 trainableEmbeddings = True
-activationFunction_LM = "Relu"       # TanH or Relu or Sigmoid
+activationFunction_LM = "ELU"       # TanH or Relu or Sigmoid or ELU
 lossFunction = "Cross-Entropy"          # Cross-Entropy or Hinge-Loss or Mean-Squared-Error
 learningRate = 0.01
 dropout = 0.50
@@ -53,7 +53,7 @@ if (lossFunction not in lossFunctionList):
     exit()
 
 # Activationfunction
-activationFunctionList = ["TanH", "Relu", "Sigmoid"]
+activationFunctionList = ["TanH", "Relu", "Sigmoid", "ELU"]
 if (activationFunction_LM not in activationFunctionList):
     print("Activationfunction not defined!!!")
     exit()
@@ -211,6 +211,9 @@ with tf.name_scope("Two_Word_Context"):
         elif (activationFunction_LM == "Sigmoid"):
             h_conv_L1_2WC = tf.nn.sigmoid(
                 conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function sigmoid
+        elif (activationFunction_LM == "ELU"):
+            h_conv_L1_2WC = tf.nn.elu(
+                conv2d(x4DTensor_padded, W_conv_L1_2WC) + b_conv_L1_2WC)  ### activation function elu
         else:
             print("Activationfunction not defined!!!")
             exit()
@@ -234,6 +237,9 @@ with tf.name_scope("Three_Word_Context"):
         elif (activationFunction_LM == "Sigmoid"):
             h_conv_L1_3WC = tf.nn.sigmoid(
                 conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function sigmoid
+        elif (activationFunction_LM == "ELU"):
+            h_conv_L1_3WC = tf.nn.elu(
+                conv2d(x4DTensor_padded, W_conv_L1_3WC) + b_conv_L1_3WC)  ### activation function elu
         else:
             print("Activationfunction not defined!!!")
             exit()
@@ -257,6 +263,9 @@ with tf.name_scope("Four_Word_Context"):
         elif (activationFunction_LM == "Sigmoid"):
             h_conv_L1_4WC = tf.nn.sigmoid(
                 conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function sigmoid
+        elif (activationFunction_LM == "ELU"):
+            h_conv_L1_4WC = tf.nn.elu(
+                conv2d(x4DTensor_padded, W_conv_L1_4WC) + b_conv_L1_4WC)  ### activation function elu
         else:
             print("Activationfunction not defined!!!")
             exit()
@@ -265,7 +274,7 @@ with tf.name_scope("Four_Word_Context"):
 
 # Concatenate the pooling outputs to get the feature vector
 with tf.name_scope("L1_OutputTensor"):
-  outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
+    outputTensor_L1 = tf.concat([h_pool_L1_2WC, h_pool_L1_3WC, h_pool_L1_4WC], 1)
     # outputTensor_L1 = tf.concat([h_pool_L1_2D_2WC, h_pool_L1_2D_3WC, h_pool_L1_2D_4WC], 1)
 # Reshape to 2D tensor
 with tf.name_scope("Concatination_Dimensions"):
