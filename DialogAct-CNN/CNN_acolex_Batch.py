@@ -465,19 +465,61 @@ with tf.Session(config=config) as sess:
         random_TrainingList[i][2] = random_TrainingList[i][2].reshape((1, 4))   # gold-standard
     # print(random_TrainingList[0][1].shape)
 
-    # Tensorboard integration
+    ### Start Tensorboard integration
+    # Var init
     training_accuracy = 0
-    tf.summary.scalar("learning_rate", learningRate)
-    tf.summary.histogram("training_accuracy", training_accuracy)
-    tf.summary.scalar("loss_function", loss)
+
+    # Acoustic Model
+    tf.summary.histogram("W_conv_MFCC_L0", W_conv_MFCC_L0)
+    tf.summary.histogram("b_conv_MFCC_L0", b_conv_MFCC_L0)
+    tf.summary.histogram("h_act_MFCC_L0", h_conv_MFCC_L0)
+    tf.summary.histogram("MaxPooling_MFCC_L0", h_pool_MFCC_L0)
+
+    # Fully Connected Layer
+    tf.summary.histogram("W_AM_FC", W_AM_FC)
+    tf.summary.histogram("b_AM_FC", b_AM_FC)
+    tf.summary.histogram("MFCC_ActFunc_FC", AM_Output)  # Activation Function
+
+    # Two-Word-Context
+    tf.summary.histogram("W_conv_L1_2WC", W_conv_L1_2WC)
+    tf.summary.histogram("b_conv_L1_2WC", b_conv_L1_2WC)
+    tf.summary.histogram("CL1_ActFunc_2WC", h_conv_L1_2WC)
+    tf.summary.histogram("CL1_MaxPooling_2WC", h_pool_L1_2WC)
+
+    # Three-Word-Context
+    tf.summary.histogram("W_conv_L1_3WC", W_conv_L1_3WC)
+    tf.summary.histogram("b_conv_L1_3WC", b_conv_L1_3WC)
+    tf.summary.histogram("CL1_ActFunc_3WC", h_conv_L1_3WC)
+    tf.summary.histogram("CL1_MaxPooling_3WC", h_pool_L1_3WC)
+
+    # Four-Word-Context
+    tf.summary.histogram("W_conv_L1_4WC", W_conv_L1_4WC)
+    tf.summary.histogram("b_conv_L1_4WC", b_conv_L1_4WC)
+    tf.summary.histogram("CL1_ActFunc_4WC", h_conv_L1_4WC)
+    tf.summary.histogram("CL1_MaxPooling_4WC", h_pool_L1_4WC)
+
+    # Second Fully Connected Layer
+    tf.summary.histogram("W_FC_L2", W_FC_L2)
+    tf.summary.histogram("b_FC_L2", b_FC_L2)
+
+    # Dropout
+    tf.summary.histogram("h_FC_L2_drop", h_FC_L2_drop)
+
+    # Embedding Matrix
+    tf.summary.histogram("Embedding_Matrix", embedding_Matrix)
+
+    # Other
+    tf.summary.histogram("y", y)  # Lexical input
+    tf.summary.histogram("x", x)  # Acoustic Input
+    tf.summary.histogram("y_", y_)  # Gold standard
     tf.summary.histogram("accuracy", accuracy)
-    # tf.summary.histogram("bias_FCL2", b_FC_L2)
-    # tf.summary.histogram("bias_FCL1_2WC", b_conv_L1_2WC)
-    # tf.summary.histogram("bias_FCL1_3WC", b_conv_L1_3WC)
-    # tf.summary.histogram("bias_FCL1_4WC", b_conv_L1_4WC)
+    tf.summary.scalar("learning_rate", learningRate)
+    tf.summary.scalar("loss_function", loss)
+    tf.summary.scalar("training_accuracy", training_accuracy)
 
     merged = tf.summary.merge_all()
     writer = tf.summary.FileWriter(logPath, sess.graph)
+    ### End Tensorboard integration
 
     for epoch in range(numEpoch):
         start_time = time.time()
