@@ -23,26 +23,27 @@ import datetime
 import os
 
 ### Tunable Variables
-numEpoch = 21                    # Number of Epochs for training
-activationFunction_AM = "ReLU6"     # TanH or Relu or Sigmoid or L_ReLU or ReLU6 or ELU
-lossFunction = "Cross-Entropy"      # Cross-Entropy or Hinge-Loss or Mean-Squared-Error
+numEpoch = 21                       # Number of Epochs for training
+activationFunction_AM = "ReLU6"     # Can be set to TanH or Relu or Sigmoid or L_ReLU or ReLU6 or ELU
+lossFunction = "Cross-Entropy"      # Can be set to Cross-Entropy or Hinge-Loss or Mean-Squared-Error
 learningRate = 0.01
 dropout = 0.50
-optimizerFunction = "Stochastic Gradient Descent"
-filterNumberMFCC = 100    # Number of filters for the MFCC features
-mfccFilterSize = 100
-AM_Feature_Output_Number = 100  # Output size of AM FCL
-weightSeed = 1
 
 ### Static Variables
-batchSize = 100         # Batchsize for training
-evalFrequency = 1       # Evaluation frequency (epoch % evalFrequency == 0)
-numCPUs = 10            # Number of CPU's to be used
-numberMFCCFrames = 2000
-typeOfCNN = "CNN + 1 Fully-Connected-Layer"
+batchSize = 100                     # Batchsize for training
+evalFrequency = 1                   # Evaluation frequency (epoch % evalFrequency == 0)
+numCPUs = 10                        # Number of CPU's to be used
+numberMFCCFrames = 2000             # Number of MFCC frames
+filterNumberMFCC = 100              # Number of filters for the MFCC features
+mfccFilterSize = 100                # Width of one MFCC filter
+AM_Feature_Output_Number = 100      # Output size of AM FCL
+weightSeed = 111121                 # Seed for the weight initialization
+optimizerFunction = "Stochastic Gradient Descent"   # Information added to the log file
 
-logFileTmp = ""
-overallTime = time.time()
+
+logFileTmp = ""                         # Empty string for the log file output
+overallTime = time.time()               # Start timing the training process
+
 
 ### Checking  Hyperparameters
 # Lossfunction
@@ -58,18 +59,11 @@ if (activationFunction_AM not in activationFunctionList):
     exit()
 
 # Server Paths
-# Without stopwords
 pathTraining = "NN_Input_Files/trainData_acolex_Embeddings_final.pickle"
 pathEvaluation = "NN_Input_Files/devData_acolex_Embeddings_final.pickle"
 pathTest = "NN_Input_Files/Test_data/testData_acolex_Embeddings_final.pickle"
-### Testing purposes only
-# pathTraining = "NN_Input_Files/sanityTestFiles/trainData_acolex_Embeddings_short.pickle"
-# pathEvaluation = "NN_Input_Files/sanityTestFiles/devData_acolex_Embeddings_short.pickle"
 
-# With stopwords
-#pathTraining = "NN_Input_Files/trainData_4_100_fsw.pickle"
-#pathEvaluation = "NN_Input_Files/devData_4_100_fsw.pickle"
-
+# Import of all needed data
 print("### Importing Training, Evaluation and Embedding Data! ###")
 trainingList = pickle.load(open(pathTraining, "rb"))
 evaluationList = pickle.load(open(pathEvaluation, "rb"))
@@ -87,8 +81,10 @@ def biasVariable(shape):
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial)
 
+
 def conv2d_MFCC(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 13, 50, 1], padding='VALID')
+
 
 def maxPool_MFCC(x, kernelDepth):
     return tf.nn.max_pool(x, ksize=[1, 1, kernelDepth, 1],
@@ -120,8 +116,6 @@ def createBatchList(random_TrainingList, batchSize):
             mfccBatchArray = mfccBatchArray.reshape(npArrayDepth, numberMFCCFrames * 13)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
-            # print(labelsBatchArray.shape)
-
             batchList.append((featureBatchArray, mfccBatchArray, labelsBatchArray))
             tmpFeatureList = []
             tmpMFCCList = []
@@ -137,17 +131,14 @@ def createBatchList(random_TrainingList, batchSize):
             mfccBatchArray = mfccBatchArray.reshape(npArrayDepth, numberMFCCFrames * 13)
             labelsBatchArray = labelsBatchArray.reshape(npArrayDepth, 4)
 
-            # print(labelsBatchArray.shape)
-
             batchList.append((featureBatchArray, mfccBatchArray, labelsBatchArray))
             tmpFeatureList = []
             tmpMFCCList = []
             tmpLabelList = []
             npArrayDepth = 0
-
     return batchList
 
-
+### Creates and returns a list that contains all development and test instances
 def createEvalList(rawEvalList):
     npArrayDepth = 0
     evalTriple = ()
@@ -178,6 +169,10 @@ def createEvalList(rawEvalList):
 x_mfcc = tf.placeholder(tf.float32, shape=[None, numberMFCCFrames * 13])  # mfcc input vectors
 y_ = tf.placeholder(tf.float32, shape=[None, 4])  # gold standard labels; 1hot-vectors
 
+### Meaning of abbreviations
+# L0 = Layer 0
+###
+
 x_MFCC_4DTensor = tf.reshape(x_mfcc, shape=[-1, 13, numberMFCCFrames, 1])
 
 ### Acoustic Model
@@ -191,28 +186,28 @@ with tf.name_scope("Acoustic_Model"):
         with tf.name_scope("MFCC_CL1_HiddenLayer"):
             if (activationFunction_AM == "Relu"):
                 h_conv_MFCC_L0 = tf.nn.relu(
-                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function ReLu
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  # activation function ReLu
             elif (activationFunction_AM == "TanH"):
                 h_conv_MFCC_L0 = tf.tanh(
-                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function TanH
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  # activation function TanH
             elif (activationFunction_AM == "Sigmoid"):
                 h_conv_MFCC_L0 = tf.nn.sigmoid(
-                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function sigmoid
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  # activation function sigmoid
             elif (activationFunction_AM == "ReLU6"):
                 h_conv_MFCC_L0 = tf.nn.relu6(
-                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function ReLU6
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  # activation function ReLU6
             elif (activationFunction_AM == "L_ReLU"):
                 h_conv_MFCC_L0 = tf.nn.leaky_relu(
-                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0,0.01)  ### activation function leaky relu
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0, 0.01)  # activation function leaky relu
             elif (activationFunction_AM == "ELU"):
                 h_conv_MFCC_L0 = tf.nn.elu(
-                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  ### activation function ELU
+                    conv2d_MFCC(x_MFCC_4DTensor, W_conv_MFCC_L0) + b_conv_MFCC_L0)  # activation function ELU
             else:
                 print("Activationfunction not defined!!!")
                 exit()
 
         with tf.name_scope("MFCC_CL1_MaxPooling"):
-            outputdepthMFCCConv = (numberMFCCFrames / 50) - 1  #Computes the
+            outputdepthMFCCConv = (numberMFCCFrames / 50) - 1   # Computes the output length of the convolution
             h_pool_MFCC_L0 = maxPool_MFCC(h_conv_MFCC_L0, outputdepthMFCCConv)
 
     with tf.name_scope("Fully_Connected_Layer"):
@@ -224,17 +219,17 @@ with tf.name_scope("Acoustic_Model"):
             h_pool_MFCC_L0_2D = tf.reshape(h_pool_MFCC_L0, [-1, filterNumberMFCC])
         with tf.name_scope("FCL"):
             if (activationFunction_AM == "Relu"):
-                AM_Output = tf.nn.relu(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function ReLu
+                AM_Output = tf.nn.relu(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  # activation function ReLu
             elif (activationFunction_AM == "TanH"):
-                AM_Output = tf.nn.tanh(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function TanH
+                AM_Output = tf.nn.tanh(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  # activation function TanH
             elif (activationFunction_AM == "Sigmoid"):
-                AM_Output = tf.nn.sigmoid(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function sigmoid
+                AM_Output = tf.nn.sigmoid(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  # activation function sigmoid
             elif (activationFunction_AM == "ReLU6"):
-                AM_Output = tf.nn.relu6(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function ReLU6
+                AM_Output = tf.nn.relu6(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  # activation function ReLU6
             elif (activationFunction_AM == "L_ReLU"):
-                AM_Output = tf.nn.leaky_relu(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC,0.01)  ### activation function leaky ReLU
+                AM_Output = tf.nn.leaky_relu(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC,0.01)  # activation function leaky ReLU
             elif (activationFunction_AM == "ELU"):
-                AM_Output = tf.nn.elu(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  ### activation function ELU
+                AM_Output = tf.nn.elu(tf.matmul(h_pool_MFCC_L0_2D, W_AM_FC) + b_AM_FC)  # activation function ELU
             else:
                 print("Activationfunction AM FCL not defined!!!")
                 exit()
@@ -251,7 +246,7 @@ with tf.name_scope("L1_OutputTensor_2D"):
 keep_Prob = tf.placeholder(tf.float32)
 h_FC_L2_drop = tf.nn.dropout(outputTensor_L1_2D, keep_Prob)
 
-# Output
+### Softmax Layer
 with tf.name_scope("FCL2_Weights"):
     W_FC_L2 = weightVariable([numOutputConcat, 4])
 with tf.name_scope("FCL2_Bias"):
@@ -264,17 +259,16 @@ with tf.name_scope("Final_Linear_Function"):
 if (lossFunction == "Cross-Entropy"):
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_,
                                                                   logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_mean
-    # loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))  # (Goldstandard, Output); Cross Entropy; reduce_sum
 elif (lossFunction == "Hinge-Loss"):
     loss = tf.losses.hinge_loss(labels=y_, logits=y, weights=1.0)
 elif (lossFunction == "Mean-Squared-Error"):
-    loss = tf.losses.mean_squared_error(labels=y_, predictions=tf.nn.softmax(y))    #Introduced softmax before y
+    loss = tf.losses.mean_squared_error(labels=y_, predictions=tf.nn.softmax(
+        y))  # Introduced softmax before y, because mean squared error doesn't computes softmax itself
 else:
     exit()
 
-# Training
+### Training
 # Optimizer
-# train_Step = tf.train.AdamOptimizer(learningRate).minimize(loss)
 train_Step = tf.train.GradientDescentOptimizer(learningRate).minimize(loss)
 
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
@@ -284,11 +278,10 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 # Configure how many threads are used for batch processing
 config = tf.ConfigProto(intra_op_parallelism_threads=numCPUs, inter_op_parallelism_threads=numCPUs)
 
-# Dump for logfile
+# Dump information to logfile
 logFileTmp += "##########\n"
 logFileTmp += "Used Training Data: " + str(pathTraining) + "\n"
 logFileTmp += "Used Dev Data: " + str(pathEvaluation) + "\n"
-logFileTmp += "Type of CNN: " + str(typeOfCNN) + "\n"
 logFileTmp += "Number of epochs: " + str(numEpoch) + "\n"
 logFileTmp += "Number of filters MFCC: " + str(filterNumberMFCC) + "\n"
 logFileTmp += "Filter size MFCC: " + str(mfccFilterSize) + "\n"
@@ -313,29 +306,15 @@ if not os.path.exists(logPath):
     os.makedirs(logPath)
 
 with tf.Session(config=config) as sess:
-# with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     stepCount = 0
-
-
-#    values2 = sess.run(W_conv_L1_2WC)
-#    print("pool_Layer_2WC:")
-#    print(values2)
-#    print(tf.shape(values2))
-#    print("Weight_3WC:")
-
-
     random_TrainingList = deepcopy(trainingList)
 
-    # print(random_TrainingList[0][1])
-    # print("\trandomTrainingList shape: " + str(random_TrainingList[0][1].shape))
-    # reshapes the feature-matrix into a vector format
-    # reshapes every 1hot-vector (labels) to a 2D shape
+    # Reshapes the feature-matrix into a vector format and reshapes every 1hot-vector (labels) to a 2D shape
     for i in range(len(random_TrainingList)):
-        random_TrainingList[i][0] = random_TrainingList[i][0].reshape((1, 100))   # text
-        random_TrainingList[i][1] = random_TrainingList[i][1].flatten() #reshape((1, numberMFCCFeatures))   # mfcc
-        random_TrainingList[i][2] = random_TrainingList[i][2].reshape((1, 4))   # gold-standard
-    # print(random_TrainingList[0][1].shape)
+        random_TrainingList[i][0] = random_TrainingList[i][0].reshape((1, 100))     # lexical
+        random_TrainingList[i][1] = random_TrainingList[i][1].flatten()             # mfcc
+        random_TrainingList[i][2] = random_TrainingList[i][2].reshape((1, 4))       # gold-standard
 
     ### Start Tensorboard integration
     # Var init
@@ -355,9 +334,9 @@ with tf.Session(config=config) as sess:
     tf.summary.histogram("h_FC_L2_drop", h_FC_L2_drop)
 
     # Other
-    tf.summary.histogram("y", y)  # Acoustic input
-    tf.summary.histogram("x", x_mfcc)  # Acoustic Input
-    tf.summary.histogram("y_", y_)  # Gold standard
+    tf.summary.histogram("y", y)        # Acoustic input
+    tf.summary.histogram("x", x_mfcc)   # Acoustic Input
+    tf.summary.histogram("y_", y_)      # Gold standard
     tf.summary.histogram("accuracy", accuracy)
     tf.summary.scalar("learning_rate", learningRate)
     tf.summary.scalar("loss_function", loss)
@@ -370,56 +349,45 @@ with tf.Session(config=config) as sess:
     for epoch in range(numEpoch):
         start_time = time.time()
         print("Current epoch " + str(epoch))
-        # Shuffle the traininglist
-        shuffle(random_TrainingList)
+        shuffle(random_TrainingList)    # Shuffles the traininglist
         epochAccuracyList = []
         epochLossList = []
         batchList = []
 
-        
-        # Batch processing
+        # Mini-batch processing
         batchList = createBatchList(random_TrainingList, batchSize)
 
         for tupleBatch in batchList:
-            # dividing data into the actual features and the gold standard one hot vectors.
+            # Dividing data into the actual features and the gold standard one hot vectors
             feature_Matrix = tupleBatch[0]
             mfcc_feature_Matrix = tupleBatch[1]
             labels = tupleBatch[2]
             batch = (feature_Matrix, mfcc_feature_Matrix, labels)
 
-            # metadata for tensorboard
+            # Metadata for tensorboard
             run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
             run_metadata = tf.RunMetadata()
 
-            # computes the actual accuracy for the current batch.
+            # Computes the actual accuracy for the current mini-batch
             training_accuracy = accuracy.eval(
                 feed_dict={x_mfcc: batch[1], y_: batch[2], keep_Prob: 1.0})
 
-            # Run the optimizer to update weights.
-            summary, l, train = sess.run([merged, loss, train_Step], feed_dict={x_mfcc: batch[1], y_: batch[2], keep_Prob: dropout})
+            # Run the optimizer to update weights
+            summary, l, train = sess.run([merged, loss, train_Step],
+                                         feed_dict={x_mfcc: batch[1], y_: batch[2], keep_Prob: dropout})
 
             writer.add_run_metadata(run_metadata, 'step %d' % stepCount)
             writer.add_summary(summary, stepCount)
-            # print("Adding run metadata for epoch " + str(stepCount))
 
             stepCount += 1
 
         elapsed_time = time.time() - start_time
-            # epochAccuracyList.append(training_accuracy)
-            # epochLossList.append(l)
 
-        # Evaluation output for direct user controll.
+        # Evaluation output for direct user control
         if epoch % evalFrequency == 0:
-            # epochAvgAccuracy = np.mean(epochAccuracyList)
-            # epochAvgLoss = np.mean(epochLossList)
-
             print('\t- step %d, training accuracy %g, learning rate %f, loss %f, %f s' % (epoch, training_accuracy,
                                                                                           learningRate, l,
                                                                                           elapsed_time))
-            # writer.add_run_metadata(run_metadata, 'step %d' % epoch)
-            # writer.add_summary(summary, epoch)
-            # print("Adding run metadata for epoch " + str(epoch))
-
             logFileTmp += 'step %d, training accuracy %g, loss %f, learning rate %f, %f s\n' % (epoch, training_accuracy,
                                                                                              l, learningRate,
                                                                                              elapsed_time)
@@ -447,6 +415,3 @@ with tf.Session(config=config) as sess:
         saveFile.write(logFileTmp)
 
 writer.close()
-
-# todo Add adaptive learningrate
-# todo Add config file integration
